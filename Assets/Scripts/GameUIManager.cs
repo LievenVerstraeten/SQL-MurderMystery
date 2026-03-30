@@ -74,7 +74,6 @@ public class GameUIManager : MonoBehaviour
 
     private void OnBurgerMenuClicked()
     {
-        Debug.Log("Hamburger Button was clicked!");
 
         if (burgerMenuDropdown != null)
         {
@@ -85,13 +84,11 @@ public class GameUIManager : MonoBehaviour
                 burgerMenuDropdown.style.display = DisplayStyle.Flex;
                 burgerMenuDropdown.RemoveFromClassList("hidden");
                 burgerMenuDropdown.BringToFront(); // Forces element to render perfectly on top
-                Debug.Log("Opened Burger Menu visually");
             }
             else
             {
                 burgerMenuDropdown.style.display = DisplayStyle.None;
                 burgerMenuDropdown.AddToClassList("hidden");
-                Debug.Log("Closed Burger Menu visually");
             }
         }
     }
