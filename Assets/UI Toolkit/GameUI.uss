@@ -1,0 +1,98 @@
+.root {
+    width: 100%;
+    height: 100%;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.icon-button {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    -unity-font-style: bold;
+    background-color: rgb(50, 50, 50);
+    color: rgb(255, 255, 255);
+    border-radius: 25px;
+    border-width: 0;
+    -unity-text-align: middle-center;
+}
+
+.icon-button:hover {
+    background-color: rgb(80, 80, 80);
+}
+
+.burger-menu-dropdown {
+    position: absolute;
+    top: 20px;
+    left: 80px;
+    flex-direction: row;
+    background-color: rgba(30, 30, 30, 0.95);
+    padding: 10px;
+    border-radius: 35px;
+    height: 70px;
+    align-items: center;
+}
+
+.menu-button {
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    margin-bottom: 0px;
+    padding: 0;
+    font-size: 18px;
+    -unity-font-style: bold;
+    background-color: rgb(60, 60, 60);
+    color: rgb(255, 255, 255);
+    border-radius: 25px;
+    border-width: 0;
+    -unity-text-align: middle-center;
+}
+
+.sql-button {
+    font-size: 14px;
+    margin-right: 0px; 
+}
+
+.menu-button:hover {
+    background-color: rgb(100, 100, 100);
+}
+
+.hidden {
+    display: none;
+}
+
+.nav-button {
+    width: 60px;
+    height: 60px;
+    font-size: 30px;
+    -unity-font-style: bold;
+    background-color: rgba(50, 50, 50, 0.8);
+    color: rgb(255, 255, 255);
+    border-radius: 30px;
+    border-width: 0;
+    position: absolute;
+    top: 50%;
+    margin-top: -30px;
+    -unity-text-align: middle-center;
+}
+
+.nav-button:hover {
+    background-color: rgb(80, 80, 80);
+}
+
+.middle-left {
+    left: 20px;
+}
+
+.middle-right {
+    right: 20px;
+}
