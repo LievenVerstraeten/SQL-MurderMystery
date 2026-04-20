@@ -1,21 +1,22 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
-    <ui:Style src="project://database/Assets/UI Toolkit/GameUI.uss" />
-    <ui:VisualElement name="root" class="root">
-        
+    <Style src="project://database/Assets/UI%20Toolkit/GameUI.uss?fileID=7433441132597879392&amp;guid=6158622be15bce24db8d826768ef4278&amp;type=3#GameUI"/>
+    <ui:VisualElement name="root" class="root" style="background-color: rgba(0, 0, 0, 0);">
         <ui:VisualElement name="header" class="header">
-            <ui:Button text="☰" name="burger-menu-button" class="icon-button" />
-            <ui:Button text="?" name="tutorial-button" class="icon-button" />
+            <ui:Button text="☰" name="burger-menu-button" class="icon-button"/>
+            <ui:Button text="?" name="tutorial-button" class="icon-button"/>
         </ui:VisualElement>
-
-        <ui:VisualElement name="burger-menu-dropdown" class="burger-menu-dropdown hidden">
-            <ui:Button text="P" tooltip="Detective Profile" name="profile-button" class="menu-button" />
-            <ui:Button text="C" tooltip="Found Clues" name="clues-button" class="menu-button" />
-            <ui:Button text="N" tooltip="Notes" name="notes-button" class="menu-button" />
-            <ui:Button text="SQL" tooltip="SQL Command Line Menu" name="sql-menu-button" class="menu-button sql-button" />
+        <ui:VisualElement name="burger-menu-dropdown" class="burger-menu-dropdown">
+            <ui:Button text="P" tooltip="Detective Profile" name="profile-button" class="menu-button"/>
+            <ui:Button text="C" tooltip="Found Clues" name="clues-button" class="menu-button"/>
+            <ui:Button text="N" tooltip="Notes" name="notes-button" class="menu-button"/>
+            <ui:Button text="SQL" tooltip="SQL Command Line Menu" name="sql-menu-button" enabled="true" class="menu-button sql-button"/>
         </ui:VisualElement>
-
-        <ui:Button text="&lt;" name="left-arrow-button" class="nav-button middle-left" />
-        <ui:Button text="&gt;" name="right-arrow-button" class="nav-button middle-right" />
-
+        <ui:Button text="&lt;" name="left-arrow-button" class="nav-button middle-left"/>
+        <ui:Button text="&gt;" name="right-arrow-button" class="nav-button middle-right"/>
+        <ui:VisualElement name="querie-input-menu" enabled="false" style="flex-grow: 1; top: 103px; position: absolute; height: 891px; width: 738px; left: 94px;">
+            <ui:TextField label="  " placeholder-text="put your queries here" name="query-input-field" style="position: relative; top: auto; left: auto; width: 732px; background-color: rgb(255, 255, 255); bottom: 0;"/>
+            <ui:ListView name="command-history-list" enabled="true" style="position: relative; height: 871px; width: 742px; top: 0; left: 0; right: 0%; bottom: 0%; background-color: rgba(48, 48, 48, 0.45);"/>
+            <ui:Button text="Send SQL Command" tooltip="Detective Profile" name="send-query-button" class="menu-button" style="top: -848px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; height: 40px; width: 160px;"/>
+        </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>
