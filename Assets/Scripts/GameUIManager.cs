@@ -74,7 +74,7 @@ public class GameUIManager : MonoBehaviour
         if (sqlMenuButton != null) 
             sqlMenuButton.clicked += OnSqlQuerieMenuClicked;
 
-        if (sendSqlCommandButton != null) sendSqlCommandButton.clicked += () => Debug.Log("command sent");
+        // if (sendSqlCommandButton != null) sendSqlCommandButton.clicked += () => Debug.Log("command sent");
 
         if (leftArrowButton != null) leftArrowButton.clicked += () => Debug.Log("Left arrow clicked");
         if (rightArrowButton != null) rightArrowButton.clicked += () => Debug.Log("Right arrow clicked");

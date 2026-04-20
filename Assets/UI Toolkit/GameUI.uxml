@@ -13,10 +13,17 @@
         </ui:VisualElement>
         <ui:Button text="&lt;" name="left-arrow-button" class="nav-button middle-left"/>
         <ui:Button text="&gt;" name="right-arrow-button" class="nav-button middle-right"/>
-        <ui:VisualElement name="querie-input-menu" enabled="false" style="flex-grow: 1; top: 103px; position: absolute; height: 891px; width: 738px; left: 94px;">
+        <ui:VisualElement name="querie-input-menu" enabled="true" style="flex-grow: 1; top: 103px; position: absolute; height: 891px; width: 738px; left: 94px;">
             <ui:TextField label="  " placeholder-text="put your queries here" name="query-input-field" style="position: relative; top: auto; left: auto; width: 732px; background-color: rgb(255, 255, 255); bottom: 0;"/>
             <ui:ListView name="command-history-list" enabled="true" style="position: relative; height: 871px; width: 742px; top: 0; left: 0; right: 0%; bottom: 0%; background-color: rgba(48, 48, 48, 0.45);"/>
             <ui:Button text="Send SQL Command" tooltip="Detective Profile" name="send-query-button" class="menu-button" style="top: -848px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; height: 40px; width: 160px;"/>
+            
+            <!-- New Query Output Area! -->
+            <ui:VisualElement name="query-output-panel" style="position: absolute; left: 750px; top: 0px; width: 600px; height: 891px; background-color: rgba(30, 30, 30, 0.9);">
+                <ui:ScrollView style="flex-grow: 1; width: 100%; height: 100%;">
+                    <ui:Label name="query-output-text" text="Query results and table info will appear here." style="color: white; font-size: 18px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;" />
+                </ui:ScrollView>
+            </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

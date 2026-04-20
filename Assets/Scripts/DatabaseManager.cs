@@ -48,35 +48,46 @@ public class DatabaseManager : MonoBehaviour
     }
     public List<Dictionary<string, string>> RunQueryWithResults(string sql)
     {
+        return RunQueryWithResults(sql, out _);
+    }
+
+    public List<Dictionary<string, string>> RunQueryWithResults(string sql, out string errorMessage)
+    {
+        errorMessage = null;
         var results = new List<Dictionary<string, string>>();
-        // Compiles SQL into SQLite format.
-        var stmt = SQLite3.Prepare2(db.Handle, sql);
+        
         try
         {
-            // Counts the amount of columns stmt gives
-            int cols = SQLite3.ColumnCount(stmt);
-            while (SQLite3.Step(stmt) == SQLite3.Result.Row)
+            // Compiles SQL into SQLite format.
+            var stmt = SQLite3.Prepare2(db.Handle, sql);
+            try
             {
-                var row = new Dictionary<string, string>();
-                for (int i = 0; i < cols; i++)
+                // Counts the amount of columns stmt gives
+                int cols = SQLite3.ColumnCount(stmt);
+                while (SQLite3.Step(stmt) == SQLite3.Result.Row)
                 {
-                    // Get column name with UTF-16 encoding
-                    string colName = SQLite3.ColumnName16(stmt, i);
-                    // Reads value of column as a string
-                    string colVal = SQLite3.ColumnString(stmt, i);
-                    row[colName] = colVal;
+                    var row = new Dictionary<string, string>();
+                    for (int i = 0; i < cols; i++)
+                    {
+                        // Get column name with UTF-16 encoding
+                        string colName = SQLite3.ColumnName16(stmt, i);
+                        // Reads value of column as a string
+                        string colVal = SQLite3.ColumnString(stmt, i);
+                        row[colName] = colVal;
+                    }
+                    results.Add(row);
                 }
-                results.Add(row);
+            }
+            finally 
+            {
+                // Clears in memory SQL statements
+                SQLite3.Finalize(stmt);
             }
         }
         catch (System.Exception ex)
         {
+            errorMessage = ex.Message;
             Debug.LogError("Query failed: " + ex.Message);
-        }
-        finally 
-        {
-            // Clears in memory SQL statements
-            SQLite3.Finalize(stmt);
         }
         return results;
     }
