@@ -1,0 +1,54 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:Style src="project://database/Assets/UI%20Toolkit/ClueBoard.uss" />
+
+    <!-- Full-screen overlay: dims background, centres the board component -->
+    <ui:VisualElement name="cb-root" class="cb-root">
+        <ui:VisualElement name="cb-board" class="cb-board">
+
+            <!-- Hanging pin at top of board -->
+            <ui:VisualElement class="cb-hanger-row">
+                <ui:VisualElement class="hanger-pin" />
+            </ui:VisualElement>
+
+            <!-- Header: title sign + icon buttons -->
+            <ui:VisualElement class="cb-header">
+                <ui:Label text="CLUE BOARD" class="cb-title" />
+                <ui:VisualElement class="cb-header-btns">
+                    <ui:Button name="add-note-btn"  text="✎" class="cb-icon-btn"                tooltip="Add blank note" />
+                    <ui:Button name="inventory-btn" text="▷" class="cb-icon-btn"                tooltip="Open inventory" />
+                    <ui:Button name="close-btn"     text="✕" class="cb-icon-btn cb-close-btn"  tooltip="Close board" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Board body: corkboard area + sliding inventory tray -->
+            <ui:VisualElement name="board-body" class="board-body">
+
+                <!-- Corkboard canvas -->
+                <ui:VisualElement name="board-area" class="board-area">
+                    <!-- Rope layer: drawn via generateVisualContent, no pointer picking -->
+                    <ui:VisualElement name="rope-layer" class="rope-layer" picking-mode="Ignore" />
+                    <!-- Card layer: draggable sticky notes live here -->
+                    <ui:VisualElement name="cards-layer" class="cards-layer" />
+                    <!-- Floating action bar (repositioned + shown/hidden by ClueBoardManager) -->
+                    <ui:VisualElement name="card-actions" class="card-actions">
+                        <ui:Button name="action-delete"   text="✕" class="card-action-btn action-delete-btn" tooltip="Delete" />
+                        <ui:Button name="action-edit"     text="✎" class="card-action-btn"                  tooltip="Edit text" />
+                        <ui:Button name="action-rope"     text="⬤" class="card-action-btn"                  tooltip="Connect rope" />
+                        <ui:Button name="action-rotate-l" text="↺" class="card-action-btn"                  tooltip="Rotate left" />
+                        <ui:Button name="action-rotate-r" text="↻" class="card-action-btn"                  tooltip="Rotate right" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- Inventory tray: slides in from the right over the board -->
+                <ui:VisualElement name="inventory-tray" class="inventory-tray inventory-tray--closed">
+                    <ui:VisualElement class="tray-header">
+                        <ui:Label text="INVENTORY" class="tray-title" />
+                        <ui:Button name="tray-close" text="✕" class="cb-icon-btn" />
+                    </ui:VisualElement>
+                    <ui:ScrollView name="tray-scroll" class="tray-scroll" />
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
