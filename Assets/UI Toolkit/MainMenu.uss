@@ -21,15 +21,20 @@
 }
 
 .menu-btn {
-    width: 280px;
-    height: 56px;
+    width: 340px;
+    height: 96px;
     padding: 0;
     font-size: 14px;
     -unity-font-style: normal;
     -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    background-color: rgb(0, 0, 0);
-    border-color: rgb(255, 255, 255);
-    border-width: 2px;
+    background-image: url("project://database/Assets/Textures/button.png");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-slice-left: 10;
+    -unity-slice-right: 10;
+    -unity-slice-top: 20;
+    -unity-slice-bottom: 20;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
     border-radius: 0;
     color: rgb(255, 255, 255);
     -unity-text-align: middle-center;
