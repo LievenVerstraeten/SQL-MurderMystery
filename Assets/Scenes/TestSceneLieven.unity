@@ -211,6 +211,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &325831320 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4496382703384421804, guid: e8aa2db34cec38b47b0ac8ac2009320b, type: 3}
+  m_PrefabInstance: {fileID: 6659964403805995814}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
 --- !u!1001 &646594266
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -417,6 +428,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
+    - target: {fileID: 7098065126819014100, guid: e8aa2db34cec38b47b0ac8ac2009320b, type: 3}
+      propertyPath: uiDocument
+      value: 
+      objectReference: {fileID: 325831320}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
