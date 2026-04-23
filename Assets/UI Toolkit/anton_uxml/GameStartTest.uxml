@@ -1,0 +1,22 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/anton_uxml/GameStartTestStyle.uss?fileID=7433441132597879392&amp;guid=45cfc525f5246f04799982b341519e94&amp;type=3#GameStartTestStyle"/>
+    <ui:VisualElement name="Content" style="flex-grow: 1; background-color: rgb(42, 53, 94);">
+        <ui:VisualElement name="TopBar" style="flex-grow: 0; width: 100%; height: initial; align-self: stretch; flex-shrink: 1;">
+            <ui:Label text="Label" name="CaseLabel" style="justify-content: flex-start;"/>
+            <ui:Button text="Suspects List&#10;" name="SuspectsBtn"/>
+            <ui:Button text="Menu&#10;" name="MenuBtn"/>
+        </ui:VisualElement>
+        <ui:ScrollView name="QueryOutput">
+            <ui:Label text="Label" name="OutputText"/>
+        </ui:ScrollView>
+        <ui:TextField label="Write Query --&gt;&#10;" placeholder-text="Click to start typing" name="QueryText" style="color: rgb(255, 255, 255);"/>
+        <ui:Button text="Execute Query" name="ExecuteQuery"/>
+        <ui:Label text="Label" name="ProfileName"/>
+    </ui:VisualElement>
+    <ui:VisualElement name="SuspectsOverlay" style="flex-grow: 1; opacity: 1; visibility: visible; overflow: visible; display: none;">
+        <ui:ScrollView name="SuspectsOverview">
+            <ui:Label text="Label" name="SuspectInfo"/>
+        </ui:ScrollView>
+        <ui:Button text="Quit" name="SuspectsOverlayQuit"/>
+    </ui:VisualElement>
+</ui:UXML>

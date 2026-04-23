@@ -1,0 +1,13 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/anton_uxml/LoadGameTestStyle.uss?fileID=7433441132597879392&amp;guid=ca0918e7c221d3c47b70e2bd97342d0b&amp;type=3#LoadGameTestStyle"/>
+    <ui:VisualElement name="Content" style="flex-grow: 1;">
+        <ui:VisualElement name="TopBar" style="flex-grow: 1;">
+            <ui:Label text="Load Game" name="TitleLabel"/>
+            <ui:Button text="Back" name="BackButton"/>
+        </ui:VisualElement>
+        <ui:ScrollView name="ProfileScroll">
+            <ui:VisualElement name="ProfileList" style="flex-grow: 1;"/>
+        </ui:ScrollView>
+    </ui:VisualElement>
+    <ui:Label text="No Profiles" name="NoProfilesLabel" style="visibility: hidden;"/>
+</ui:UXML>
