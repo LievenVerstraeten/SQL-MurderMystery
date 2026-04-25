@@ -10,19 +10,68 @@
             <ui:Button text="C" tooltip="Found Clues" name="clues-button" class="menu-button"/>
             <ui:Button text="N" tooltip="Notes" name="notes-button" class="menu-button"/>
             <ui:Button text="SQL" tooltip="SQL Command Line Menu" name="sql-menu-button" enabled="true" class="menu-button sql-button"/>
+            <ui:Button text="EXIT" tooltip="Save and return to main menu" name="save-exit-button" class="menu-button save-exit-button"/>
         </ui:VisualElement>
-        <ui:Button text="&lt;" name="left-arrow-button" class="nav-button middle-left"/>
-        <ui:Button text="&gt;" name="right-arrow-button" class="nav-button middle-right"/>
-        <ui:VisualElement name="querie-input-menu" enabled="true" style="flex-grow: 1; top: 103px; position: absolute; height: 891px; width: 738px; left: 94px;">
-            <ui:TextField label="  " placeholder-text="put your queries here" name="query-input-field" style="position: relative; top: auto; left: auto; width: 732px; background-color: rgb(255, 255, 255); bottom: 0;"/>
-            <ui:ListView name="command-history-list" enabled="true" style="position: relative; height: 871px; width: 742px; top: 0; left: 0; right: 0%; bottom: 0%; background-color: rgba(48, 48, 48, 0.45);"/>
-            <ui:Button text="Send SQL Command" tooltip="Detective Profile" name="send-query-button" class="menu-button" style="top: -848px; margin-top: 2px; margin-right: 2px; margin-bottom: 2px; margin-left: 2px; height: 40px; width: 160px;"/>
-            
-            <!-- New Query Output Area! -->
-            <ui:VisualElement name="query-output-panel" style="position: absolute; left: 750px; top: 0px; width: 600px; height: 891px; background-color: rgba(30, 30, 30, 0.9);">
-                <ui:ScrollView style="flex-grow: 1; width: 100%; height: 100%;">
-                    <ui:Label name="query-output-text" text="Query results and table info will appear here." style="color: white; font-size: 18px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;" />
-                </ui:ScrollView>
+
+        <!-- ═══ CUTSCENE OVERLAY ════════════════════════════════════════════ -->
+        <ui:VisualElement name="cutscene-layer" class="cutscene-layer">
+            <ui:Label name="cutscene-text" class="cutscene-text" text="" />
+            <ui:Button name="cutscene-continue" class="cutscene-continue" text="[ Continue ]" />
+        </ui:VisualElement>
+
+        <!-- ═══ DEBBIE HINT POPUP ════════════════════════════════════════════ -->
+        <ui:VisualElement name="hint-popup" class="hint-popup">
+            <ui:Label name="hint-popup-speaker" class="hint-popup-speaker" text="Debbie" />
+            <ui:Label name="hint-popup-text" class="hint-popup-text" text="" />
+            <ui:Button name="hint-popup-close" class="hint-popup-close" text="Got it, cluck!" />
+        </ui:VisualElement>
+
+        <!-- ═══ VN DIALOGUE LAYER ════════════════════════════════════════════ -->
+        <ui:VisualElement name="dialogue-layer" class="dialogue-layer">
+            <!-- NPC portrait (left side, behind box) -->
+            <ui:VisualElement name="speaker-portrait" class="speaker-portrait" />
+
+            <!-- Dialogue box -->
+            <ui:VisualElement name="dialogue-box" class="dialogue-box">
+                <ui:Label name="speaker-name" class="speaker-name" text="" />
+                <ui:Label name="dialogue-text" class="dialogue-text" text="" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- ═══ INVENTORY PANEL ══════════════════════════════════════════════ -->
+        <ui:VisualElement name="inventory-panel" class="inventory-panel">
+            <ui:Label text="EVIDENCE" class="inventory-title" />
+            <ui:ScrollView name="inventory-list" class="inventory-list" />
+            <ui:Button name="add-to-board-btn" class="inventory-action-btn" text="Pin to Board" />
+            <ui:Button name="close-inventory-btn" class="inventory-action-btn" text="Close" />
+        </ui:VisualElement>
+
+        <!-- ═══ INVENTORY HUD BUTTON ═════════════════════════════════════════ -->
+        <ui:Button name="inventory-hud-btn" class="inventory-hud-btn" text="BAG" />
+
+        <!-- SQL Terminal — task banner header + two equal columns -->
+        <ui:VisualElement name="sql-terminal-container" style="position: absolute; top: 103px; left: 0; right: 0; bottom: 0; flex-direction: column; display: none;">
+            <!-- Task banner — visible above the columns so the player always sees the task -->
+            <ui:VisualElement name="task-banner" class="task-banner">
+                <ui:Label name="task-label" class="task-label" text="" />
+                <ui:Button name="debbie-hint-btn" class="debbie-hint-btn" text="? Ask Debbie" />
+            </ui:VisualElement>
+            <!-- Two columns: input | output -->
+            <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
+                <!-- Left 50%: query input -->
+                <ui:VisualElement name="querie-input-menu" style="flex-grow: 1; flex-basis: 0; flex-direction: column; background-color: rgba(30, 30, 30, 0.95);">
+                    <ui:VisualElement style="flex-direction: row; width: 100%; height: 80px; flex-shrink: 0;">
+                        <ui:TextField label="" multiline="true" placeholder-text="put your queries here" name="query-input-field" style="flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; background-color: rgb(255, 255, 255);"/>
+                        <ui:Button text="Send" name="send-query-button" class="menu-button" style="width: 80px; flex-shrink: 0; margin: 0;"/>
+                    </ui:VisualElement>
+                    <ui:ListView name="command-history-list" style="flex-grow: 1; width: 100%; background-color: rgba(48, 48, 48, 0.45);"/>
+                </ui:VisualElement>
+                <!-- Right 50%: query output -->
+                <ui:VisualElement name="query-output-panel" style="flex-grow: 1; flex-basis: 0; background-color: rgba(20, 20, 20, 0.95);">
+                    <ui:ScrollView style="flex-grow: 1; width: 100%; height: 100%;">
+                        <ui:Label name="query-output-text" text="Query results will appear here." style="color: white; font-size: 16px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;"/>
+                    </ui:ScrollView>
+                </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
     </ui:VisualElement>

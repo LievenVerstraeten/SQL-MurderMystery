@@ -360,11 +360,44 @@ PrefabInstance:
       propertyPath: m_Name
       value: UI
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 7098065126819014100, guid: e8aa2db34cec38b47b0ac8ac2009320b, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4742202001333436201, guid: e8aa2db34cec38b47b0ac8ac2009320b, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1941341348}
   m_SourcePrefab: {fileID: 100100000, guid: e8aa2db34cec38b47b0ac8ac2009320b, type: 3}
+--- !u!1 &1941341342 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4742202001333436201, guid: e8aa2db34cec38b47b0ac8ac2009320b, type: 3}
+  m_PrefabInstance: {fileID: 1941341341}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1941341346 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4496382703384421804, guid: e8aa2db34cec38b47b0ac8ac2009320b, type: 3}
+  m_PrefabInstance: {fileID: 1941341341}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1941341342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
+--- !u!114 &1941341348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1941341342}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f485fae2bcc3ff489a41b76a2601087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameUIManager
+  uiDocument: {fileID: 1941341346}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

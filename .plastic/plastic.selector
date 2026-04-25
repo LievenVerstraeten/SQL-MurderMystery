@@ -1,4 +1,3 @@
 repository "NoSQLMurder/NoSQLMurder@7972542363189@cloud"
   path "/"
-    br "/main"
-    co "/main"
+    smartbranch "/main"

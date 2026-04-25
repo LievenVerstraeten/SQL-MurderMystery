@@ -1,167 +1,177 @@
-﻿/* GameScene.uss
-   Styling for the GameStart scene.
+/*
+ * GameStartTestStyle.uss — NoSQL Murder Mystery
+ * Shared detective palette: ink · cream · gold · warm-gray
+ *
+ * Element IDs: #Content #TopBar #CaseLabel #SuspectsBtn #MenuBtn
+ *              #QueryOutput #OutputText #QueryText #ExecuteQuery
+ *              #ProfileName #SuspectsOverlay #SuspectsOverview #SuspectsOverlayQuit
+ * Classes:     .suspect-card .suspect-name .suspect-detail .suspect-empty
+ */
 
-   Element IDs (applied automatically by name):
-     #TopBar, #CaseLabel, #QueryOutput, #OutputText
-     #QueryText, #ExecuteQuery, #ProfileName
-     #SuspectsOverlay, #SuspectsOverview, #SuspectsOverlayQuit
+/* ── Content container ───────────────────────────────────────────── */
 
-   Classes (apply in UI Builder or built in C#):
-     .suspect-card, .suspect-name, .suspect-detail, .suspect-empty
-*/
-
-/* ── Content container ──────────────────────────────────────────────────── */
-
-#content {
+#Content {
     flex-direction: column;
     flex-grow: 1;
     width: 100%;
     height: 100%;
-    background-color: #1A1A2E;
+    background-color: rgb(10, 9, 8);
 }
 
-/* ── Top bar ─────────────────────────────────────────────────────────────── */
+/* ── Top bar ─────────────────────────────────────────────────────── */
 
 #TopBar {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: #16213E;
-    padding: 0 20px;
-    height: 96px;
+    background-color: rgba(16, 14, 12, 0.97);
+    padding-left: 20px;
+    padding-right: 20px;
+    height: 72px;
     width: 100%;
     flex-shrink: 0;
+    border-bottom-color: rgb(148, 140, 126);
     border-bottom-width: 1px;
-    border-bottom-color: #C9A84C;
 }
 
 #CaseLabel {
-    color: #E8C96A;
-    font-size: 20px;
-    -unity-font-style: bold;
+    color: rgb(188, 162, 88);
+    font-size: 13px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
 }
 
 /* Top bar buttons */
 #SuspectsBtn, #MenuBtn {
-    background-color: #C9A84C;
-    color: #1A1A2E;
-    font-size: 14px;
-    -unity-font-style: bold;
-    border-width: 0;
-    border-radius: 4px;
-    padding: 8px 20px;
+    font-size: 9px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    background-color: rgb(10, 9, 8);
+    color: rgb(212, 205, 192);
+    border-color: rgb(148, 140, 126);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 18px;
+    padding-right: 18px;
     margin-left: 8px;
-    transition-property: background-color, scale;
-    transition-duration: 0.15s;
+    scale: 1;
+    transition-property: scale, background-color, border-color, color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
-#SuspectsBtn:hover, #MenuBtn:hover {
-    background-color: #E8C96A;
-    scale: 1.03;
-    cursor: link;
-}
-
-#SuspectsBtn:active, #MenuBtn:active {
-    background-color: #A8832E;
-    scale: 0.97;
+#SuspectsBtn:hover {
+    background-color: rgba(148, 140, 126, 0.12);
+    border-color: rgb(188, 162, 88);
+    color: rgb(188, 162, 88);
+    scale: 1.04;
 }
 
 #MenuBtn {
-    background-color: #5C1F1F;
-    color: #E8D0D0;
+    border-color: rgb(120, 55, 55);
+    color: rgb(180, 90, 90);
 }
 
 #MenuBtn:hover {
-    background-color: #8B2E2E;
+    background-color: rgba(140, 55, 55, 0.18);
+    border-color: rgb(180, 90, 90);
+    scale: 1.04;
 }
 
-#MenuBtn:active {
-    background-color: #3D1010;
-}
-
-/* ── Output panel ────────────────────────────────────────────────────────── */
+/* ── Output panel ────────────────────────────────────────────────── */
 
 #QueryOutput {
     flex-grow: 1;
     width: 100%;
-    background-color: #0D1117;
+    background-color: rgba(8, 7, 6, 0.98);
     padding: 16px;
+    border-bottom-color: rgb(40, 38, 34);
     border-bottom-width: 1px;
-    border-bottom-color: #2A2A3E;
 }
 
 #OutputText {
-    color: #A8D8A8;
-    font-size: 14px;
+    color: rgb(160, 210, 160);
+    font-size: 13px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
     white-space: normal;
-    -unity-font-style: normal;
 }
 
-/* ── SQL input area ──────────────────────────────────────────────────────── */
+/* ── SQL input area ──────────────────────────────────────────────── */
 
 #QueryText {
     width: 100%;
     height: 80px;
-    background-color: #16213E;
-    border-color: #2A2A4E;
-    border-width: 1px;
+    background-color: rgba(16, 14, 12, 0.97);
+    border-color: rgb(80, 76, 70);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
     border-radius: 0;
     flex-shrink: 0;
+    color: rgb(212, 205, 192);
+    font-size: 12px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
 }
 
 #QueryText:focus {
-    border-color: #C9A84C;
+    border-color: rgb(188, 162, 88);
 }
 
-#QueryText .unity-text-field__input {
-    background-color: transparent;
-    color: #E8E8D0;
-    font-size: 14px;
-    -unity-font-style: normal;
-    padding: 8px 12px;
-    white-space: normal;
-}
-
-/* ── Execute button ──────────────────────────────────────────────────────── */
+/* ── Execute button ──────────────────────────────────────────────── */
 
 #ExecuteQuery {
     width: 100%;
     height: 44px;
-    background-color: #C9A84C;
-    color: #1A1A2E;
-    font-size: 15px;
-    -unity-font-style: bold;
-    border-width: 0;
+    background-color: rgba(26, 22, 14, 0.97);
+    color: rgb(188, 162, 88);
+    font-size: 10px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    border-color: rgb(120, 102, 50);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
     border-radius: 0;
     flex-shrink: 0;
-    transition-property: background-color;
-    transition-duration: 0.15s;
+    scale: 1;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out;
 }
 
 #ExecuteQuery:hover {
-    background-color: #E8C96A;
-    cursor: link;
+    background-color: rgba(40, 34, 14, 0.97);
+    border-color: rgb(188, 162, 88);
+    scale: 1.01;
 }
 
 #ExecuteQuery:active {
-    background-color: #A8832E;
+    scale: 0.99;
 }
 
-/* ── Profile name ────────────────────────────────────────────────────────── */
+/* ── Profile name ────────────────────────────────────────────────── */
 
 #ProfileName {
-    color: #6A6A5A;
-    font-size: 12px;
+    color: rgb(108, 102, 92);
+    font-size: 9px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
     -unity-text-align: middle-center;
     padding: 6px;
     flex-shrink: 0;
     width: 100%;
-    background-color: #16213E;
+    background-color: rgba(16, 14, 12, 0.97);
+    border-top-color: rgb(40, 38, 34);
     border-top-width: 1px;
-    border-top-color: #2A2A4E;
 }
 
-/* ── Suspects overlay ────────────────────────────────────────────────────── */
+/* ── Suspects overlay ────────────────────────────────────────────── */
 
 #SuspectsOverlay {
     position: absolute;
@@ -175,62 +185,89 @@
 }
 
 #SuspectsOverview {
-    background-color: #16213E;
-    border-color: #C9A84C;
-    border-width: 1px;
-    border-radius: 8px;
+    background-color: rgba(16, 14, 12, 0.98);
+    border-color: rgb(148, 140, 126);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
     padding: 24px;
     width: 480px;
     max-height: 600px;
-    overflow: hidden;
 }
 
 #SuspectsOverlayQuit {
-    background-color: #5C1F1F;
-    color: #E8D0D0;
-    font-size: 14px;
-    -unity-font-style: bold;
-    border-width: 0;
-    border-radius: 4px;
-    padding: 8px 24px;
+    background-color: rgb(10, 9, 8);
+    color: rgb(180, 90, 90);
+    font-size: 9px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    border-color: rgb(120, 55, 55);
+    border-top-width: 2px;
+    border-right-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 20px;
+    padding-right: 20px;
     margin-top: 16px;
     align-self: flex-end;
-    transition-property: background-color;
-    transition-duration: 0.15s;
+    transition-property: background-color, scale;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out;
 }
 
 #SuspectsOverlayQuit:hover {
-    background-color: #8B2E2E;
-    cursor: link;
+    background-color: rgba(140, 55, 55, 0.18);
+    border-color: rgb(180, 90, 90);
 }
 
-/* ── Suspect cards (built in C#) ─────────────────────────────────────────── */
+/* ── Suspect cards ───────────────────────────────────────────────── */
 
 .suspect-card {
-    background-color: #1A1A2E;
-    border-color: #2A2A4E;
-    border-width: 1px;
-    border-radius: 4px;
-    padding: 12px 16px;
+    background-color: rgba(22, 20, 16, 0.97);
+    border-color: rgb(60, 56, 50);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 6px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 16px;
+    padding-right: 16px;
     margin-bottom: 8px;
 }
 
 .suspect-name {
-    color: #E8C96A;
-    font-size: 15px;
-    -unity-font-style: bold;
-    margin-bottom: 4px;
+    color: rgb(188, 162, 88);
+    font-size: 11px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    margin-bottom: 6px;
 }
 
 .suspect-detail {
-    color: #A8A89A;
-    font-size: 12px;
+    color: rgb(108, 102, 92);
+    font-size: 9px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
     white-space: normal;
 }
 
 .suspect-empty {
-    color: #6A6A5A;
-    font-size: 14px;
+    color: rgb(80, 76, 70);
+    font-size: 10px;
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
     -unity-text-align: middle-center;
     padding: 24px;
 }

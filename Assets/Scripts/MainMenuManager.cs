@@ -31,15 +31,15 @@ public class MainMenuManager : MonoBehaviour
 
         var root = uiDocument.rootVisualElement;
 
-        // Query buttons by the names you set in UI Builder
-        newGameButton = root.Q<Button>("NewGameMain");
-        loadGameButton = root.Q<Button>("LoadGameMain");
-        exitButton = root.Q<Button>("ExitGameMain");
+        // Query buttons by the names in MainMenu.uxml
+        newGameButton  = root.Q<Button>("play-button");
+        loadGameButton = root.Q<Button>("settings-button");
+        exitButton     = root.Q<Button>("exit-button");
 
         // Warn if any button wasn't found — catches typos in UI Builder names
-        if (newGameButton == null) Debug.LogError("[MainMenuManager] 'NewGameMain' button not found.");
-        if (loadGameButton == null) Debug.LogError("[MainMenuManager] 'LoadGameMain' button not found.");
-        if (exitButton == null) Debug.LogError("[MainMenuManager] 'ExitGameMain' button not found.");
+        if (newGameButton  == null) Debug.LogError("[MainMenuManager] 'play-button' not found.");
+        if (loadGameButton == null) Debug.LogError("[MainMenuManager] 'settings-button' not found.");
+        if (exitButton     == null) Debug.LogError("[MainMenuManager] 'exit-button' not found.");
 
         // Wire up click events
         newGameButton?.RegisterCallback<ClickEvent>(OnNewGameClicked);
@@ -94,6 +94,7 @@ public class MainMenuManager : MonoBehaviour
     {
         if (loadGameButton == null) return;
 
+        if (DatabaseManager.Instance == null) return;
         var profiles = DatabaseManager.Instance.GetAllProfiles();
         bool hasProfiles = profiles != null && profiles.Count > 0;
 

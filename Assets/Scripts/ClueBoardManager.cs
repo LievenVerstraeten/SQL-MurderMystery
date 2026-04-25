@@ -118,6 +118,25 @@ public class ClueBoardManager : MonoBehaviour
 
     // ── Board Visibility ─────────────────────────────────────────────────────
 
+    /// <summary>Called from InventoryManager when player pins an item to the board.</summary>
+    public void AddClueFromInventory(string title, string body)
+    {
+        // Make sure the board is open so the player sees the card appear
+        SetVisible(true);
+
+        float cx = _cardsLayer?.layout.width  > 10 ? _cardsLayer.layout.width  * 0.38f : 200f;
+        float cy = _cardsLayer?.layout.height > 10 ? _cardsLayer.layout.height * 0.35f : 140f;
+
+        SpawnCard(new BoardCard
+        {
+            Id       = "card_" + _cardCounter++,
+            Title    = title,
+            Body     = body,
+            Rotation = Random.Range(-12f, 12f),
+        },
+        new Vector2(cx + Random.Range(-80, 80), cy + Random.Range(-60, 60)));
+    }
+
     /// <summary>Call from the HUD circle-icon to show the board.</summary>
     public void SetVisible(bool visible)
     {

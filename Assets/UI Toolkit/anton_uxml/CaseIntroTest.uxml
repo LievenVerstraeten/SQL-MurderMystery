@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/UI%20Toolkit/anton_uxml/CaseIntroTestStyle.uss?fileID=7433441132597879392&amp;guid=2939fd8bf2c40b648bf5615e7370150f&amp;type=3#CaseIntroTestStyle"/>
     <ui:VisualElement name="Container" style="flex-grow: 1;">
         <ui:Label text="&#10;" name="CaseTitle" class="title"/>
-        <ui:TextField label="Your Name" placeholder-text="John Doe..." name="FieldPlayerName" hide-placeholder-on-focus="false" class="name_input" style="width: 519px; height: 160px;"/>
+        <ui:TextField label="Your Name" placeholder-text="John Doe..." name="FieldPlayerName" hide-placeholder-on-focus="false" class="name_input" />
         <ui:Button text="Proceed&#10;" name="PlayerConfirmName" class="button"/>
     </ui:VisualElement>
 </ui:UXML>
