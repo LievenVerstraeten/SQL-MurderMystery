@@ -100,15 +100,19 @@
     color: rgb(200, 190, 168);
     border-color: rgb(110, 84, 52);
     border-width: 2px;
-    border-radius: 3px;
+    border-radius: 6px;
     -unity-text-align: middle-center;
-    transition-property: background-color, border-color;
-    transition-duration: 0.1s, 0.1s;
+    scale: 1;
+    transition-property: background-color, border-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .cb-icon-btn:hover {
-    background-color: rgb(58, 46, 30);
-    border-color: rgb(175, 135, 84);
+    background-color: rgb(52, 40, 24);
+    border-color: rgb(188, 162, 88);
+    color: rgb(212, 198, 158);
+    scale: 1.08;
 }
 
 .cb-icon-btn--active {
@@ -321,7 +325,7 @@
     background-color: rgb(14, 12, 8);
     border-color: rgb(85, 64, 40);
     border-width: 2px;
-    border-radius: 3px;
+    border-radius: 6px;
     padding: 3px 4px;
     display: none;
 }
@@ -336,15 +340,18 @@
     color: rgb(185, 174, 152);
     border-color: rgb(76, 60, 40);
     border-width: 1px;
-    border-radius: 2px;
+    border-radius: 6px;
     -unity-text-align: middle-center;
-    transition-property: background-color, border-color;
-    transition-duration: 0.1s, 0.1s;
+    scale: 1;
+    transition-property: background-color, border-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out;
 }
 
 .card-action-btn:hover {
     background-color: rgb(52, 42, 28);
-    border-color: rgb(155, 124, 80);
+    border-color: rgb(188, 162, 88);
+    scale: 1.08;
 }
 
 .card-action-btn--active {

@@ -1,54 +1,105 @@
+/*
+ * MainMenu.uss — NoSQL Murder Mystery
+ * Warm monochrome · vintage · pixel
+ *
+ * Palette (shared with GameUI.uss)
+ *   ink    rgb(10, 9, 8)
+ *   border rgb(148, 140, 126)
+ *   cream  rgb(212, 205, 192)
+ *   dim    rgb(108, 102, 92)
+ *   gold   rgb(188, 162, 88)
+ *   danger rgb(160, 65, 65)
+ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   ROOT
+   ═══════════════════════════════════════════════════════════════════ */
+
 .root {
     width: 100%;
     height: 100%;
-    background-color: rgb(18, 18, 24);
+    background-color: rgb(10, 9, 8);
     align-items: center;
     justify-content: center;
-}
-
-.title {
-    font-size: 42px;
-    color: rgb(255, 255, 255);
-    -unity-font-style: bold;
-    -unity-text-align: upper-center;
-    margin-bottom: 40px;
     -unity-font: url("project://database/Assets/Fonts/2P.ttf");
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TITLE BLOCK
+   ═══════════════════════════════════════════════════════════════════ */
+
+.title {
+    font-size: 24px;
+    color: rgb(188, 162, 88);
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font-style: normal;
+    -unity-text-align: upper-center;
+    margin-bottom: 6px;
+}
+
+.subtitle {
+    font-size: 8px;
+    color: rgb(108, 102, 92);
+    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-text-align: upper-center;
+    margin-bottom: 52px;
+    letter-spacing: 3px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BUTTON CONTAINER
+   ═══════════════════════════════════════════════════════════════════ */
 
 .button-container {
     align-items: center;
-    width: 300px;
+    width: 340px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MENU BUTTONS
+   ═══════════════════════════════════════════════════════════════════ */
 
 .menu-btn {
     width: 340px;
-    height: 96px;
+    height: 54px;
     padding: 0;
-    font-size: 14px;
-    -unity-font-style: normal;
+    font-size: 11px;
     -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    background-image: url("project://database/Assets/Textures/button.png");
-    -unity-background-scale-mode: stretch-to-fill;
-    -unity-slice-left: 10;
-    -unity-slice-right: 10;
-    -unity-slice-top: 20;
-    -unity-slice-bottom: 20;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0;
-    border-radius: 0;
-    color: rgb(255, 255, 255);
+    -unity-font-style: normal;
+    background-color: rgb(10, 9, 8);
+    background-image: none;
+    color: rgb(212, 205, 192);
+    border-color: rgb(148, 140, 126);
+    border-width: 2px;
+    border-radius: 6px;
     -unity-text-align: middle-center;
     margin-bottom: 14px;
     scale: 1;
-    transition-property: scale;
-    transition-duration: 0.12s;
-    transition-timing-function: ease-out;
+    transition-property: scale, background-color, border-color, color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .menu-btn:hover {
+    background-color: rgba(148, 140, 126, 0.12);
+    border-color: rgb(188, 162, 88);
+    color: rgb(188, 162, 88);
     scale: 1.04;
 }
 
 .menu-btn:active {
     scale: 0.97;
+    background-color: rgba(188, 162, 88, 0.08);
+}
+
+/* EXIT button — danger tint */
+.exit-btn {
+    border-color: rgb(120, 55, 55);
+    color: rgb(180, 90, 90);
+}
+
+.exit-btn:hover {
+    background-color: rgba(140, 55, 55, 0.18);
+    border-color: rgb(180, 90, 90);
+    color: rgb(210, 110, 110);
 }

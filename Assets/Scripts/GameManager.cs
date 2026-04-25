@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
     public string mainMenuScene = "MainMenu";
     public string newGameScene = "NewGameSetup";  // Name input screen
     public string loadGameScene = "LoadGame";       // Profile select screen
-    public string gameScene = "GameScene";      // The actual game
+    public string gameScene = "MurderMystery";   // The actual game
 
     // ─── World Mode ───────────────────────────────────────────────────────────
     // "unique" = every profile gets its own generated murder world

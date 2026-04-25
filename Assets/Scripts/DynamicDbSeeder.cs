@@ -96,27 +96,25 @@ public class DynamicDbSeeder : MonoBehaviour
 
         foreach (var table in casedef.DynamicTables)
         {
-            // Always create the table — IF NOT EXISTS keeps this safe
+            // Dynamic game tables now live in world.db (per-profile) so that
+            // SELECT * FROM sqlite_master shows only game tables to the player.
             if (!string.IsNullOrEmpty(table.CreateSQL))
             {
-                // Ensure IF NOT EXISTS is present — safety guard
                 string createSql = EnsureIfNotExists(table.CreateSQL);
-                DatabaseManager.Instance.RunSaveNonQuery(createSql);
+                DatabaseManager.Instance.RunWorldNonQuery(createSql);
                 tableCount++;
             }
 
-            // Only insert seed rows on a fresh new game
-            // On load, the player's existing data must be preserved
+            // Only insert seed rows on a fresh new game.
+            // On load the world.db already contains the player's progress.
             if (isNewGame && table.InsertStatements != null)
             {
                 foreach (var insert in table.InsertStatements)
                 {
                     if (!string.IsNullOrEmpty(insert))
                     {
-                        // Replace {PROFILE_ID} placeholder with the actual profile ID
-                        // This ensures each profile's dynamic data is stored separately
                         string sql = insert.Replace("{PROFILE_ID}", profileId.ToString());
-                        DatabaseManager.Instance.RunSaveNonQuery(sql);
+                        DatabaseManager.Instance.RunWorldNonQuery(sql);
                         insertCount++;
                     }
                 }

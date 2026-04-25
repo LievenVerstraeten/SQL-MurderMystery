@@ -112,10 +112,13 @@ public class TaskValidator : MonoBehaviour
             return;
         }
 
+        // Preprocess for static-table check (strip internet. prefix)
+        string processedSQL = PreprocessSQL(playerSQL);
+
         // ── Static table protection ───────────────────────────────────────────
-        if (IsWriteOperation(playerSQL))
+        if (IsWriteOperation(processedSQL))
         {
-            string targetTable = ExtractTargetTable(playerSQL);
+            string targetTable = ExtractTargetTable(processedSQL);
             if (!string.IsNullOrEmpty(targetTable) &&
                 staticTableNames.Contains(targetTable.ToLower()))
             {
@@ -143,7 +146,7 @@ public class TaskValidator : MonoBehaviour
         SQLTask currentTask = activeCase.Tasks[taskIndex];
 
         // ── Execute the player's query ────────────────────────────────────────
-        List<Dictionary<string, string>> returnedRows = ExecutePlayerQuery(playerSQL, profileId);
+        List<Dictionary<string, string>> returnedRows = ExecutePlayerQuery(processedSQL, profileId);
 
         // Log every query the player runs
         DatabaseManager.Instance.LogPlayerQuery(profileId, playerSQL,
@@ -258,35 +261,44 @@ public class TaskValidator : MonoBehaviour
     // =========================================================================
 
     /// <summary>
-    /// Runs the player's SQL against the correct database.
-    /// Write operations (INSERT/UPDATE/CREATE/DELETE) go to saves.db.
-    /// Read operations (SELECT) go to world.db or saves.db based on target table.
+    /// Preprocesses SQL before execution.
+    /// - Rewrites "internet.sqlite_master" → "internet_meta"
+    /// - Strips the "internet." schema prefix from table names so queries
+    ///   like "SELECT * FROM internet.bbc_news" hit world.db directly.
+    /// </summary>
+    private string PreprocessSQL(string sql)
+    {
+        // Must rewrite sqlite_master reference first (more specific)
+        sql = sql.Replace("internet.sqlite_master", "internet_meta");
+        // Strip any remaining "internet." prefix
+        sql = sql.Replace("internet.", "");
+        return sql;
+    }
+
+    /// <summary>
+    /// Runs the player's SQL against world.db.
+    /// All player-visible tables (both static and dynamic) live in world.db
+    /// so that sqlite_master shows only game tables.
+    /// Writes to static tables are blocked before this method is called.
     /// </summary>
     private List<Dictionary<string, string>> ExecutePlayerQuery(
         string sql, int profileId)
     {
+        // Preprocess: handle internet.* schema prefix
+        sql = PreprocessSQL(sql);
+
         try
         {
             if (IsWriteOperation(sql))
             {
-                // Write always goes to saves.db — static tables already blocked above
-                DatabaseManager.Instance.RunSaveNonQuery(sql);
+                // All player writes go to world.db (static tables already blocked above)
+                DatabaseManager.Instance.RunWorldNonQuery(sql);
                 return new List<Dictionary<string, string>>();
             }
             else
             {
-                // For SELECT, try world.db first, fall back to saves.db
-                string targetTable = ExtractTargetTable(sql);
-
-                if (!string.IsNullOrEmpty(targetTable) &&
-                    staticTableNames.Contains(targetTable.ToLower()))
-                {
-                    return DatabaseManager.Instance.RunWorldQueryWithResults(sql);
-                }
-                else
-                {
-                    return DatabaseManager.Instance.RunSaveQueryWithResults(sql);
-                }
+                // All player reads from world.db
+                return DatabaseManager.Instance.RunWorldQueryWithResults(sql);
             }
         }
         catch (System.Exception ex)
