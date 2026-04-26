@@ -1,4 +1,4 @@
-﻿// TaskValidator.cs
+// TaskValidator.cs
 // Validates the player's SQL query results against the current task's expected output.
 //
 // ALIAS FLEXIBILITY:
@@ -154,9 +154,33 @@ public class TaskValidator : MonoBehaviour
 
         // ── Free write task (no expected rows) ────────────────────────────────
         // Some tasks are open-ended (e.g. "write your own conclusion")
-        // These always pass as long as the query executes without error.
+        // These pass if the query executes without error AND matches verb/target table
         if (currentTask.ExpectedRows == null || currentTask.ExpectedRows.Count == 0)
         {
+            string upperSQL = playerSQL.ToUpper();
+            string upperConcept = currentTask.ConceptTag.ToUpper();
+            
+            // Require the query to contain the ConceptTag if it's an action verb
+            if (upperConcept == "INSERT" || upperConcept == "UPDATE" || upperConcept == "CREATE TABLE")
+            {
+                if (!upperSQL.Contains(upperConcept))
+                {
+                    FireResult(new ValidationResult(false, $"You need to use {currentTask.ConceptTag} for this task.", "Missing keyword."));
+                    return;
+                }
+            }
+
+            // Require it to target the right table if specified
+            if (!string.IsNullOrEmpty(currentTask.RequiredTargetTable))
+            {
+                string targetTable = ExtractTargetTable(playerSQL);
+                if (!string.Equals(targetTable, currentTask.RequiredTargetTable, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    FireResult(new ValidationResult(false, $"Make sure you are modifying the '{currentTask.RequiredTargetTable}' table.", "Wrong target table."));
+                    return;
+                }
+            }
+
             AdvanceAndNotify(profileId, activeCase, taskIndex, returnedRows,
                 "Good work. Moving on.");
             return;

@@ -74,5 +74,9 @@
                 </ui:VisualElement>
             </ui:VisualElement>
         </ui:VisualElement>
+
+        <!-- ═══ CLUE BOARD OVERLAY ══════════════════════════════════════════ -->
+        <ui:Template src="ClueBoard.uxml" name="ClueBoardTemplate" />
+        <ui:Instance template="ClueBoardTemplate" name="clue-board-instance" picking-mode="Ignore" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
     </ui:VisualElement>
 </ui:UXML>

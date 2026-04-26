@@ -30,6 +30,13 @@ public class GameUIManager : MonoBehaviour
             return;
         }
 
+        // Ensure ClueBoardManager is attached so the embedded clue board UI functions!
+        if (GetComponent<ClueBoardManager>() == null)
+        {
+            gameObject.AddComponent<ClueBoardManager>();
+            ClueBoardManager.Instance?.SetVisible(false);
+        }
+
         var root = uiDocument.rootVisualElement;
 
         // Querying elements
@@ -58,7 +65,11 @@ public class GameUIManager : MonoBehaviour
         // Burger menu items
         if (tutorialButton != null)  tutorialButton.clicked  += () => Debug.Log("Tutorial clicked");
         if (profileButton != null)   profileButton.clicked   += () => Debug.Log("Profile clicked");
-        if (cluesButton != null)     cluesButton.clicked     += () => Debug.Log("Clues clicked");
+        if (cluesButton != null)     cluesButton.clicked     += () => {
+             ClueBoardManager.Instance?.SetVisible(true);
+             // Optionally close burger menu when opening clues
+             if (isMenuOpen) OnBurgerMenuClicked();
+        };
         if (notesButton != null)     notesButton.clicked     += () => Debug.Log("Notes clicked");
         if (sqlMenuButton != null)   sqlMenuButton.clicked   += OnSqlQuerieMenuClicked;
         if (saveExitButton != null)  saveExitButton.clicked  += OnSaveExitClicked;
@@ -136,6 +147,26 @@ public class GameUIManager : MonoBehaviour
         string playerName = GameManager.Instance.ActiveProfileName;
         var nodes = Case01Story.Build(playerName);
 
-        DialogueManager.Instance.StartStory(nodes, savedTaskIndex);
+        // Convert the SQL task index to the matching dialogue node index
+        int dialogueNodeIndex = 0;
+        if (savedTaskIndex > 0)
+        {
+            int seenTasks = 0;
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                if (nodes[i].Type == NodeType.SQLTask)
+                {
+                    seenTasks++;
+                    if (seenTasks == savedTaskIndex)
+                    {
+                        // Found the last completed task. Start at the node right after it.
+                        dialogueNodeIndex = i + 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        DialogueManager.Instance.StartStory(nodes, dialogueNodeIndex);
     }
 }

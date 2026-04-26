@@ -195,7 +195,7 @@ public class CaseManager : MonoBehaviour
         case1.Tasks.Add(new SQLTask(
             "Add your name to the hounds table using INSERT INTO.",
             "INSERT INTO hounds (id, name) VALUES ('03', 'YourName');",
-            "INSERT"));
+            "INSERT") { RequiredTargetTable = "hounds" });
 
         // Task 2 — SELECT * FROM hounds  (result: 3 rows; partial match on Jerry+Debbie)
         var t2 = new SQLTask(
@@ -219,13 +219,13 @@ public class CaseManager : MonoBehaviour
         case1.Tasks.Add(new SQLTask(
             "Create a table called clues with columns: id, name, type, details, found_at.",
             "CREATE TABLE clues (id TEXT PRIMARY KEY, name TEXT, type TEXT, details TEXT, found_at TEXT);",
-            "CREATE TABLE"));
+            "CREATE TABLE") { RequiredTargetTable = "clues" });
 
         // Task 5 — INSERT CL002 Tamam Shud (free write)
         case1.Tasks.Add(new SQLTask(
             "Insert the Tamam Shud clue into the clues table.",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL002', ...);",
-            "INSERT"));
+            "INSERT") { RequiredTargetTable = "clues" });
 
         // Task 6 — SELECT * FROM clues (2 rows after CL001 demo + CL002 player insert)
         var t6 = new SQLTask(
@@ -306,25 +306,25 @@ public class CaseManager : MonoBehaviour
         case1.Tasks.Add(new SQLTask(
             "Update Jessica Thomson's interviewed status to 1.",
             "UPDATE witnesses SET interviewed = 1 WHERE name = 'Jessica Thomson';",
-            "UPDATE"));
+            "UPDATE") { RequiredTargetTable = "witnesses" });
 
         // Task 14 — UPDATE Neil Hamilton interviewed = 1 (free write)
         case1.Tasks.Add(new SQLTask(
             "Update Neil Hamilton's interviewed status to 1.",
             "UPDATE witnesses SET interviewed = 1 WHERE name = 'Neil Hamilton';",
-            "UPDATE"));
+            "UPDATE") { RequiredTargetTable = "witnesses" });
 
         // Task 15 — INSERT CL003 Neil Hamilton Testimony (free write)
         case1.Tasks.Add(new SQLTask(
             "Insert Neil Hamilton's testimony as a new clue (CL003) into the clues table.",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL003', 'Neil Hamilton Testimony', 'Testimony', '...', '1948-12-02 10:00:00');",
-            "INSERT"));
+            "INSERT") { RequiredTargetTable = "clues" });
 
         // Task 16 — UPDATE John Burton Cleland interviewed = 1 (free write)
         case1.Tasks.Add(new SQLTask(
             "Update John Burton Cleland's interviewed status to 1.",
             "UPDATE witnesses SET interviewed = 1 WHERE name = 'John Burton Cleland';",
-            "UPDATE"));
+            "UPDATE") { RequiredTargetTable = "witnesses" });
 
         // Task 17 — COUNT + GROUP BY clues type
         var t17 = new SQLTask(
@@ -387,7 +387,7 @@ public class CaseManager : MonoBehaviour
         case1.Tasks.Add(new SQLTask(
             "Update the value in the keys table for K001 to 'It is ended'.",
             "UPDATE keys SET value = 'It is ended' WHERE id = 'K001';",
-            "UPDATE"));
+            "UPDATE") { RequiredTargetTable = "keys" });
 
         // Task 24 — SELECT * FROM keys WHERE id = 'K001' (verify value)
         var t24 = new SQLTask(
@@ -439,19 +439,19 @@ public class CaseManager : MonoBehaviour
         case1.Tasks.Add(new SQLTask(
             "Insert the 2022 DNA identification of Carl Webb as a new clue (CL004).",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL004', 'Carl Webb Identity (2022 DNA)', 'Documentary', '...', '2022-07-26 00:00:00');",
-            "INSERT"));
+            "INSERT") { RequiredTargetTable = "clues" });
 
         // Task 30 — INSERT CL005 Dorothy Webb (free write)
         case1.Tasks.Add(new SQLTask(
             "Insert Dorothy Webb's testimony as a new clue (CL005).",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL005', 'Dorothy Webb Testimony', 'Testimony', '...', '2022-08-01 00:00:00');",
-            "INSERT"));
+            "INSERT") { RequiredTargetTable = "clues" });
 
         // Task 31 — UPDATE logfile SET victim = '...' WHERE id = '01' (free write)
         case1.Tasks.Add(new SQLTask(
             "Update the victim field in the logfile to reflect the 2022 DNA finding.",
             "UPDATE logfile SET victim = 'Carl \"Charles\" Webb (unconfirmed, DNA 2022)' WHERE id = '01';",
-            "UPDATE"));
+            "UPDATE") { RequiredTargetTable = "logfile" });
 
         // Task 32 — SELECT clues ORDER BY found_at ASC (5 rows)
         var t32 = new SQLTask(
@@ -477,7 +477,7 @@ public class CaseManager : MonoBehaviour
         case1.Tasks.Add(new SQLTask(
             "Update the logfile — set status to 'Investigated - Inconclusive' and write your final summary in details.",
             "UPDATE logfile SET status = 'Investigated - Inconclusive', details = 'Your summary here.' WHERE id = '01';",
-            "UPDATE"));
+            "UPDATE") { RequiredTargetTable = "logfile" });
 
         // Task 35 — SELECT * FROM logfile WHERE id = '01' (verify final state)
         var t35 = new SQLTask(

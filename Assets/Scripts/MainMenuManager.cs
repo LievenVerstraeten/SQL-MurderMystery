@@ -1,4 +1,4 @@
-﻿// MainMenuManager.cs
+// MainMenuManager.cs
 // Wires the three main menu buttons to GameManager.
 //
 // SETUP:
@@ -18,6 +18,9 @@ public class MainMenuManager : MonoBehaviour
     private Button newGameButton;
     private Button loadGameButton;
     private Button exitButton;
+    private Button creditsButton;
+    private VisualElement creditsPanel;
+    private Button creditsBackButton;
 
     private void OnEnable()
     {
@@ -33,18 +36,24 @@ public class MainMenuManager : MonoBehaviour
 
         // Query buttons by the names in MainMenu.uxml
         newGameButton  = root.Q<Button>("play-button");
-        loadGameButton = root.Q<Button>("settings-button");
+        loadGameButton = root.Q<Button>("settings-button"); // 'settings-button' is used for Load Game
         exitButton     = root.Q<Button>("exit-button");
+        creditsButton  = root.Q<Button>("credits-button");
+        creditsPanel   = root.Q<VisualElement>("credits-panel");
+        creditsBackButton = root.Q<Button>("credits-back-button");
 
         // Warn if any button wasn't found — catches typos in UI Builder names
         if (newGameButton  == null) Debug.LogError("[MainMenuManager] 'play-button' not found.");
         if (loadGameButton == null) Debug.LogError("[MainMenuManager] 'settings-button' not found.");
         if (exitButton     == null) Debug.LogError("[MainMenuManager] 'exit-button' not found.");
+        if (creditsButton  == null) Debug.LogError("[MainMenuManager] 'credits-button' not found.");
 
         // Wire up click events
         newGameButton?.RegisterCallback<ClickEvent>(OnNewGameClicked);
         loadGameButton?.RegisterCallback<ClickEvent>(OnLoadGameClicked);
         exitButton?.RegisterCallback<ClickEvent>(OnExitClicked);
+        creditsButton?.RegisterCallback<ClickEvent>(OnCreditsClicked);
+        creditsBackButton?.RegisterCallback<ClickEvent>(OnCreditsBackClicked);
 
         // Grey out Load Game if no profiles exist yet
         RefreshLoadGameButton();
@@ -56,6 +65,8 @@ public class MainMenuManager : MonoBehaviour
         newGameButton?.UnregisterCallback<ClickEvent>(OnNewGameClicked);
         loadGameButton?.UnregisterCallback<ClickEvent>(OnLoadGameClicked);
         exitButton?.UnregisterCallback<ClickEvent>(OnExitClicked);
+        creditsButton?.UnregisterCallback<ClickEvent>(OnCreditsClicked);
+        creditsBackButton?.UnregisterCallback<ClickEvent>(OnCreditsBackClicked);
     }
 
     // ─── Button Handlers ──────────────────────────────────────────────────────
@@ -82,6 +93,22 @@ public class MainMenuManager : MonoBehaviour
 #else
         Application.Quit();
 #endif
+    }
+
+    private void OnCreditsClicked(ClickEvent e)
+    {
+        if (creditsPanel != null)
+        {
+            creditsPanel.style.display = DisplayStyle.Flex;
+        }
+    }
+
+    private void OnCreditsBackClicked(ClickEvent e)
+    {
+        if (creditsPanel != null)
+        {
+            creditsPanel.style.display = DisplayStyle.None;
+        }
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

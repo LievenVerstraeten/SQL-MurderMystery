@@ -1,4 +1,4 @@
-﻿// LoadGameManager.cs
+// LoadGameManager.cs
 // Displays all saved detective profiles as cards on the Load Game screen.
 // Each card shows the profile name, active case name, and last played timestamp.
 // Clicking a card calls GameManager.LoadProfile() to resume that investigation.
@@ -159,22 +159,28 @@ public class LoadGameManager : MonoBehaviour
 
         card.RegisterCallback<ClickEvent>(e =>
         {
-            // Don't load if the delete button was clicked
-            if (e.target == deleteButton) return;
             if (id < 0) return;
+
+            // Don't load if the click originated from the delete button
+            VisualElement target = e.target as VisualElement;
+            while (target != null)
+            {
+                if (target == deleteButton) return;
+                if (target == card) break; // Stop looking once we hit the card itself
+                target = target.parent;
+            }
 
             Debug.Log($"[LoadGameManager] Loading profile {id}: {profileName}");
             GameManager.Instance.LoadProfile(id);
         });
 
         // ── Delete button handler ─────────────────────────────────────────────
-        deleteButton.RegisterCallback<ClickEvent>(e =>
+        deleteButton.clicked += () =>
         {
-            e.StopPropagation(); // Prevent card click from firing
             GameManager.Instance.DeleteProfile(id);
             PopulateProfiles();  // Refresh the list
             Debug.Log($"[LoadGameManager] Deleted profile {id}.");
-        });
+        };
 
         return card;
     }

@@ -82,7 +82,9 @@ public class ClueBoardManager : MonoBehaviour
 
     private void OnEnable()
     {
-        _root = GetComponent<UIDocument>().rootVisualElement;
+        var rve = GetComponent<UIDocument>().rootVisualElement;
+        // Target the instance container if embedded, otherwise fallback
+        _root = rve.Q("clue-board-instance") ?? rve.Q("cb-root") ?? rve;
 
         _cardsLayer    = _root.Q("cards-layer");
         _ropeLayer     = _root.Q("rope-layer");

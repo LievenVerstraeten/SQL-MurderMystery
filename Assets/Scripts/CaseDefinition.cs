@@ -1,4 +1,4 @@
-﻿// CaseDefinition.cs
+// CaseDefinition.cs
 // Data container that defines everything about a single case.
 // CaseManager holds a list of these and passes the active one
 // to StaticDbGenerator and DynamicDbSeeder when a game starts.
@@ -46,6 +46,9 @@ public class SQLTask
     // If true, the player can pass with a partial result (subset of expected rows).
     // Useful for tasks where we only care they found *something* relevant.
     public bool PartialMatch = false;
+
+    // Required target table for tasks where ExpectedRows is empty
+    public string RequiredTargetTable = "";
 
     // Narrative dialogue shown BEFORE the task (Debbie / N exchange)
     public string PreTaskDialogue;
