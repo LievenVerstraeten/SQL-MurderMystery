@@ -66,30 +66,29 @@
     font-size: 11px;
     -unity-font: url("project://database/Assets/Fonts/2P.ttf");
     -unity-font-style: normal;
-    background-color: rgb(10, 9, 8);
-    background-image: none;
+    background-color: rgb(22, 16, 3);
     color: rgb(212, 205, 192);
-    border-color: rgb(148, 140, 126);
+    border-color: rgb(188, 162, 88);
     border-width: 2px;
     border-radius: 6px;
     -unity-text-align: middle-center;
     margin-bottom: 14px;
     scale: 1;
-    transition-property: scale, background-color, border-color, color;
-    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
+    transition-property: scale, border-color, color;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out;
 }
 
 .menu-btn:hover {
-    background-color: rgba(148, 140, 126, 0.12);
-    border-color: rgb(188, 162, 88);
-    color: rgb(188, 162, 88);
+    background-color: rgb(48, 34, 6);
+    border-color: rgb(230, 205, 120);
+    color: rgb(230, 205, 120);
     scale: 1.04;
 }
 
 .menu-btn:active {
     scale: 0.97;
-    background-color: rgba(188, 162, 88, 0.08);
+    background-color: rgb(14, 10, 2);
 }
 
 /* EXIT button — danger tint */

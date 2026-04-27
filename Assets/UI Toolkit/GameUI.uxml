@@ -2,13 +2,25 @@
     <Style src="project://database/Assets/UI%20Toolkit/GameUI.uss?fileID=7433441132597879392&amp;guid=6158622be15bce24db8d826768ef4278&amp;type=3#GameUI"/>
     <ui:VisualElement name="root" class="root" style="background-color: rgba(0, 0, 0, 0);">
         <ui:VisualElement name="header" class="header">
-            <ui:Button text="☰" name="burger-menu-button" class="icon-button"/>
-            <ui:Button text="?" name="tutorial-button" class="icon-button"/>
+            <ui:Button name="burger-menu-button" class="icon-button">
+                <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_BurgerMenu.png');"/>
+            </ui:Button>
+            <ui:VisualElement class="header-right">
+                <ui:Button name="inventory-hud-btn" class="inventory-hud-btn">
+                    <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Folder.png');"/>
+                </ui:Button>
+                <ui:Button name="tutorial-button" class="icon-button">
+                    <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Question.png');"/>
+                </ui:Button>
+            </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="burger-menu-dropdown" class="burger-menu-dropdown">
-            <ui:Button text="P" tooltip="Detective Profile" name="profile-button" class="menu-button"/>
-            <ui:Button text="C" tooltip="Found Clues" name="clues-button" class="menu-button"/>
-            <ui:Button text="N" tooltip="Notes" name="notes-button" class="menu-button"/>
+            <ui:Button tooltip="Detective Profile" name="profile-button" class="menu-button">
+                <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Profile.png');"/>
+            </ui:Button>
+            <ui:Button tooltip="Found Clues" name="clues-button" class="menu-button">
+                <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_ClueBoard.png');"/>
+            </ui:Button>
             <ui:Button text="SQL" tooltip="SQL Command Line Menu" name="sql-menu-button" enabled="true" class="menu-button sql-button"/>
             <ui:Button text="EXIT" tooltip="Save and return to main menu" name="save-exit-button" class="menu-button save-exit-button"/>
         </ui:VisualElement>
@@ -45,9 +57,6 @@
             <ui:Button name="add-to-board-btn" class="inventory-action-btn" text="Pin to Board" />
             <ui:Button name="close-inventory-btn" class="inventory-action-btn" text="Close" />
         </ui:VisualElement>
-
-        <!-- ═══ INVENTORY HUD BUTTON ═════════════════════════════════════════ -->
-        <ui:Button name="inventory-hud-btn" class="inventory-hud-btn" text="BAG" />
 
         <!-- SQL Terminal — task banner header + two equal columns -->
         <ui:VisualElement name="sql-terminal-container" style="position: absolute; top: 103px; left: 0; right: 0; bottom: 0; flex-direction: column; display: none;">
