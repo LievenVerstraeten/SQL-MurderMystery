@@ -1,16 +1,52 @@
 /*
  * GameUI.uss — NoSQL Murder Mystery
- * Aesthetic: warm monochrome · vintage · pixel
+ * Design: Gilded Mystery — Obsidian + Gold
+ * Adapted from Query Hound / Gilded Enigma design system
  *
  * Palette
- *   --ink    rgb(10, 9, 8)          scene background
- *   --panel  rgba(16, 14, 12, 0.97) raised panel fill
- *   --border rgb(148, 140, 126)     warm-grey border
- *   --cream  rgb(212, 205, 192)     primary text / off-white
- *   --dim    rgb(108, 102, 92)      secondary / muted text
- *   --gold   rgb(163, 134, 92)      accent (Debbie · hints · tasks)
- *   --danger rgb(160, 65, 65)       exit / error tint
+ *   obsidian     rgb(24, 18, 16)            scene background
+ *   surface      rgb(37, 30, 28)            raised panel fill
+ *   surface-hi   rgb(52, 44, 40)            elevated / hover surface
+ *   gold         rgb(242, 202, 80)          primary gold accent
+ *   gold-deep    rgb(212, 175, 55)          borders / active
+ *   gold-light   rgb(255, 224, 136)         highlights / glow tips
+ *   cream        rgb(237, 224, 220)         primary text
+ *   muted        rgb(175, 162, 148)         secondary text
+ *   danger       rgb(180, 65, 65)           exit / error
  */
+
+/* ═══════════════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Continue button — slow amber blink to draw attention */
+@keyframes continue-blink {
+    0%   { opacity: 1.0; }
+    40%  { opacity: 1.0; }
+    55%  { opacity: 0.28; }
+    70%  { opacity: 1.0; }
+    100% { opacity: 1.0; }
+}
+
+/* Hint popup — gentle breathing glow */
+@keyframes hint-breathe {
+    0%   { opacity: 1.0; }
+    50%  { opacity: 0.80; }
+    100% { opacity: 1.0; }
+}
+
+/* Task banner — fade in upward on appear */
+@keyframes banner-rise {
+    0%   { translate: 0 12px; opacity: 0; }
+    100% { translate: 0   0;  opacity: 1; }
+}
+
+/* Debbie hint button — gentle pulse */
+@keyframes debbie-pulse {
+    0%   { opacity: 1.0; }
+    50%  { opacity: 0.60; }
+    100% { opacity: 1.0; }
+}
 
 /* ═══════════════════════════════════════════════════════════════════
    ROOT
@@ -20,8 +56,8 @@
     width: 100%;
     height: 100%;
     padding: 18px;
-    background-color: rgb(10, 9, 8);
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    background-color: rgb(20, 15, 13);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -39,24 +75,31 @@
     width: 54px;
     height: 54px;
     font-size: 14px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    background-color: rgb(22, 16, 3);
-    color: rgb(212, 205, 192);
-    border-color: rgb(188, 162, 88);
-    border-width: 2px;
-    border-radius: 8px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    background-color: rgb(40, 32, 28);
+    color: rgb(212, 175, 55);
+    border-top-color: rgba(242, 202, 80, 0.70);
+    border-bottom-color: rgba(212, 175, 55, 0.28);
+    border-left-color: rgba(212, 175, 55, 0.28);
+    border-right-color: rgba(212, 175, 55, 0.28);
+    border-width: 1px;
+    border-radius: 3px;
     padding: 10px;
     -unity-text-align: middle-center;
     scale: 1;
-    transition-property: scale, border-color;
-    transition-duration: 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out;
+    transition-property: scale, background-color, border-top-color, border-bottom-color, border-left-color, border-right-color, color;
+    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out, ease-out, ease-out, ease-out;
 }
 
 .icon-button:hover {
-    background-color: rgb(48, 34, 6);
-    border-color: rgb(230, 205, 120);
-    scale: 1.10;
+    background-color: rgb(58, 48, 40);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.55);
+    border-left-color: rgba(242, 202, 80, 0.55);
+    border-right-color: rgba(242, 202, 80, 0.55);
+    color: rgb(255, 224, 136);
+    scale: 1.08;
 }
 
 .btn-icon {
@@ -74,15 +117,14 @@
     top: 8px;
     left: 89px;
     flex-direction: row;
-    background-image: url("project://database/Assets/Textures/Graphics/9_slice_textbox.png");
-    background-color: rgba(0, 0, 0, 0);
-    -unity-background-scale-mode: stretch-to-fill;
-    -unity-slice-left: 30;
-    -unity-slice-right: 15;
-    -unity-slice-top: 12;
-    -unity-slice-bottom: 22;
-    border-width: 0;
-    padding: 12px 14px;
+    background-color: rgb(40, 32, 28);
+    border-top-color: rgba(242, 202, 80, 0.65);
+    border-bottom-color: rgba(212, 175, 55, 0.25);
+    border-left-color: rgba(212, 175, 55, 0.25);
+    border-right-color: rgba(212, 175, 55, 0.25);
+    border-width: 1px;
+    border-radius: 3px;
+    padding: 10px 12px;
     align-items: center;
 }
 
@@ -97,40 +139,57 @@
     margin-bottom: 0;
     padding: 10px;
     font-size: 10px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    background-color: rgb(22, 16, 3);
-    color: rgb(212, 205, 192);
-    border-color: rgb(148, 126, 96);
-    border-width: 2px;
-    border-radius: 8px;
+    letter-spacing: 1px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    background-color: rgb(40, 32, 28);
+    color: rgb(212, 175, 55);
+    border-top-color: rgba(242, 202, 80, 0.60);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.22);
+    border-right-color: rgba(212, 175, 55, 0.22);
+    border-width: 1px;
+    border-radius: 3px;
     -unity-text-align: middle-center;
     scale: 1;
-    transition-property: scale, border-color;
-    transition-duration: 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out;
+    transition-property: scale, background-color, border-top-color, border-bottom-color, border-left-color, border-right-color, color;
+    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out, ease-out, ease-out, ease-out;
 }
 
 .menu-button:hover {
-    background-color: rgb(48, 34, 6);
-    border-color: rgb(163, 134, 92);
-    scale: 1.10;
+    background-color: rgb(58, 48, 40);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.55);
+    border-left-color: rgba(242, 202, 80, 0.55);
+    border-right-color: rgba(242, 202, 80, 0.55);
+    color: rgb(255, 224, 136);
+    scale: 1.08;
 }
 
 .sql-button {
     font-size: 8px;
+    letter-spacing: 0;
 }
 
 .save-exit-button {
     font-size: 7px;
     margin-right: 0;
-    border-color: rgb(120, 55, 55);
-    color: rgb(180, 90, 90);
+    background-color: rgb(38, 18, 18);
+    border-top-color: rgba(200, 80, 80, 0.70);
+    border-bottom-color: rgba(180, 65, 65, 0.28);
+    border-left-color: rgba(180, 65, 65, 0.28);
+    border-right-color: rgba(180, 65, 65, 0.28);
+    color: rgb(200, 100, 100);
 }
 
 .save-exit-button:hover {
-    background-color: rgba(140, 55, 55, 0.18);
-    border-color: rgb(180, 90, 90);
-    scale: 1.10;
+    background-color: rgb(55, 24, 24);
+    border-top-color: rgb(230, 110, 110);
+    border-bottom-color: rgba(210, 85, 85, 0.55);
+    border-left-color: rgba(210, 85, 85, 0.55);
+    border-right-color: rgba(210, 85, 85, 0.55);
+    color: rgb(230, 130, 130);
+    scale: 1.08;
 }
 
 .hidden {
@@ -142,12 +201,12 @@
     width: 60px;
     height: 60px;
     font-size: 20px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    background-color: rgb(10, 9, 8);
-    color: rgb(212, 205, 192);
-    border-color: rgb(148, 140, 126);
-    border-width: 2px;
-    border-radius: 6px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    background-color: rgb(24, 18, 16);
+    color: rgb(237, 224, 220);
+    border-color: rgba(212, 175, 55, 0.40);
+    border-width: 1px;
+    border-radius: 3px;
     position: absolute;
     top: 50%;
     margin-top: -30px;
@@ -165,48 +224,51 @@
     left: 0; top: 0; right: 0; bottom: 0;
     align-items: center;
     justify-content: center;
+    background-color: rgba(14, 10, 8, 0.90);
     display: none;
 }
 
 .cutscene-text {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 15px;
-    color: rgb(212, 205, 192);
+    color: rgb(237, 224, 220);
     white-space: normal;
     -unity-text-align: middle-center;
     max-width: 680px;
     margin-bottom: 40px;
     padding-left: 40px;
     padding-right: 40px;
+    letter-spacing: 1px;
 }
 
 .cutscene-continue {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 11px;
-    color: rgb(212, 205, 192);
-    background-color: rgba(0, 0, 0, 0);
-    border-color: rgb(148, 140, 126);
-    border-width: 2px;
-    border-radius: 6px;
+    letter-spacing: 2px;
+    color: rgb(242, 202, 80);
+    background-color: rgba(40, 32, 28, 0.85);
+    border-top-color: rgba(255, 224, 136, 0.75);
+    border-bottom-color: rgba(212, 175, 55, 0.35);
+    border-left-color: rgba(212, 175, 55, 0.35);
+    border-right-color: rgba(212, 175, 55, 0.35);
+    border-width: 1px;
+    border-radius: 3px;
     padding-top: 10px;
     padding-bottom: 10px;
-    padding-left: 22px;
-    padding-right: 22px;
+    padding-left: 26px;
+    padding-right: 26px;
     scale: 1;
-    transition-property: scale, border-color, color;
-    transition-duration: 0.12s, 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out, ease-out;
+    transition-property: scale, background-color, border-top-color, color;
+    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .cutscene-continue:hover {
-    scale: 1.08;
-    border-color: rgb(212, 205, 192);
-    color: rgb(255, 255, 255);
+    background-color: rgba(58, 48, 40, 0.90);
+    border-top-color: rgb(255, 224, 136);
+    color: rgb(255, 224, 136);
+    scale: 1.06;
 }
-
-/* ═══════════════════════════════════════════════════════════════════
-   VN DIALOGUE LAYER
-   ═══════════════════════════════════════════════════════════════════ */
 
 .dialogue-layer {
     position: absolute;
@@ -235,14 +297,13 @@
     margin-left: 20px;
     margin-right: 30px;
     margin-bottom: 20px;
-    background-image: url("project://database/Assets/Textures/Graphics/9_slice_textbox.png");
-    background-color: rgba(0, 0, 0, 0);
-    -unity-background-scale-mode: stretch-to-fill;
-    -unity-slice-left: 30;
-    -unity-slice-right: 15;
-    -unity-slice-top: 12;
-    -unity-slice-bottom: 22;
-    border-width: 0;
+    background-color: rgba(40, 32, 28, 0.97);
+    border-top-color: rgba(242, 202, 80, 0.80);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.35);
+    border-right-color: rgba(212, 175, 55, 0.18);
+    border-width: 1px;
+    border-radius: 3px;
     padding-top: 18px;
     padding-bottom: 18px;
     padding-left: 32px;
@@ -250,54 +311,63 @@
 }
 
 .speaker-name {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 12px;
-    color: rgb(188, 162, 88);
+    color: rgb(242, 202, 80);
     margin-bottom: 10px;
+    letter-spacing: 2px;
 }
 
 .dialogue-text {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 12px;
-    color: rgb(212, 205, 192);
+    color: rgb(237, 224, 220);
     white-space: normal;
     flex-grow: 1;
     margin-bottom: 12px;
 }
 
+/* Continue button — blinks slowly to signal it's clickable */
 .continue-btn {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 10px;
-    color: rgb(108, 102, 92);
+    letter-spacing: 1px;
+    color: rgb(212, 175, 55);
     background-color: rgba(0, 0, 0, 0);
-    border-color: rgb(70, 66, 60);
+    border-top-color: rgba(242, 202, 80, 0.55);
+    border-bottom-color: rgba(212, 175, 55, 0.20);
+    border-left-color: rgba(212, 175, 55, 0.20);
+    border-right-color: rgba(212, 175, 55, 0.20);
     border-width: 1px;
-    border-radius: 6px;
+    border-radius: 3px;
     align-self: flex-end;
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 14px;
     padding-right: 14px;
+    animation-name: continue-blink;
+    animation-duration: 2.8s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
     scale: 1;
-    transition-property: scale, color, border-color;
-    transition-duration: 0.10s, 0.10s, 0.10s;
+    transition-property: scale, color, border-top-color;
+    transition-duration: 0.12s, 0.12s, 0.12s;
     transition-timing-function: ease-out, ease-out, ease-out;
 }
 
 .continue-btn:hover {
-    color: rgb(212, 205, 192);
-    border-color: rgb(148, 140, 126);
+    color: rgb(255, 224, 136);
+    border-top-color: rgb(255, 224, 136);
+    opacity: 1;
     scale: 1.06;
 }
-
-/* ─── Task banner (shown during SQL tasks) ─── */
 
 .task-banner {
     flex-direction: row;
     align-items: center;
     flex-shrink: 0;
-    background-color: rgba(26, 22, 14, 0.97);
-    border-bottom-color: rgb(188, 162, 88);
+    background-color: rgb(32, 26, 22);
+    border-bottom-color: rgb(212, 175, 55);
     border-bottom-width: 2px;
     border-width: 0;
     padding-top: 10px;
@@ -305,38 +375,55 @@
     padding-left: 16px;
     padding-right: 16px;
     display: none;
+    animation-name: banner-rise;
+    animation-duration: 0.35s;
+    animation-timing-function: ease-out;
 }
 
 .task-label {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 10px;
-    color: rgb(188, 162, 88);
+    color: rgb(242, 202, 80);
     white-space: normal;
     flex-grow: 1;
+    letter-spacing: 1px;
 }
 
 .debbie-hint-btn {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 9px;
-    color: rgb(188, 162, 88);
+    letter-spacing: 1px;
+    color: rgb(212, 175, 55);
     background-color: rgba(0, 0, 0, 0);
-    border-color: rgb(120, 102, 50);
+    border-top-color: rgba(242, 202, 80, 0.55);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.22);
+    border-right-color: rgba(212, 175, 55, 0.22);
     border-width: 1px;
-    border-radius: 6px;
+    border-radius: 3px;
     padding-top: 5px;
     padding-bottom: 5px;
     padding-left: 10px;
     padding-right: 10px;
     flex-shrink: 0;
+    animation-name: debbie-pulse;
+    animation-duration: 3.5s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
     scale: 1;
-    transition-property: scale, background-color, border-color;
-    transition-duration: 0.10s, 0.10s, 0.10s;
-    transition-timing-function: ease-out, ease-out, ease-out;
+    transition-property: scale, background-color, border-top-color, color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .debbie-hint-btn:hover {
-    background-color: rgba(188, 162, 88, 0.14);
-    border-color: rgb(188, 162, 88);
+    background-color: rgba(242, 202, 80, 0.12);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.55);
+    border-left-color: rgba(242, 202, 80, 0.55);
+    border-right-color: rgba(242, 202, 80, 0.55);
+    color: rgb(255, 224, 136);
+    opacity: 1;
     scale: 1.06;
 }
 
@@ -349,60 +436,74 @@
     left: 310px;
     right: 30px;
     bottom: 350px;
-    background-color: rgba(18, 15, 8, 0.98);
-    border-color: rgb(188, 162, 88);
-    border-width: 2px;
-    border-radius: 6px;
+    background-color: rgba(30, 24, 20, 0.99);
+    border-top-color: rgb(242, 202, 80);
+    border-bottom-color: rgba(212, 175, 55, 0.40);
+    border-left-color: rgba(212, 175, 55, 0.55);
+    border-right-color: rgba(212, 175, 55, 0.30);
+    border-width: 1px;
+    border-radius: 3px;
     padding-top: 14px;
     padding-bottom: 14px;
     padding-left: 18px;
     padding-right: 18px;
     display: none;
+    animation-name: hint-breathe;
+    animation-duration: 4s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
 }
 
 .hint-popup-speaker {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 11px;
-    color: rgb(188, 162, 88);
+    color: rgb(242, 202, 80);
     margin-bottom: 8px;
+    letter-spacing: 2px;
 }
 
 .hint-popup-text {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 11px;
-    color: rgb(212, 205, 192);
+    color: rgb(237, 224, 220);
     white-space: normal;
     flex-grow: 1;
     margin-bottom: 12px;
 }
 
 .hint-popup-close {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 9px;
-    color: rgb(188, 162, 88);
+    letter-spacing: 1px;
+    color: rgb(212, 175, 55);
     background-color: rgba(0, 0, 0, 0);
-    border-color: rgb(120, 102, 50);
+    border-top-color: rgba(242, 202, 80, 0.55);
+    border-bottom-color: rgba(212, 175, 55, 0.20);
+    border-left-color: rgba(212, 175, 55, 0.20);
+    border-right-color: rgba(212, 175, 55, 0.20);
     border-width: 1px;
-    border-radius: 6px;
+    border-radius: 3px;
     align-self: flex-end;
     padding-top: 6px;
     padding-bottom: 6px;
     padding-left: 14px;
     padding-right: 14px;
     scale: 1;
-    transition-property: scale, background-color, border-color;
-    transition-duration: 0.10s, 0.10s, 0.10s;
-    transition-timing-function: ease-out, ease-out, ease-out;
+    transition-property: scale, background-color, border-top-color, color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .hint-popup-close:hover {
-    background-color: rgba(188, 162, 88, 0.14);
-    border-color: rgb(188, 162, 88);
+    background-color: rgba(242, 202, 80, 0.12);
+    border-top-color: rgb(255, 224, 136);
+    color: rgb(255, 224, 136);
+    opacity: 1;
     scale: 1.06;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
-   INVENTORY PANEL  (opens on left so it never covers the ? button)
+   INVENTORY PANEL
    ═══════════════════════════════════════════════════════════════════ */
 
 .inventory-panel {
@@ -411,23 +512,27 @@
     top: 90px;
     width: 280px;
     height: 480px;
-    background-color: rgba(14, 12, 10, 0.98);
-    border-color: rgb(148, 140, 126);
-    border-width: 2px;
-    border-radius: 6px;
+    background-color: rgba(40, 32, 28, 0.98);
+    border-top-color: rgba(242, 202, 80, 0.75);
+    border-bottom-color: rgba(212, 175, 55, 0.20);
+    border-left-color: rgba(212, 175, 55, 0.35);
+    border-right-color: rgba(212, 175, 55, 0.20);
+    border-width: 1px;
+    border-radius: 3px;
     padding: 16px;
     display: none;
 }
 
 .inventory-title {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 11px;
-    color: rgb(212, 205, 192);
+    color: rgb(242, 202, 80);
     -unity-text-align: upper-center;
+    letter-spacing: 3px;
     margin-bottom: 12px;
-    border-bottom-color: rgb(80, 76, 70);
+    border-bottom-color: rgba(212, 175, 55, 0.35);
     border-bottom-width: 1px;
-    padding-bottom: 8px;
+    padding-bottom: 10px;
 }
 
 .inventory-list {
@@ -436,52 +541,65 @@
 }
 
 .inventory-action-btn {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 9px;
-    color: rgb(212, 205, 192);
-    background-color: rgb(10, 9, 8);
-    border-color: rgb(108, 102, 92);
+    letter-spacing: 1px;
+    color: rgb(175, 162, 148);
+    background-color: rgb(28, 22, 18);
+    border-top-color: rgba(212, 175, 55, 0.40);
+    border-bottom-color: rgba(212, 175, 55, 0.12);
+    border-left-color: rgba(212, 175, 55, 0.12);
+    border-right-color: rgba(212, 175, 55, 0.12);
     border-width: 1px;
-    border-radius: 6px;
+    border-radius: 3px;
     height: 36px;
     margin-top: 6px;
     scale: 1;
-    transition-property: scale, background-color, border-color;
-    transition-duration: 0.10s, 0.10s, 0.10s;
-    transition-timing-function: ease-out, ease-out, ease-out;
+    transition-property: scale, background-color, border-top-color, color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .inventory-action-btn:hover {
-    background-color: rgba(148, 140, 126, 0.14);
-    border-color: rgb(148, 140, 126);
-    scale: 1.04;
+    background-color: rgba(242, 202, 80, 0.10);
+    border-top-color: rgba(242, 202, 80, 0.80);
+    border-bottom-color: rgba(212, 175, 55, 0.40);
+    border-left-color: rgba(212, 175, 55, 0.40);
+    border-right-color: rgba(212, 175, 55, 0.40);
+    color: rgb(242, 202, 80);
+    scale: 1.03;
 }
-
-/* ─── BAG HUD button — grouped with ? in header-right ─── */
 
 .inventory-hud-btn {
     width: 54px;
     height: 54px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 10px;
-    color: rgb(212, 205, 192);
-    background-color: rgb(22, 16, 3);
-    border-color: rgb(188, 162, 88);
-    border-width: 2px;
-    border-radius: 8px;
+    color: rgb(212, 175, 55);
+    background-color: rgb(40, 32, 28);
+    border-top-color: rgba(242, 202, 80, 0.70);
+    border-bottom-color: rgba(212, 175, 55, 0.28);
+    border-left-color: rgba(212, 175, 55, 0.28);
+    border-right-color: rgba(212, 175, 55, 0.28);
+    border-width: 1px;
+    border-radius: 3px;
     padding: 10px;
     -unity-text-align: middle-center;
     margin-right: 6px;
     scale: 1;
-    transition-property: scale, border-color;
-    transition-duration: 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out;
+    transition-property: scale, background-color, border-top-color, color;
+    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .inventory-hud-btn:hover {
-    background-color: rgb(48, 34, 6);
-    border-color: rgb(230, 205, 120);
-    scale: 1.10;
+    background-color: rgb(58, 48, 40);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.55);
+    border-left-color: rgba(242, 202, 80, 0.55);
+    border-right-color: rgba(242, 202, 80, 0.55);
+    color: rgb(255, 224, 136);
+    scale: 1.08;
 }
 
 .header-right {
@@ -489,10 +607,91 @@
     align-items: flex-start;
 }
 
-/* ═══════════════════════════════════════════════════════════════════
-   SPEAKER PORTRAITS
-   One class per character — applied at runtime by DialogueManager.
-   ═══════════════════════════════════════════════════════════════════ */
+.sql-input-panel {
+    background-color: rgb(18, 14, 12);
+    border-right-color: rgba(212, 175, 55, 0.28);
+    border-right-width: 1px;
+}
+
+.sql-input-row {
+    border-bottom-color: rgba(212, 175, 55, 0.25);
+    border-bottom-width: 1px;
+}
+
+.sql-input-field {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(237, 224, 220);
+    background-color: rgb(20, 16, 13);
+    border-top-color: rgba(212, 175, 55, 0.28);
+    border-bottom-color: rgba(212, 175, 55, 0.08);
+    border-left-color: rgba(212, 175, 55, 0.08);
+    border-right-color: rgba(212, 175, 55, 0.08);
+    border-width: 1px;
+    border-radius: 0;
+}
+
+.sql-input-field .unity-base-text-field__input {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(237, 224, 220);
+    background-color: rgb(20, 16, 13);
+    border-width: 0;
+}
+
+.sql-input-field .unity-base-text-field__input:focus {
+    border-width: 0;
+    border-color: rgba(0, 0, 0, 0);
+}
+
+.sql-history-list {
+    background-color: rgb(14, 10, 8);
+}
+
+.sql-send-btn {
+    width: 80px;
+    height: 100%;
+    flex-shrink: 0;
+    margin: 0;
+    font-size: 8px;
+    letter-spacing: 1px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    background-color: rgb(212, 175, 55);
+    color: rgb(22, 16, 0);
+    border-top-color: rgba(255, 240, 160, 0.90);
+    border-bottom-color: rgba(130, 100, 18, 0.80);
+    border-left-color: rgba(180, 145, 40, 0.60);
+    border-right-color: rgba(180, 145, 40, 0.60);
+    border-width: 1px;
+    border-radius: 0;
+    -unity-text-align: middle-center;
+    scale: 1;
+    transition-property: background-color, color, border-top-color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
+}
+
+.sql-send-btn:hover {
+    background-color: rgb(242, 202, 80);
+    color: rgb(14, 10, 0);
+    border-top-color: rgb(255, 248, 200);
+}
+
+.sql-send-btn:active {
+    background-color: rgb(180, 145, 38);
+    scale: 0.97;
+}
+
+.sql-output-panel {
+    background-color: rgb(15, 11, 9);
+}
+
+.sql-output-text {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(175, 162, 148);
+    white-space: normal;
+}
 
 .portrait-debbie {
     background-image: url("project://database/Assets/Textures/Tutorial_Guy.png");
@@ -528,4 +727,176 @@
     background-image: url("project://database/Assets/Textures/randomtimehound.png");
     -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(0, 0, 0, 0);
+}
+
+.inventory-row {
+    flex-direction: row;
+    align-items: center;
+    min-height: 36px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 4px;
+    background-color: rgb(28, 22, 18);
+    border-top-color: rgba(212, 175, 55, 0.28);
+    border-bottom-color: rgba(212, 175, 55, 0.08);
+    border-left-color: rgba(212, 175, 55, 0.08);
+    border-right-color: rgba(212, 175, 55, 0.08);
+    border-width: 1px;
+    border-radius: 2px;
+    transition-property: background-color, border-top-color;
+    transition-duration: 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out;
+}
+
+.inventory-row:hover {
+    background-color: rgba(242, 202, 80, 0.09);
+    border-top-color: rgba(242, 202, 80, 0.60);
+}
+
+.inventory-row--selected {
+    background-color: rgba(242, 202, 80, 0.16);
+    border-top-color: rgb(242, 202, 80);
+    border-bottom-color: rgba(212, 175, 55, 0.38);
+    border-left-color: rgba(212, 175, 55, 0.38);
+    border-right-color: rgba(212, 175, 55, 0.38);
+}
+
+.inventory-icon {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(212, 175, 55);
+    margin-right: 8px;
+    flex-shrink: 0;
+    -unity-text-align: middle-center;
+}
+
+.inventory-item-name {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(237, 224, 220);
+    white-space: normal;
+    flex-grow: 1;
+}
+
+.profile-card {
+    flex-direction: column;
+    width: 260px;
+    margin: 10px;
+    padding: 16px;
+    background-color: rgb(38, 30, 26);
+    border-top-color: rgba(242, 202, 80, 0.70);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.22);
+    border-right-color: rgba(212, 175, 55, 0.22);
+    border-width: 1px;
+    border-radius: 3px;
+    scale: 1;
+    transition-property: scale, background-color, border-top-color;
+    transition-duration: 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out;
+}
+
+.profile-card:hover {
+    background-color: rgb(52, 44, 38);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.50);
+    border-left-color: rgba(242, 202, 80, 0.50);
+    border-right-color: rgba(242, 202, 80, 0.50);
+    scale: 1.03;
+}
+
+.card-name {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 12px;
+    color: rgb(242, 202, 80);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.card-date {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 8px;
+    color: rgb(175, 162, 148);
+    margin-bottom: 4px;
+}
+
+.card-case {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(212, 175, 55);
+    margin-top: 6px;
+}
+
+.card-left {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.card-right {
+    flex-shrink: 0;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.card-delete {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(200, 80, 80);
+    background-color: rgb(38, 18, 18);
+    border-top-color: rgba(200, 80, 80, 0.55);
+    border-bottom-color: rgba(180, 65, 65, 0.18);
+    border-left-color: rgba(180, 65, 65, 0.18);
+    border-right-color: rgba(180, 65, 65, 0.18);
+    border-width: 1px;
+    border-radius: 3px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
+.card-delete:hover {
+    background-color: rgb(64, 20, 20);
+    border-top-color: rgb(230, 100, 100);
+    color: rgb(240, 130, 130);
+}
+
+.suspect-card {
+    flex-direction: column;
+    padding: 12px;
+    margin: 6px;
+    background-color: rgb(34, 27, 23);
+    border-top-color: rgba(212, 175, 55, 0.50);
+    border-bottom-color: rgba(212, 175, 55, 0.15);
+    border-left-color: rgba(212, 175, 55, 0.15);
+    border-right-color: rgba(212, 175, 55, 0.15);
+    border-width: 1px;
+    border-radius: 3px;
+}
+
+.suspect-name {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(237, 224, 220);
+    margin-bottom: 6px;
+}
+
+.suspect-detail {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(175, 162, 148);
+    white-space: normal;
+}
+
+.suspect-empty {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgba(175, 162, 148, 0.40);
+    -unity-text-align: middle-center;
+    padding: 12px;
+    border-color: rgba(212, 175, 55, 0.15);
+    border-width: 1px;
+    border-radius: 3px;
 }

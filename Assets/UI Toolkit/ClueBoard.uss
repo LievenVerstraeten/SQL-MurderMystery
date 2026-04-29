@@ -1,10 +1,10 @@
 
 /* ═══════════════════════════════════════════════════════════════
-   CLUE BOARD  –  UI Stylesheet
-   Requires Unity 2022.2+ for @keyframes / animation support.
+   CLUE BOARD — Gilded Mystery
+   Unity 6 UI Toolkit
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Swing-in animation ───────────────────────────────────────── */
+/* ── Keyframe animations ──────────────────────────────────────── */
 
 @keyframes board-swing {
     0%   { rotate: -7deg; }
@@ -15,6 +15,12 @@
     100% { rotate:  0deg; }
 }
 
+@keyframes board-fade-in {
+    0%   { opacity: 0; }
+    30%  { opacity: 0.60; }
+    100% { opacity: 1; }
+}
+
 /* ── Root overlay ─────────────────────────────────────────────── */
 
 .cb-root {
@@ -22,7 +28,8 @@
     left: 0; top: 0; right: 0; bottom: 0;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.55);
+    background-color: rgba(0, 0, 0, 0.68);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
 }
 
 /* ── Board window ─────────────────────────────────────────────── */
@@ -31,15 +38,17 @@
     width: 780px;
     height: 560px;
     flex-direction: column;
-    background-color: rgb(28, 22, 16);
-    border-color: rgb(88, 66, 42);
-    border-width: 5px;
-    border-radius: 3px;
-    /* Pivot at the hanging pin so the swing looks correct */
+    background-color: rgb(26, 20, 16);
+    border-top-color: rgba(242, 202, 80, 0.80);
+    border-bottom-color: rgba(212, 175, 55, 0.28);
+    border-left-color: rgba(212, 175, 55, 0.45);
+    border-right-color: rgba(212, 175, 55, 0.45);
+    border-width: 2px;
+    border-radius: 2px;
     transform-origin: top center;
-    animation-name: board-swing;
-    animation-duration: 0.75s;
-    animation-timing-function: ease-out;
+    animation-name: board-swing, board-fade-in;
+    animation-duration: 0.75s, 0.45s;
+    animation-timing-function: ease-out, ease-out;
 }
 
 /* ── Hanger pin row ───────────────────────────────────────────── */
@@ -49,15 +58,15 @@
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
-    background-color: rgb(28, 22, 16);
+    background-color: rgba(0, 0, 0, 0);
 }
 
 .hanger-pin {
     width: 14px;
     height: 14px;
     border-radius: 7px;
-    background-color: rgb(18, 14, 8);
-    border-color: rgb(135, 100, 55);
+    background-color: rgb(18, 13, 8);
+    border-color: rgb(212, 175, 55);
     border-width: 2px;
 }
 
@@ -71,16 +80,17 @@
     flex-shrink: 0;
     padding-left: 16px;
     padding-right: 10px;
-    background-color: rgb(20, 16, 12);
-    border-bottom-color: rgb(70, 52, 34);
-    border-bottom-width: 2px;
+    background-color: rgb(32, 25, 20);
+    border-bottom-color: rgba(212, 175, 55, 0.65);
+    border-bottom-width: 1px;
 }
 
 .cb-title {
     font-size: 12px;
-    color: rgb(210, 198, 172);
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    color: rgb(242, 202, 80);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     -unity-text-align: middle-left;
+    letter-spacing: 3px;
 }
 
 .cb-header-btns {
@@ -88,7 +98,7 @@
     align-items: center;
 }
 
-/* ── Icon buttons (header + tray) ─────────────────────────────── */
+/* ── Icon buttons ─────────────────────────────────────────────── */
 
 .cb-icon-btn {
     width: 32px;
@@ -96,40 +106,56 @@
     margin-left: 6px;
     font-size: 14px;
     padding: 0;
-    background-color: rgb(38, 30, 20);
-    color: rgb(200, 190, 168);
-    border-color: rgb(110, 84, 52);
-    border-width: 2px;
-    border-radius: 6px;
+    background-color: rgb(40, 32, 28);
+    color: rgb(175, 162, 148);
+    border-top-color: rgba(242, 202, 80, 0.55);
+    border-bottom-color: rgba(212, 175, 55, 0.20);
+    border-left-color: rgba(212, 175, 55, 0.20);
+    border-right-color: rgba(212, 175, 55, 0.20);
+    border-width: 1px;
+    border-radius: 3px;
     -unity-text-align: middle-center;
     scale: 1;
-    transition-property: background-color, border-color, color, scale;
-    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
+    transition-property: background-color, border-top-color, border-bottom-color, border-left-color, border-right-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out, ease-out, ease-out, ease-out;
 }
 
 .cb-icon-btn:hover {
-    background-color: rgb(52, 40, 24);
-    border-color: rgb(188, 162, 88);
-    color: rgb(212, 198, 158);
+    background-color: rgb(58, 48, 40);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.55);
+    border-left-color: rgba(242, 202, 80, 0.55);
+    border-right-color: rgba(242, 202, 80, 0.55);
+    color: rgb(255, 224, 136);
     scale: 1.08;
 }
 
 .cb-icon-btn--active {
-    background-color: rgb(36, 72, 36);
-    border-color: rgb(70, 150, 70);
-    color: rgb(160, 230, 160);
+    background-color: rgb(28, 48, 28);
+    border-top-color: rgba(120, 220, 120, 0.80);
+    border-bottom-color: rgba(80, 170, 80, 0.35);
+    border-left-color: rgba(80, 170, 80, 0.35);
+    border-right-color: rgba(80, 170, 80, 0.35);
+    color: rgb(160, 240, 160);
 }
 
 .cb-close-btn {
-    background-color: rgb(96, 18, 18);
-    border-color: rgb(155, 38, 38);
-    color: rgb(255, 195, 195);
+    background-color: rgb(64, 14, 14);
+    border-top-color: rgba(220, 100, 100, 0.80);
+    border-bottom-color: rgba(180, 65, 65, 0.30);
+    border-left-color: rgba(180, 65, 65, 0.30);
+    border-right-color: rgba(180, 65, 65, 0.30);
+    color: rgb(220, 160, 160);
 }
 
 .cb-close-btn:hover {
-    background-color: rgb(145, 24, 24);
-    border-color: rgb(215, 58, 58);
+    background-color: rgb(110, 22, 22);
+    border-top-color: rgb(245, 130, 130);
+    border-bottom-color: rgba(220, 90, 90, 0.60);
+    border-left-color: rgba(220, 90, 90, 0.60);
+    border-right-color: rgba(220, 90, 90, 0.60);
+    color: rgb(255, 190, 190);
 }
 
 /* ── Board body ───────────────────────────────────────────────── */
@@ -140,13 +166,14 @@
     overflow: hidden;
 }
 
-/* Corkboard canvas with nine-slice background */
+/* Corkboard canvas — tinted darker for noir atmosphere */
 .board-area {
     position: absolute;
     left: 0; top: 0; right: 0; bottom: 0;
     background-image: url("project://database/Assets/Textures/board.png");
     -unity-background-scale-mode: stretch-to-fill;
-    background-color: rgb(92, 68, 44);
+    background-color: rgb(68, 48, 30);
+    -unity-background-image-tint-color: rgba(16, 10, 4, 0.38);
     -unity-slice-left:   18;
     -unity-slice-right:  18;
     -unity-slice-top:    18;
@@ -170,9 +197,9 @@
     right: 0; top: 0; bottom: 0;
     width: 210px;
     flex-direction: column;
-    background-color: rgb(14, 12, 8);
-    border-left-color: rgb(72, 54, 34);
-    border-left-width: 3px;
+    background-color: rgb(20, 15, 12);
+    border-left-color: rgba(212, 175, 55, 0.60);
+    border-left-width: 2px;
     transition-property: translate;
     transition-duration: 0.26s;
     transition-timing-function: ease-out;
@@ -189,15 +216,17 @@
     flex-shrink: 0;
     padding-left: 12px;
     padding-right: 8px;
-    border-bottom-color: rgb(60, 46, 28);
+    background-color: rgba(38, 30, 24, 0.70);
+    border-bottom-color: rgba(212, 175, 55, 0.35);
     border-bottom-width: 1px;
 }
 
 .tray-title {
     font-size: 9px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    color: rgb(185, 170, 142);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    color: rgb(212, 175, 55);
     -unity-text-align: middle-left;
+    letter-spacing: 2px;
 }
 
 .tray-scroll {
@@ -208,33 +237,39 @@
 .tray-item {
     min-height: 52px;
     margin-bottom: 7px;
-    background-color: rgb(26, 22, 16);
-    border-color: rgb(62, 48, 30);
+    background-color: rgb(30, 23, 18);
+    border-top-color: rgba(212, 175, 55, 0.28);
+    border-bottom-color: rgba(212, 175, 55, 0.08);
+    border-left-color: rgba(212, 175, 55, 0.08);
+    border-right-color: rgba(212, 175, 55, 0.08);
     border-width: 1px;
     padding: 7px 8px;
     flex-direction: column;
     justify-content: center;
-    transition-property: border-color, background-color;
-    transition-duration: 0.1s, 0.1s;
+    transition-property: background-color, border-top-color, border-bottom-color, border-left-color, border-right-color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s, 0.12s;
 }
 
 .tray-item:hover {
-    border-color: rgb(198, 168, 118);
-    background-color: rgb(40, 34, 24);
+    background-color: rgba(242, 202, 80, 0.10);
+    border-top-color: rgba(242, 202, 80, 0.75);
+    border-bottom-color: rgba(212, 175, 55, 0.32);
+    border-left-color: rgba(212, 175, 55, 0.32);
+    border-right-color: rgba(212, 175, 55, 0.32);
 }
 
 .tray-item-title {
     font-size: 7px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    color: rgb(208, 192, 160);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    color: rgb(237, 224, 220);
     -unity-text-align: middle-left;
     white-space: normal;
 }
 
 .tray-item-body {
     font-size: 6px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    color: rgb(108, 92, 70);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    color: rgb(140, 128, 110);
     -unity-text-align: upper-left;
     white-space: normal;
     margin-top: 4px;
@@ -248,26 +283,29 @@
     min-height: 88px;
     background-image: url("project://database/Assets/Textures/stickynote.png");
     -unity-background-scale-mode: stretch-to-fill;
-    background-color: rgb(234, 214, 146);  /* fallback if texture missing */
+    background-color: rgb(234, 214, 146);
+    -unity-background-image-tint-color: rgba(255, 238, 180, 0.88);
     padding-top: 22px;
     padding-left: 9px;
     padding-right: 9px;
     padding-bottom: 9px;
     flex-direction: column;
     border-width: 2px;
-    border-color: rgba(0, 0, 0, 0);       /* transparent until selected */
+    border-color: rgba(0, 0, 0, 0);
     border-radius: 0;
-    /* Pivot at the pin so rotation feels natural */
     transform-origin: 50% 8px;
-    transition-property: border-color;
-    transition-duration: 0.1s;
+    transition-property: border-top-color, border-bottom-color, border-left-color, border-right-color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
 }
 
 .board-card--selected {
-    border-color: rgb(240, 240, 255);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(212, 175, 55, 0.65);
+    border-left-color: rgba(212, 175, 55, 0.65);
+    border-right-color: rgba(212, 175, 55, 0.65);
 }
 
-/* Thumbtack / pin at the top-centre of each card */
+/* Thumbtack — gold pin */
 .card-pin {
     position: absolute;
     top: 5px;
@@ -276,14 +314,14 @@
     width: 10px;
     height: 10px;
     border-radius: 5px;
-    background-color: rgb(35, 26, 16);
-    border-color: rgb(130, 96, 52);
-    border-width: 1px;
+    background-color: rgb(24, 16, 8);
+    border-color: rgb(212, 175, 55);
+    border-width: 2px;
 }
 
 .card-title {
     font-size: 7px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     color: rgb(26, 16, 6);
     -unity-text-align: upper-left;
     white-space: normal;
@@ -294,7 +332,7 @@
 
 .card-body {
     font-size: 6px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     color: rgb(56, 40, 16);
     -unity-text-align: upper-left;
     white-space: normal;
@@ -308,10 +346,13 @@
     flex-grow: 1;
     margin-top: 4px;
     font-size: 6px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     color: rgb(18, 10, 2);
-    background-color: rgba(255, 252, 230, 0.92);
-    border-color: rgb(110, 82, 44);
+    background-color: rgba(255, 252, 230, 0.94);
+    border-top-color: rgba(212, 175, 55, 0.75);
+    border-bottom-color: rgba(212, 175, 55, 0.30);
+    border-left-color: rgba(212, 175, 55, 0.30);
+    border-right-color: rgba(212, 175, 55, 0.30);
     border-width: 1px;
     padding: 2px 3px;
 }
@@ -322,10 +363,13 @@
     position: absolute;
     flex-direction: row;
     align-items: center;
-    background-color: rgb(14, 12, 8);
-    border-color: rgb(85, 64, 40);
-    border-width: 2px;
-    border-radius: 6px;
+    background-color: rgb(22, 17, 14);
+    border-top-color: rgba(242, 202, 80, 0.65);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.32);
+    border-right-color: rgba(212, 175, 55, 0.22);
+    border-width: 1px;
+    border-radius: 3px;
     padding: 3px 4px;
     display: none;
 }
@@ -336,36 +380,55 @@
     margin-right: 3px;
     font-size: 13px;
     padding: 0;
-    background-color: rgb(32, 26, 18);
-    color: rgb(185, 174, 152);
-    border-color: rgb(76, 60, 40);
+    background-color: rgb(40, 32, 28);
+    color: rgb(175, 162, 148);
+    border-top-color: rgba(212, 175, 55, 0.40);
+    border-bottom-color: rgba(212, 175, 55, 0.12);
+    border-left-color: rgba(212, 175, 55, 0.12);
+    border-right-color: rgba(212, 175, 55, 0.12);
     border-width: 1px;
-    border-radius: 6px;
+    border-radius: 3px;
     -unity-text-align: middle-center;
     scale: 1;
-    transition-property: background-color, border-color, scale;
-    transition-duration: 0.12s, 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out, ease-out;
+    transition-property: background-color, border-top-color, color, scale;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .card-action-btn:hover {
-    background-color: rgb(52, 42, 28);
-    border-color: rgb(188, 162, 88);
+    background-color: rgb(58, 48, 40);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.55);
+    border-left-color: rgba(242, 202, 80, 0.55);
+    border-right-color: rgba(242, 202, 80, 0.55);
+    color: rgb(255, 224, 136);
     scale: 1.08;
 }
 
 .card-action-btn--active {
-    background-color: rgb(95, 16, 16);
-    border-color: rgb(195, 46, 46);
+    background-color: rgb(64, 14, 14);
+    border-top-color: rgba(220, 80, 80, 0.80);
+    border-bottom-color: rgba(180, 55, 55, 0.30);
+    border-left-color: rgba(180, 55, 55, 0.30);
+    border-right-color: rgba(180, 55, 55, 0.30);
     color: rgb(255, 172, 172);
 }
 
 .action-delete-btn {
-    color: rgb(195, 55, 55);
+    color: rgb(200, 80, 80);
+    background-color: rgb(38, 18, 18);
+    border-top-color: rgba(200, 80, 80, 0.55);
+    border-bottom-color: rgba(180, 65, 65, 0.18);
+    border-left-color: rgba(180, 65, 65, 0.18);
+    border-right-color: rgba(180, 65, 65, 0.18);
 }
 
 .action-delete-btn:hover {
-    background-color: rgb(85, 16, 16);
-    border-color: rgb(195, 46, 46);
-    color: rgb(255, 95, 95);
+    background-color: rgb(80, 18, 18);
+    border-top-color: rgb(245, 120, 120);
+    border-bottom-color: rgba(220, 90, 90, 0.55);
+    border-left-color: rgba(220, 90, 90, 0.55);
+    border-right-color: rgba(220, 90, 90, 0.55);
+    color: rgb(255, 120, 120);
+    scale: 1.08;
 }

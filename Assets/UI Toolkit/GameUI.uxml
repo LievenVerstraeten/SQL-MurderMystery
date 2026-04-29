@@ -68,17 +68,17 @@
             <!-- Two columns: input | output -->
             <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
                 <!-- Left 50%: query input -->
-                <ui:VisualElement name="querie-input-menu" style="flex-grow: 1; flex-basis: 0; flex-direction: column; background-color: rgba(30, 30, 30, 0.95);">
-                    <ui:VisualElement style="flex-direction: row; width: 100%; height: 80px; flex-shrink: 0;">
-                        <ui:TextField label="" multiline="true" placeholder-text="put your queries here" name="query-input-field" style="flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0; background-color: rgb(255, 255, 255);"/>
-                        <ui:Button text="Send" name="send-query-button" class="menu-button" style="width: 80px; flex-shrink: 0; margin: 0;"/>
+                <ui:VisualElement name="querie-input-menu" class="sql-input-panel" style="flex-grow: 1; flex-basis: 0; flex-direction: column;">
+                    <ui:VisualElement class="sql-input-row" style="flex-direction: row; width: 100%; height: 80px; flex-shrink: 0;">
+                        <ui:TextField label="" multiline="true" placeholder-text="put your queries here" name="query-input-field" class="sql-input-field" style="flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0;"/>
+                        <ui:Button text="Send" name="send-query-button" class="sql-send-btn" style="flex-shrink: 0;"/>
                     </ui:VisualElement>
-                    <ui:ListView name="command-history-list" style="flex-grow: 1; width: 100%; background-color: rgba(48, 48, 48, 0.45);"/>
+                    <ui:ListView name="command-history-list" class="sql-history-list" style="flex-grow: 1; width: 100%;"/>
                 </ui:VisualElement>
                 <!-- Right 50%: query output -->
-                <ui:VisualElement name="query-output-panel" style="flex-grow: 1; flex-basis: 0; background-color: rgba(20, 20, 20, 0.95);">
+                <ui:VisualElement name="query-output-panel" class="sql-output-panel" style="flex-grow: 1; flex-basis: 0;">
                     <ui:ScrollView style="flex-grow: 1; width: 100%; height: 100%;">
-                        <ui:Label name="query-output-text" text="Query results will appear here." style="color: white; font-size: 16px; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;"/>
+                        <ui:Label name="query-output-text" class="sql-output-text" text="Query results will appear here." style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;"/>
                     </ui:ScrollView>
                 </ui:VisualElement>
             </ui:VisualElement>

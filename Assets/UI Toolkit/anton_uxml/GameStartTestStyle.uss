@@ -1,6 +1,6 @@
 /*
  * GameStartTestStyle.uss — NoSQL Murder Mystery
- * Shared detective palette: ink · cream · gold · warm-gray
+ * Design: Gilded Mystery — Obsidian + Gold
  *
  * Element IDs: #Content #TopBar #CaseLabel #SuspectsBtn #MenuBtn
  *              #QueryOutput #OutputText #QueryText #ExecuteQuery
@@ -15,7 +15,8 @@
     flex-grow: 1;
     width: 100%;
     height: 100%;
-    background-color: rgb(10, 9, 8);
+    background-color: rgb(20, 15, 13);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
 }
 
 /* ── Top bar ─────────────────────────────────────────────────────── */
@@ -24,64 +25,83 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    background-color: rgba(16, 14, 12, 0.97);
+    background-color: rgb(32, 25, 20);
     padding-left: 20px;
     padding-right: 20px;
     height: 72px;
     width: 100%;
     flex-shrink: 0;
-    border-bottom-color: rgb(148, 140, 126);
+    border-bottom-color: rgba(212, 175, 55, 0.60);
     border-bottom-width: 1px;
 }
 
 #CaseLabel {
-    color: rgb(188, 162, 88);
+    color: rgb(242, 202, 80);
     font-size: 13px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    letter-spacing: 2px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
 }
 
-/* Top bar buttons */
+/* ── Top bar buttons ─────────────────────────────────────────────── */
+
 #SuspectsBtn, #MenuBtn {
     font-size: 9px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    background-color: rgb(10, 9, 8);
-    color: rgb(212, 205, 192);
-    border-color: rgb(148, 140, 126);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
+    letter-spacing: 1px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    background-color: rgb(28, 22, 18);
+    color: rgb(237, 224, 220);
+    border-top-color: rgba(242, 202, 80, 0.65);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.22);
+    border-right-color: rgba(212, 175, 55, 0.22);
+    border-width: 1px;
+    border-radius: 3px;
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 18px;
     padding-right: 18px;
     margin-left: 8px;
     scale: 1;
-    transition-property: scale, background-color, border-color, color;
+    transition-property: scale, background-color, border-top-color, color;
     transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
     transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 #SuspectsBtn:hover {
-    background-color: rgba(148, 140, 126, 0.12);
-    border-color: rgb(188, 162, 88);
-    color: rgb(188, 162, 88);
+    background-color: rgb(42, 34, 28);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.50);
+    border-left-color: rgba(242, 202, 80, 0.50);
+    border-right-color: rgba(242, 202, 80, 0.50);
+    color: rgb(255, 224, 136);
     scale: 1.04;
+}
+
+#SuspectsBtn:active {
+    scale: 0.97;
 }
 
 #MenuBtn {
-    border-color: rgb(120, 55, 55);
-    color: rgb(180, 90, 90);
+    background-color: rgb(38, 18, 18);
+    border-top-color: rgba(200, 80, 80, 0.70);
+    border-bottom-color: rgba(180, 65, 65, 0.22);
+    border-left-color: rgba(180, 65, 65, 0.22);
+    border-right-color: rgba(180, 65, 65, 0.22);
+    color: rgb(200, 100, 100);
 }
 
 #MenuBtn:hover {
-    background-color: rgba(140, 55, 55, 0.18);
-    border-color: rgb(180, 90, 90);
+    background-color: rgb(55, 24, 24);
+    border-top-color: rgb(230, 110, 110);
+    border-bottom-color: rgba(210, 85, 85, 0.55);
+    border-left-color: rgba(210, 85, 85, 0.55);
+    border-right-color: rgba(210, 85, 85, 0.55);
+    color: rgb(230, 130, 130);
     scale: 1.04;
+}
+
+#MenuBtn:active {
+    scale: 0.97;
 }
 
 /* ── Output panel ────────────────────────────────────────────────── */
@@ -89,16 +109,16 @@
 #QueryOutput {
     flex-grow: 1;
     width: 100%;
-    background-color: rgba(8, 7, 6, 0.98);
+    background-color: rgb(14, 11, 9);
     padding: 16px;
-    border-bottom-color: rgb(40, 38, 34);
+    border-bottom-color: rgba(212, 175, 55, 0.20);
     border-bottom-width: 1px;
 }
 
 #OutputText {
-    color: rgb(160, 210, 160);
-    font-size: 13px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    color: rgb(175, 162, 148);
+    font-size: 11px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     white-space: normal;
 }
 
@@ -107,21 +127,40 @@
 #QueryText {
     width: 100%;
     height: 80px;
-    background-color: rgba(16, 14, 12, 0.97);
-    border-color: rgb(80, 76, 70);
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
+    background-color: rgb(18, 14, 12);
+    border-top-color: rgba(212, 175, 55, 0.45);
+    border-bottom-color: rgba(212, 175, 55, 0.18);
+    border-left-color: rgba(212, 175, 55, 0.18);
+    border-right-color: rgba(212, 175, 55, 0.18);
+    border-width: 1px;
     border-radius: 0;
     flex-shrink: 0;
-    color: rgb(212, 205, 192);
-    font-size: 12px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    color: rgb(237, 224, 220);
+    font-size: 11px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    transition-property: border-top-color;
+    transition-duration: 0.15s;
+    transition-timing-function: ease-out;
 }
 
 #QueryText:focus {
-    border-color: rgb(188, 162, 88);
+    border-top-color: rgb(242, 202, 80);
+    border-bottom-color: rgba(242, 202, 80, 0.40);
+    border-left-color: rgba(242, 202, 80, 0.40);
+    border-right-color: rgba(242, 202, 80, 0.40);
+}
+
+#QueryText .unity-base-text-field__input {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(237, 224, 220);
+    background-color: rgb(18, 14, 12);
+    border-width: 0;
+}
+
+#QueryText .unity-base-text-field__input:focus {
+    border-width: 0;
+    border-color: rgba(0, 0, 0, 0);
 }
 
 /* ── Execute button ──────────────────────────────────────────────── */
@@ -129,45 +168,47 @@
 #ExecuteQuery {
     width: 100%;
     height: 44px;
-    background-color: rgba(26, 22, 14, 0.97);
-    color: rgb(188, 162, 88);
+    background-color: rgb(212, 175, 55);
+    color: rgb(22, 16, 0);
     font-size: 10px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    border-color: rgb(120, 102, 50);
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
+    letter-spacing: 2px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    border-top-color: rgba(255, 240, 160, 0.90);
+    border-bottom-color: rgba(180, 148, 40, 0.60);
+    border-left-color: rgba(180, 148, 40, 0.60);
+    border-right-color: rgba(180, 148, 40, 0.60);
+    border-width: 1px;
     border-radius: 0;
     flex-shrink: 0;
     scale: 1;
-    transition-property: background-color, scale;
-    transition-duration: 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out;
+    transition-property: background-color, scale, border-top-color;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out;
 }
 
 #ExecuteQuery:hover {
-    background-color: rgba(40, 34, 14, 0.97);
-    border-color: rgb(188, 162, 88);
+    background-color: rgb(230, 192, 70);
+    border-top-color: rgba(255, 248, 200, 1.0);
     scale: 1.01;
 }
 
 #ExecuteQuery:active {
     scale: 0.99;
+    background-color: rgb(190, 156, 44);
 }
 
 /* ── Profile name ────────────────────────────────────────────────── */
 
 #ProfileName {
-    color: rgb(108, 102, 92);
+    color: rgba(175, 162, 148, 0.50);
     font-size: 9px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     -unity-text-align: middle-center;
     padding: 6px;
     flex-shrink: 0;
     width: 100%;
-    background-color: rgba(16, 14, 12, 0.97);
-    border-top-color: rgb(40, 38, 34);
+    background-color: rgb(24, 19, 16);
+    border-top-color: rgba(212, 175, 55, 0.20);
     border-top-width: 1px;
 }
 
@@ -179,70 +220,72 @@
     top: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(10, 7, 5, 0.82);
     align-items: center;
     justify-content: center;
 }
 
 #SuspectsOverview {
-    background-color: rgba(16, 14, 12, 0.98);
-    border-color: rgb(148, 140, 126);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
+    background-color: rgb(28, 22, 18);
+    border-top-color: rgba(242, 202, 80, 0.75);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.22);
+    border-right-color: rgba(212, 175, 55, 0.22);
+    border-width: 1px;
+    border-radius: 3px;
     padding: 24px;
     width: 480px;
     max-height: 600px;
 }
 
 #SuspectsOverlayQuit {
-    background-color: rgb(10, 9, 8);
-    color: rgb(180, 90, 90);
+    background-color: rgb(38, 18, 18);
+    color: rgb(200, 100, 100);
     font-size: 9px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    border-color: rgb(120, 55, 55);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
+    letter-spacing: 1px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    border-top-color: rgba(200, 80, 80, 0.70);
+    border-bottom-color: rgba(180, 65, 65, 0.22);
+    border-left-color: rgba(180, 65, 65, 0.22);
+    border-right-color: rgba(180, 65, 65, 0.22);
+    border-width: 1px;
+    border-radius: 3px;
     padding-top: 8px;
     padding-bottom: 8px;
     padding-left: 20px;
     padding-right: 20px;
     margin-top: 16px;
     align-self: flex-end;
-    transition-property: background-color, scale;
-    transition-duration: 0.12s, 0.12s;
-    transition-timing-function: ease-out, ease-out;
+    scale: 1;
+    transition-property: background-color, scale, border-top-color, color;
+    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 #SuspectsOverlayQuit:hover {
-    background-color: rgba(140, 55, 55, 0.18);
-    border-color: rgb(180, 90, 90);
+    background-color: rgb(55, 24, 24);
+    border-top-color: rgb(230, 110, 110);
+    border-bottom-color: rgba(210, 85, 85, 0.55);
+    border-left-color: rgba(210, 85, 85, 0.55);
+    border-right-color: rgba(210, 85, 85, 0.55);
+    color: rgb(230, 130, 130);
+    scale: 1.03;
+}
+
+#SuspectsOverlayQuit:active {
+    scale: 0.97;
 }
 
 /* ── Suspect cards ───────────────────────────────────────────────── */
 
 .suspect-card {
-    background-color: rgba(22, 20, 16, 0.97);
-    border-color: rgb(60, 56, 50);
-    border-top-width: 1px;
-    border-right-width: 1px;
-    border-bottom-width: 1px;
-    border-left-width: 1px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
+    background-color: rgb(32, 25, 20);
+    border-top-color: rgba(212, 175, 55, 0.50);
+    border-bottom-color: rgba(212, 175, 55, 0.14);
+    border-left-color: rgba(212, 175, 55, 0.14);
+    border-right-color: rgba(212, 175, 55, 0.14);
+    border-width: 1px;
+    border-radius: 3px;
     padding-top: 12px;
     padding-bottom: 12px;
     padding-left: 16px;
@@ -251,23 +294,30 @@
 }
 
 .suspect-name {
-    color: rgb(188, 162, 88);
+    color: rgb(242, 202, 80);
     font-size: 11px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    letter-spacing: 1px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     margin-bottom: 6px;
 }
 
 .suspect-detail {
-    color: rgb(108, 102, 92);
+    color: rgb(175, 162, 148);
     font-size: 9px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     white-space: normal;
 }
 
 .suspect-empty {
-    color: rgb(80, 76, 70);
+    color: rgba(175, 162, 148, 0.35);
     font-size: 10px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     -unity-text-align: middle-center;
+    border-top-color: rgba(212, 175, 55, 0.15);
+    border-bottom-color: rgba(212, 175, 55, 0.08);
+    border-left-color: rgba(212, 175, 55, 0.08);
+    border-right-color: rgba(212, 175, 55, 0.08);
+    border-width: 1px;
+    border-radius: 3px;
     padding: 24px;
 }

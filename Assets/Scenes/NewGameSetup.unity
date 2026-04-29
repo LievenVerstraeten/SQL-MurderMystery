@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 1364151079}
   - component: {fileID: 1364151080}
   - component: {fileID: 1364151081}
+  - component: {fileID: 1364151082}
   m_Layer: 0
   m_Name: CaseIntro
   m_TagString: Untagged
@@ -187,6 +188,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc6f271d812ba845a15d774abf52185, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CaseIntroManager
+--- !u!114 &1364151082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1364151078}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 833757977a5e2c54c9c251a2137ff16e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ApplyFont
+  font: {fileID: 12800000, guid: 22008c9a3075d60409697e3fe420a2d2, type: 3}
 --- !u!1 &1651951963
 GameObject:
   m_ObjectHideFlags: 0
