@@ -15,6 +15,7 @@
 //   Call DialogueManager.Instance.StartStory(Case01Story.Build(playerName))
 //   from GameUIManager after the game scene loads.
 
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -23,21 +24,32 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
-    [SerializeField] private UIDocument uiDocument;
+    [SerializeField] private UIDocument  uiDocument;
+    [SerializeField] private AudioSource _dialogueAudio;
 
-    // Portrait CSS classes applied to speaker-portrait element at runtime
+    private AudioClip _sfxDebbie;
+    private AudioClip _sfxPlayer;
+    private AudioClip _sfxSystem;
+
     private static readonly string[] PortraitClasses =
     {
         "portrait-debbie", "portrait-detective", "portrait-jessica",
         "portrait-neil",   "portrait-cleland",   "portrait-timehound",
     };
 
-    // ── Story state ───────────────────────────────────────────────────────────
     private List<DialogueNode> _story;
     private int  _nodeIndex   = 0;
     private bool _awaitingSQL = false;
 
-    // ── UI references ─────────────────────────────────────────────────────────
+//typewriter state here
+    private Coroutine _typewriterCoroutine;
+    private bool      _isTyping;
+    private string    _fullText;
+    private Label     _activeTypewriterLabel;
+    private bool      _typewriterSkipGuard;
+
+    private const float TypewriterCharsPerSec = 40f;
+
     private VisualElement _dialogueLayer;
     private VisualElement _cutsceneLayer;
     private VisualElement _speakerPortrait;
@@ -53,13 +65,25 @@ public class DialogueManager : MonoBehaviour
     private Label         _hintPopupText;
     private Button        _hintPopupClose;
 
-    // ── Lifecycle ─────────────────────────────────────────────────────────────
-
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        if (_dialogueAudio == null)
+            _dialogueAudio = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
+        _dialogueAudio.loop         = true;
+        _dialogueAudio.playOnAwake  = false;
+        _dialogueAudio.spatialBlend = 0f; // 2D — not distance-attenuated
+
+        _sfxDebbie = Resources.Load<AudioClip>("Dialogue_Debbie");
+        _sfxPlayer = Resources.Load<AudioClip>("Dialogue_Player");
+        _sfxSystem = Resources.Load<AudioClip>("Dialogue_System");
+
+        LoadDialogueClip(_sfxDebbie, "Dialogue_Debbie");
+        LoadDialogueClip(_sfxPlayer, "Dialogue_Player");
+        LoadDialogueClip(_sfxSystem, "Dialogue_System");
     }
 
     void OnEnable()
@@ -113,8 +137,6 @@ public class DialogueManager : MonoBehaviour
         if (_hintPopupClose      != null) _hintPopupClose.clicked      -= CloseHintPopup;
     }
 
-    // ── Public API ────────────────────────────────────────────────────────────
-
     /// <summary>
     /// Called by GameUIManager when the game scene loads so DialogueManager
     /// can bind to the correct UIDocument (it lives on the persistent GameSystems
@@ -139,8 +161,6 @@ public class DialogueManager : MonoBehaviour
 
     public int  GetNodeIndex() => _nodeIndex;
     public void SetNodeIndex(int index) { _nodeIndex = index; }
-
-    // ── Story engine ──────────────────────────────────────────────────────────
 
     private void ShowNode()
     {
@@ -172,10 +192,9 @@ public class DialogueManager : MonoBehaviour
         SetLayerVisible(_taskBanner,     false);
         SetButtonVisible(_continueBtn,   true);
 
-        if (_speakerNameLbl  != null) _speakerNameLbl.text  = node.Speaker;
-        if (_dialogueTextLbl != null) _dialogueTextLbl.text = node.Text;
+        if (_speakerNameLbl  != null) _speakerNameLbl.text = node.Speaker;
+        if (_dialogueTextLbl != null) StartTypewriter(_dialogueTextLbl, node.Text, node.Speaker);
 
-        // Portrait: apply CSS class matching the speaker; fallback to base dark bg
         if (_speakerPortrait != null)
         {
             foreach (var cls in PortraitClasses)
@@ -199,6 +218,7 @@ public class DialogueManager : MonoBehaviour
 
     private void ShowTask(DialogueNode node)
     {
+        SkipTypewriter(); // task banner appears over dialogue, stop any running typewriter
         // Keep dialogue layer visible for context; add task banner on top
         SetLayerVisible(_taskBanner,   true);
         SetButtonVisible(_continueBtn, false);
@@ -224,7 +244,7 @@ public class DialogueManager : MonoBehaviour
         SetLayerVisible(_cutsceneLayer,  true);
         SetLayerVisible(_taskBanner,     false);
 
-        if (_cutsceneTextLbl != null) _cutsceneTextLbl.text = node.CutsceneText;
+        if (_cutsceneTextLbl != null) StartTypewriter(_cutsceneTextLbl, node.CutsceneText);
         if (_cutsceneLayer   != null)
             _cutsceneLayer.style.backgroundColor = new StyleColor(node.CutsceneColor);
     }
@@ -242,11 +262,20 @@ public class DialogueManager : MonoBehaviour
         SetLayerVisible(_taskBanner,    false);
     }
 
-    // ── Event handlers ────────────────────────────────────────────────────────
-
     private void OnContinueClicked()
     {
         if (_awaitingSQL) return;
+
+        // Absorb the bubbled ClickEvent that arrives right after a skip click
+        if (_typewriterSkipGuard) { _typewriterSkipGuard = false; return; }
+
+        if (_isTyping)
+        {
+            SkipTypewriter();
+            _typewriterSkipGuard = true; // next call in same frame is the layer bubble
+            return;
+        }
+
         Advance();
     }
 
@@ -298,7 +327,77 @@ public class DialogueManager : MonoBehaviour
         if (_hintPopup != null) _hintPopup.style.display = DisplayStyle.None;
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
+    private void StartTypewriter(Label label, string text, string speaker = "")
+    {
+        if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
+        _fullText              = text;
+        _activeTypewriterLabel = label;
+        _typewriterSkipGuard   = false;
+
+        PlayTypewriterSound(speaker);
+
+        _typewriterCoroutine = StartCoroutine(TypewriterRoutine(label, text));
+    }
+
+    private IEnumerator TypewriterRoutine(Label label, string text)
+    {
+        _isTyping  = true;
+        label.text = "";
+        var delay  = new WaitForSeconds(1f / TypewriterCharsPerSec);
+        for (int i = 0; i < text.Length; i++)
+        {
+            label.text = text[..(i + 1)];
+            yield return delay;
+        }
+        _isTyping            = false;
+        _typewriterCoroutine = null;
+        _dialogueAudio?.Stop();
+    }
+
+    private void SkipTypewriter()
+    {
+        if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
+        _typewriterCoroutine = null;
+        _isTyping            = false;
+        if (_activeTypewriterLabel != null)
+            _activeTypewriterLabel.text = _fullText;
+        _dialogueAudio?.Stop();
+    }
+
+    private void PlayTypewriterSound(string speaker)
+    {
+        if (_dialogueAudio == null) return;
+        string playerName = GameManager.Instance?.ActiveProfileName ?? "";
+        AudioClip clip = speaker == "Debbie" ? _sfxDebbie
+                       : speaker == playerName ? _sfxPlayer
+                       : _sfxSystem;
+        if (clip == null)
+        {
+            Debug.LogWarning($"DialogueManager could not find a typewriter sound for speaker '{speaker}'. Make sure the clip is in Assets/Resources.");
+            return;
+        }
+
+        if (clip.loadState == AudioDataLoadState.Unloaded && !clip.LoadAudioData())
+        {
+            Debug.LogWarning($"DialogueManager could not load audio data for '{clip.name}'. Enable Preload Audio Data in the clip import settings, or use a loaded clip.");
+            return;
+        }
+
+        _dialogueAudio.clip = clip;
+        _dialogueAudio.Play();
+    }
+
+    private static void LoadDialogueClip(AudioClip clip, string resourceName)
+    {
+        if (clip == null)
+        {
+            Debug.LogWarning($"DialogueManager could not load Resources/{resourceName}. Put the audio file under Assets/Resources and omit the file extension in code.");
+            return;
+        }
+
+        if (clip.loadState == AudioDataLoadState.Unloaded)
+            clip.LoadAudioData();
+    }
 
     private static void SetLayerVisible(VisualElement el, bool visible)
     {
