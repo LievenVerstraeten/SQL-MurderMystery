@@ -1,20 +1,22 @@
 /*
  * CaseIntroTestStyle.uss — NoSQL Murder Mystery
- * Shared detective palette: ink · cream · gold · warm-gray
+ * Design: Gilded Mystery — Obsidian + Gold
  */
 
 /* ── Root / Container ────────────────────────────────────────────── */
 
 VisualElement {
-    background-color: rgb(10, 9, 8);
+    background-color: rgb(20, 15, 13);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
 }
 
 /* ── Case title ──────────────────────────────────────────────────── */
 
 .title {
     font-size: 18px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    color: rgb(188, 162, 88);
+    letter-spacing: 3px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    color: rgb(242, 202, 80);
     align-self: center;
     width: 80%;
     -unity-text-align: upper-center;
@@ -30,26 +32,26 @@ VisualElement {
     width: 480px;
     height: 60px;
     font-size: 12px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
-    color: rgb(212, 205, 192);
-    background-color: rgba(16, 14, 12, 0.97);
-    border-color: rgb(148, 140, 126);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    color: rgb(237, 224, 220);
+    background-color: rgb(18, 14, 12);
+    border-top-color: rgba(242, 202, 80, 0.55);
+    border-bottom-color: rgba(212, 175, 55, 0.22);
+    border-left-color: rgba(212, 175, 55, 0.22);
+    border-right-color: rgba(212, 175, 55, 0.22);
+    border-width: 1px;
+    border-radius: 3px;
     padding-left: 12px;
     padding-right: 12px;
     margin-bottom: 32px;
+    transition-property: border-top-color;
+    transition-duration: 0.15s;
+    transition-timing-function: ease-out;
 }
 
 .name_input .unity-text-field__label {
-    color: rgb(108, 102, 92);
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    color: rgba(175, 162, 148, 0.55);
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 10px;
     min-width: 80px;
     width: 80px;
@@ -57,16 +59,25 @@ VisualElement {
 }
 
 .name_input .unity-base-text-field__input {
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 12px;
-    color: rgb(212, 205, 192);
-    background-color: rgba(16, 14, 12, 0.97);
+    color: rgb(237, 224, 220);
+    background-color: rgb(18, 14, 12);
     padding-left: 10px;
     padding-right: 10px;
+    border-width: 0;
+}
+
+.name_input .unity-base-text-field__input:focus {
+    border-width: 0;
+    border-color: rgba(0, 0, 0, 0);
 }
 
 .name_input:focus {
-    border-color: rgb(188, 162, 88);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.42);
+    border-left-color: rgba(242, 202, 80, 0.42);
+    border-right-color: rgba(242, 202, 80, 0.42);
 }
 
 /* ── Proceed button ──────────────────────────────────────────────── */
@@ -77,32 +88,35 @@ VisualElement {
     height: 54px;
     margin-top: 16px;
     font-size: 11px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    letter-spacing: 2px;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     -unity-text-align: middle-center;
-    background-color: rgb(10, 9, 8);
-    color: rgb(212, 205, 192);
-    border-color: rgb(148, 140, 126);
-    border-top-width: 2px;
-    border-right-width: 2px;
-    border-bottom-width: 2px;
-    border-left-width: 2px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-bottom-left-radius: 6px;
+    background-color: rgb(40, 32, 28);
+    color: rgb(237, 224, 220);
+    border-top-color: rgba(242, 202, 80, 0.65);
+    border-bottom-color: rgba(212, 175, 55, 0.20);
+    border-left-color: rgba(212, 175, 55, 0.20);
+    border-right-color: rgba(212, 175, 55, 0.20);
+    border-width: 1px;
+    border-radius: 3px;
     scale: 1;
-    transition-property: scale, background-color, border-color, color;
-    transition-duration: 0.12s, 0.12s, 0.12s, 0.12s;
+    transition-property: scale, background-color, border-top-color, color;
+    transition-duration: 0.18s, 0.18s, 0.18s, 0.18s;
     transition-timing-function: ease-out, ease-out, ease-out, ease-out;
 }
 
 .button:hover {
-    background-color: rgba(148, 140, 126, 0.12);
-    border-color: rgb(188, 162, 88);
-    color: rgb(188, 162, 88);
+    background-color: rgb(58, 48, 40);
+    border-top-color: rgb(255, 224, 136);
+    border-bottom-color: rgba(242, 202, 80, 0.55);
+    border-left-color: rgba(242, 202, 80, 0.55);
+    border-right-color: rgba(242, 202, 80, 0.55);
+    color: rgb(255, 224, 136);
     scale: 1.04;
 }
 
 .button:active {
     scale: 0.97;
+    background-color: rgb(22, 17, 14);
+    border-top-color: rgba(212, 175, 55, 0.42);
 }

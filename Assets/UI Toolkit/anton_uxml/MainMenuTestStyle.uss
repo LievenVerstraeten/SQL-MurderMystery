@@ -11,6 +11,7 @@
     justify-content: center;
     width: 100%;
     height: 100%;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
 }
 
 /* ── Title ───────────────────────────────────────────────────────── */
@@ -19,7 +20,7 @@
     font-size: 24px;
     -unity-text-align: upper-center;
     color: rgb(188, 162, 88);
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     -unity-font-style: normal;
     margin-bottom: 52px;
 }
@@ -32,7 +33,7 @@
     align-self: center;
     -unity-text-align: middle-center;
     font-size: 11px;
-    -unity-font: url("project://database/Assets/Fonts/2P.ttf");
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     background-color: rgb(10, 9, 8);
     color: rgb(212, 205, 192);
     border-color: rgb(148, 140, 126);

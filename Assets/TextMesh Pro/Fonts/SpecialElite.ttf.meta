@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1cfbd9d6c9f1b2347bd5d6fe9e5a20bd
+guid: 4862e3c30dc07214b82637004651433d
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,13 +9,14 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Press Start 2P
-  fallbackFontReferences: []
+  - Special Elite
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 22008c9a3075d60409697e3fe420a2d2, type: 3}
   customCharacters: 
   fontRenderingMode: 0
   ascentCalculationMode: 1
   useLegacyBoundsCalculation: 0
-  shouldRoundAdvanceValue: 1
+  shouldRoundAdvanceValue: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
