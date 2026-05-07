@@ -15,6 +15,9 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="burger-menu-dropdown" class="burger-menu-dropdown">
+         <ui:Button tooltip="Toggle Sound" name="mute-button" class="menu-button">
+        <ui:VisualElement name="mute-icon" class="btn-icon mute-icon-on"/>
+        </ui:Button>
             <ui:Button tooltip="Detective Profile" name="profile-button" class="menu-button">
                 <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Profile.png');"/>
             </ui:Button>

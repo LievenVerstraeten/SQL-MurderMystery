@@ -104,15 +104,19 @@ public class LoadGameManager : MonoBehaviour
     private VisualElement BuildProfileCard(Dictionary<string, string> profile)
     {
         // Extract profile data
-        string profileId = profile.GetValueOrDefault("id", "0");
+        string profileId = profile.GetValueOrDefault("id", "");
         string profileName = profile.GetValueOrDefault("profile_name", "Unknown Detective");
         string lastPlayed = profile.GetValueOrDefault("last_played", "Never");
-        string createdAt = profile.GetValueOrDefault("created_at", "Unknown");
 
-        // Format the timestamp to be more readable
+        // FIX: Validate the id parse here. If it fails we still build the card
+        // but the delete button will show a warning and do nothing, rather than
+        // silently calling DeleteProfile(-1) which deletes nothing and leaves the
+        // card stranded in the list forever.
+        bool idValid = int.TryParse(profileId, out int id) && id >= 0;
+        if (!idValid)
+            Debug.LogWarning($"[LoadGameManager] Profile has invalid id '{profileId}' — delete will be disabled.");
+
         string formattedDate = FormatTimestamp(lastPlayed);
-
-        // Get the active case name for this profile
         string caseName = GetCaseNameForProfile(profileId);
 
         // ── Card container ────────────────────────────────────────────────────
@@ -155,18 +159,16 @@ public class LoadGameManager : MonoBehaviour
         card.Add(deleteButton);
 
         // ── Click to load — whole card is clickable ───────────────────────────
-        int id = int.TryParse(profileId, out int parsed) ? parsed : -1;
-
         card.RegisterCallback<ClickEvent>(e =>
         {
-            if (id < 0) return;
+            if (!idValid) return;
 
             // Don't load if the click originated from the delete button
             VisualElement target = e.target as VisualElement;
             while (target != null)
             {
                 if (target == deleteButton) return;
-                if (target == card) break; // Stop looking once we hit the card itself
+                if (target == card) break;
                 target = target.parent;
             }
 
@@ -177,9 +179,26 @@ public class LoadGameManager : MonoBehaviour
         // ── Delete button handler ─────────────────────────────────────────────
         deleteButton.clicked += () =>
         {
+            // FIX: Guard against invalid ids — never call DeleteProfile(-1).
+            if (!idValid)
+            {
+                Debug.LogWarning($"[LoadGameManager] Cannot delete profile with invalid id '{profileId}'. Removing card from UI only.");
+                // Remove the orphaned card from the UI so the player isn't stuck
+                card.RemoveFromHierarchy();
+                RefreshEmptyState();
+                return;
+            }
+
+            Debug.Log($"[LoadGameManager] Deleting profile {id}: {profileName}");
+
+            // FIX: Remove the card from the UI immediately before the DB call.
+            // This prevents the list from briefly showing a stale state when
+            // PopulateProfiles re-queries, which was the original symptom of
+            // "can't delete a profile that was just created then immediately exited".
+            card.RemoveFromHierarchy();
+            RefreshEmptyState();
+
             GameManager.Instance.DeleteProfile(id);
-            PopulateProfiles();  // Refresh the list
-            Debug.Log($"[LoadGameManager] Deleted profile {id}.");
         };
 
         return card;
@@ -190,11 +209,29 @@ public class LoadGameManager : MonoBehaviour
     // =========================================================================
 
     /// <summary>
+    /// Checks whether the profile list is now empty and updates the empty-state
+    /// label visibility accordingly. Call after removing any card from the hierarchy.
+    /// </summary>
+    private void RefreshEmptyState()
+    {
+        if (profileList == null) return;
+
+        bool isEmpty = profileList.childCount == 0;
+
+        if (noProfilesLabel != null)
+            noProfilesLabel.style.display = isEmpty ? DisplayStyle.Flex : DisplayStyle.None;
+        if (profileScroll != null)
+            profileScroll.style.display = isEmpty ? DisplayStyle.None : DisplayStyle.Flex;
+    }
+
+    /// <summary>
     /// Looks up the case name for a profile from case_progress in saves.db.
     /// Falls back to "No case started" if none found.
     /// </summary>
     private string GetCaseNameForProfile(string profileId)
     {
+        if (string.IsNullOrEmpty(profileId)) return "No case started";
+
         var result = DatabaseManager.Instance.RunSaveQueryWithResults(
             "SELECT case_id FROM case_progress WHERE profile_id = ? ORDER BY id DESC LIMIT 1",
             profileId
