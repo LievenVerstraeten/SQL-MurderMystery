@@ -40,9 +40,9 @@ public class GameUIManager : MonoBehaviour
         var root = uiDocument.rootVisualElement;
 
         // Querying elements
-        burgerMenuButton   = root.Q<Button>("burger-menu-button");
+        burgerMenuButton = root.Q<Button>("burger-menu-button");
         burgerMenuDropdown = root.Q<VisualElement>("burger-menu-dropdown");
-        querieInputMenu    = root.Q<VisualElement>("sql-terminal-container");
+        querieInputMenu = root.Q<VisualElement>("sql-terminal-container");
 
         // Initialize panels as hidden
         if (burgerMenuDropdown != null)
@@ -50,29 +50,29 @@ public class GameUIManager : MonoBehaviour
         if (querieInputMenu != null)
             querieInputMenu.style.display = DisplayStyle.None;
 
-        tutorialButton   = root.Q<Button>("tutorial-button");
-        profileButton    = root.Q<Button>("profile-button");
-        cluesButton      = root.Q<Button>("clues-button");
-        notesButton      = root.Q<Button>("notes-button");
-        sqlMenuButton    = root.Q<Button>("sql-menu-button");
-        inventoryHudBtn  = root.Q<Button>("inventory-hud-btn");
-        saveExitButton   = root.Q<Button>("save-exit-button");
+        tutorialButton = root.Q<Button>("tutorial-button");
+        profileButton = root.Q<Button>("profile-button");
+        cluesButton = root.Q<Button>("clues-button");
+        notesButton = root.Q<Button>("notes-button");
+        sqlMenuButton = root.Q<Button>("sql-menu-button");
+        inventoryHudBtn = root.Q<Button>("inventory-hud-btn");
+        saveExitButton = root.Q<Button>("save-exit-button");
 
         // Burger menu
         if (burgerMenuButton != null)
             burgerMenuButton.clicked += OnBurgerMenuClicked;
 
         // Burger menu items
-        if (tutorialButton != null)  tutorialButton.clicked  += () => Debug.Log("Tutorial clicked");
-        if (profileButton != null)   profileButton.clicked   += () => Debug.Log("Profile clicked");
-        if (cluesButton != null)     cluesButton.clicked     += () => {
-             ClueBoardManager.Instance?.SetVisible(true);
-             // Optionally close burger menu when opening clues
-             if (isMenuOpen) OnBurgerMenuClicked();
+        if (tutorialButton != null) tutorialButton.clicked += () => Debug.Log("Tutorial clicked");
+        if (profileButton != null) profileButton.clicked += () => Debug.Log("Profile clicked");
+        if (cluesButton != null) cluesButton.clicked += () => {
+            ClueBoardManager.Instance?.SetVisible(true);
+            // Close burger menu when opening clues
+            if (isMenuOpen) OnBurgerMenuClicked();
         };
-        if (notesButton != null)     notesButton.clicked     += () => Debug.Log("Notes clicked");
-        if (sqlMenuButton != null)   sqlMenuButton.clicked   += OnSqlQuerieMenuClicked;
-        if (saveExitButton != null)  saveExitButton.clicked  += OnSaveExitClicked;
+        if (notesButton != null) notesButton.clicked += () => Debug.Log("Notes clicked");
+        if (sqlMenuButton != null) sqlMenuButton.clicked += OnSqlQuerieMenuClicked;
+        if (saveExitButton != null) saveExitButton.clicked += OnSaveExitClicked;
 
         // Inventory HUD button
         if (inventoryHudBtn != null)
@@ -81,15 +81,20 @@ public class GameUIManager : MonoBehaviour
         // Connect persistent managers to this scene's UIDocument
         DialogueManager.Instance?.ConnectToUI(uiDocument);
         UIDatabase.Instance?.ConnectToUI(uiDocument);
+
+        // Connect mute button — finds "mute-button" in the UXML and wires it up.
+        // Add a Button named "mute-button" to your GameUI.uxml to enable this.
+        MuteManager.Instance?.ConnectToUI(uiDocument);
+
         StartStoryIfReady();
     }
 
     private void OnDisable()
     {
         if (burgerMenuButton != null) burgerMenuButton.clicked -= OnBurgerMenuClicked;
-        if (sqlMenuButton != null)    sqlMenuButton.clicked   -= OnSqlQuerieMenuClicked;
-        if (saveExitButton != null)   saveExitButton.clicked  -= OnSaveExitClicked;
-        if (inventoryHudBtn != null)  inventoryHudBtn.clicked -= () => InventoryManager.Instance?.ToggleInventory();
+        if (sqlMenuButton != null) sqlMenuButton.clicked -= OnSqlQuerieMenuClicked;
+        if (saveExitButton != null) saveExitButton.clicked -= OnSaveExitClicked;
+        if (inventoryHudBtn != null) inventoryHudBtn.clicked -= () => InventoryManager.Instance?.ToggleInventory();
     }
 
     // ─── Burger menu ──────────────────────────────────────────────────────────
@@ -131,7 +136,7 @@ public class GameUIManager : MonoBehaviour
     private void StartStoryIfReady()
     {
         if (DialogueManager.Instance == null) { Debug.LogError("[GameUIManager] DialogueManager.Instance is null"); return; }
-        if (GameManager.Instance == null)     { Debug.LogError("[GameUIManager] GameManager.Instance is null"); return; }
+        if (GameManager.Instance == null) { Debug.LogError("[GameUIManager] GameManager.Instance is null"); return; }
 
         int profileId = GameManager.Instance.ActiveProfileId;
         if (profileId < 0) { Debug.LogError($"[GameUIManager] No active profile (id={profileId})"); return; }

@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 186723431}
   - component: {fileID: 186723432}
   - component: {fileID: 186723433}
+  - component: {fileID: 186723434}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -417,6 +418,18 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &186723434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186723421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0453b69acd7d414cb5fa434ad7756e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::MuteManager
 --- !u!1 &187898159
 GameObject:
   m_ObjectHideFlags: 0

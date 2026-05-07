@@ -900,3 +900,5 @@
     border-width: 1px;
     border-radius: 3px;
 }
+.mute-icon-on  { background-image: url('project://database/Assets/Textures/Graphics/icons/UI_VolumeOn.png'); }
+.mute-icon-off { background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Muted.png'); }

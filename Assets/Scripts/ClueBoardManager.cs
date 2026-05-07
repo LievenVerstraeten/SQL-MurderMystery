@@ -56,23 +56,23 @@ public class ClueBoardManager : MonoBehaviour
     private VisualElement _ropeLayer;
     private VisualElement _cardActions;
     private VisualElement _inventoryTray;
-    private Button        _inventoryBtn;
-    private Button        _actionRopeBtn;
+    private Button _inventoryBtn;
+    private Button _actionRopeBtn;
 
     // ── Runtime State ────────────────────────────────────────────────────────
 
-    private readonly List<BoardCard>      _cards = new();
+    private readonly List<BoardCard> _cards = new();
     private readonly List<RopeConnection> _ropes = new();
 
-    private BoardCard     _selectedCard  = null;
-    private BoardCard     _ropeStartCard = null;
-    private bool          _isRopeMode    = false;
-    private bool          _isTrayOpen    = false;
+    private BoardCard _selectedCard = null;
+    private BoardCard _ropeStartCard = null;
+    private bool _isRopeMode = false;
+    private bool _isTrayOpen = false;
 
     // Drag state
-    private VisualElement _dragTarget  = null;
-    private Vector2       _dragOffset;
-    private bool          _didDrag     = false;
+    private VisualElement _dragTarget = null;
+    private Vector2 _dragOffset;
+    private bool _didDrag = false;
 
     private int _cardCounter = 0;
 
@@ -86,23 +86,23 @@ public class ClueBoardManager : MonoBehaviour
         // Target the instance container if embedded, otherwise fallback
         _root = rve.Q("clue-board-instance") ?? rve.Q("cb-root") ?? rve;
 
-        _cardsLayer    = _root.Q("cards-layer");
-        _ropeLayer     = _root.Q("rope-layer");
-        _cardActions   = _root.Q("card-actions");
+        _cardsLayer = _root.Q("cards-layer");
+        _ropeLayer = _root.Q("rope-layer");
+        _cardActions = _root.Q("card-actions");
         _inventoryTray = _root.Q("inventory-tray");
-        _inventoryBtn  = _root.Q<Button>("inventory-btn");
+        _inventoryBtn = _root.Q<Button>("inventory-btn");
         _actionRopeBtn = _root.Q<Button>("action-rope");
 
         _ropeLayer.generateVisualContent += DrawRopes;
 
-        _root.Q<Button>("close-btn").clicked       += () => SetVisible(false);
-        _root.Q<Button>("add-note-btn").clicked    += AddNote;
-        _inventoryBtn.clicked                       += ToggleTray;
-        _root.Q<Button>("tray-close").clicked      += CloseTray;
+        _root.Q<Button>("close-btn").clicked += () => SetVisible(false);
+        _root.Q<Button>("add-note-btn").clicked += AddNote;
+        _inventoryBtn.clicked += ToggleTray;
+        _root.Q<Button>("tray-close").clicked += CloseTray;
 
-        _root.Q<Button>("action-delete").clicked   += ActionDelete;
-        _root.Q<Button>("action-edit").clicked     += ActionEdit;
-        _actionRopeBtn.clicked                      += ActionStartRope;
+        _root.Q<Button>("action-delete").clicked += ActionDelete;
+        _root.Q<Button>("action-edit").clicked += ActionEdit;
+        _actionRopeBtn.clicked += ActionStartRope;
         _root.Q<Button>("action-rotate-l").clicked += () => ActionRotate(-15f);
         _root.Q<Button>("action-rotate-r").clicked += () => ActionRotate(+15f);
 
@@ -126,24 +126,32 @@ public class ClueBoardManager : MonoBehaviour
         // Make sure the board is open so the player sees the card appear
         SetVisible(true);
 
-        float cx = _cardsLayer?.layout.width  > 10 ? _cardsLayer.layout.width  * 0.38f : 200f;
+        float cx = _cardsLayer?.layout.width > 10 ? _cardsLayer.layout.width * 0.38f : 200f;
         float cy = _cardsLayer?.layout.height > 10 ? _cardsLayer.layout.height * 0.35f : 140f;
 
         SpawnCard(new BoardCard
         {
-            Id       = "card_" + _cardCounter++,
-            Title    = title,
-            Body     = body,
+            Id = "card_" + _cardCounter++,
+            Title = title,
+            Body = body,
             Rotation = Random.Range(-12f, 12f),
         },
         new Vector2(cx + Random.Range(-80, 80), cy + Random.Range(-60, 60)));
     }
 
-    /// <summary>Call from the HUD circle-icon to show the board.</summary>
+    /// <summary>
+    /// Call from the HUD circle-icon to show/hide the board.
+    /// FIX: BringToFront() is now called on open so the clue board always
+    /// appears above every other panel (including the SQL terminal).
+    /// </summary>
     public void SetVisible(bool visible)
     {
         _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
-        if (!visible) CloseTray();
+
+        if (visible)
+            _root.BringToFront();   // ← ensures board is always on top
+        else
+            CloseTray();
     }
 
     // ── Rope Drawing ─────────────────────────────────────────────────────────
@@ -154,8 +162,8 @@ public class ClueBoardManager : MonoBehaviour
 
         var p = ctx.painter2D;
         p.strokeColor = new Color(0.72f, 0.08f, 0.08f);
-        p.lineWidth   = 3.5f;
-        p.lineCap     = LineCap.Round;
+        p.lineWidth = 3.5f;
+        p.lineCap = LineCap.Round;
 
         foreach (var rope in _ropes)
         {
@@ -163,9 +171,9 @@ public class ClueBoardManager : MonoBehaviour
             Vector2 b = CardPinLocal(rope.To.Element);
 
             // Gravity sag: control point below the midpoint, proportional to distance
-            float   dist = Vector2.Distance(a, b);
-            float   sag  = Mathf.Clamp(dist * 0.22f, 24f, 110f);
-            Vector2 cp   = new Vector2((a.x + b.x) * 0.5f, Mathf.Max(a.y, b.y) + sag);
+            float dist = Vector2.Distance(a, b);
+            float sag = Mathf.Clamp(dist * 0.22f, 24f, 110f);
+            Vector2 cp = new Vector2((a.x + b.x) * 0.5f, Mathf.Max(a.y, b.y) + sag);
 
             p.BeginPath();
             p.MoveTo(a);
@@ -197,7 +205,7 @@ public class ClueBoardManager : MonoBehaviour
         item.AddToClassList("tray-item");
 
         var t = new Label(title); t.AddToClassList("tray-item-title");
-        var b = new Label(body);  b.AddToClassList("tray-item-body");
+        var b = new Label(body); b.AddToClassList("tray-item-body");
         item.Add(t);
         item.Add(b);
 
@@ -207,14 +215,14 @@ public class ClueBoardManager : MonoBehaviour
 
     private void SpawnFromInventory(string title, string body)
     {
-        float cx = _cardsLayer.layout.width  > 10 ? _cardsLayer.layout.width  * 0.38f : 200f;
+        float cx = _cardsLayer.layout.width > 10 ? _cardsLayer.layout.width * 0.38f : 200f;
         float cy = _cardsLayer.layout.height > 10 ? _cardsLayer.layout.height * 0.35f : 140f;
 
         SpawnCard(new BoardCard
         {
-            Id       = "card_" + _cardCounter++,
-            Title    = title,
-            Body     = body,
+            Id = "card_" + _cardCounter++,
+            Title = title,
+            Body = body,
             Rotation = Random.Range(-12f, 12f),
         },
         new Vector2(cx + Random.Range(-80, 80), cy + Random.Range(-60, 60)));
@@ -238,37 +246,37 @@ public class ClueBoardManager : MonoBehaviour
         _isTrayOpen = false;
         _inventoryTray.RemoveFromClassList("inventory-tray--open");
         _inventoryTray.AddToClassList("inventory-tray--closed");
-        _inventoryBtn.RemoveFromClassList("cb-icon-btn--active");
-    }
-
-    // ── Add Note ─────────────────────────────────────────────────────────────
-
-    private void AddNote()
-    {
-        float cx = _cardsLayer.layout.width  > 10 ? _cardsLayer.layout.width  * 0.45f : 240f;
-        float cy = _cardsLayer.layout.height > 10 ? _cardsLayer.layout.height * 0.40f : 160f;
-
-        SpawnCard(new BoardCard
-        {
-            Id       = "note_" + _cardCounter++,
-            Title    = "Note",
-            Body     = "...",
-            Rotation = Random.Range(-8f, 8f),
-        },
-        new Vector2(cx + Random.Range(-50, 50), cy + Random.Range(-50, 50)));
+        _inventoryBtn?.RemoveFromClassList("cb-icon-btn--active");
     }
 
     // ── Card Spawning ────────────────────────────────────────────────────────
+
+    private void AddNote()
+    {
+        float cx = _cardsLayer.layout.width > 10 ? _cardsLayer.layout.width * 0.5f : 220f;
+        float cy = _cardsLayer.layout.height > 10 ? _cardsLayer.layout.height * 0.4f : 160f;
+
+        SpawnCard(new BoardCard
+        {
+            Id = "card_" + _cardCounter++,
+            Title = "Note",
+            Body = "…",
+            Rotation = Random.Range(-8f, 8f),
+        },
+        new Vector2(cx + Random.Range(-60, 60), cy + Random.Range(-40, 40)));
+    }
 
     private void SpawnCard(BoardCard card, Vector2 position)
     {
         var el = new VisualElement();
         el.AddToClassList("board-card");
+        el.name = card.Id;
+
         el.style.left = position.x;
-        el.style.top  = position.y;
+        el.style.top = position.y;
+
         SetCardRotation(el, card.Rotation);
 
-        // Decorative pin at top-centre
         var pin = new VisualElement();
         pin.AddToClassList("card-pin");
         el.Add(pin);
@@ -324,7 +332,7 @@ public class ClueBoardManager : MonoBehaviour
 
         if (_isRopeMode)
         {
-            _isRopeMode    = false;
+            _isRopeMode = false;
             _ropeStartCard = null;
             _actionRopeBtn.RemoveFromClassList("card-action-btn--active");
         }
@@ -332,13 +340,13 @@ public class ClueBoardManager : MonoBehaviour
 
     private void PositionActionBar(BoardCard card)
     {
-        float left  = card.Element.resolvedStyle.left;
-        float top   = card.Element.resolvedStyle.top;
+        float left = card.Element.resolvedStyle.left;
+        float top = card.Element.resolvedStyle.top;
         float width = card.Element.resolvedStyle.width;
 
         const float barWidth = 172f;
         _cardActions.style.left = Mathf.Max(4f, left + width * 0.5f - barWidth * 0.5f);
-        _cardActions.style.top  = Mathf.Max(4f, top - 38f);
+        _cardActions.style.top = Mathf.Max(4f, top - 38f);
     }
 
     private void OnBoardPointerDown(PointerDownEvent evt)
@@ -362,7 +370,7 @@ public class ClueBoardManager : MonoBehaviour
     {
         if (_selectedCard == null) return;
         var card = _selectedCard;
-        var el   = card.Element;
+        var el = card.Element;
 
         var bodyLbl = el.Q<Label>("body_" + card.Id);
         // Guard: don't open a second field if one is already open
@@ -378,8 +386,8 @@ public class ClueBoardManager : MonoBehaviour
 
         field.RegisterCallback<FocusOutEvent>(_ =>
         {
-            card.Body             = field.value;
-            bodyLbl.text          = field.value;
+            card.Body = field.value;
+            bodyLbl.text = field.value;
             bodyLbl.style.display = DisplayStyle.Flex;
             if (el.Contains(field)) el.Remove(field);
         });
@@ -388,7 +396,7 @@ public class ClueBoardManager : MonoBehaviour
     private void ActionStartRope()
     {
         if (_selectedCard == null) return;
-        _isRopeMode    = true;
+        _isRopeMode = true;
         _ropeStartCard = _selectedCard;
         _actionRopeBtn.AddToClassList("card-action-btn--active");
     }
@@ -415,7 +423,7 @@ public class ClueBoardManager : MonoBehaviour
 
         bool exists = _ropes.Any(r =>
             (r.From == _ropeStartCard && r.To == target) ||
-            (r.From == target         && r.To == _ropeStartCard));
+            (r.From == target && r.To == _ropeStartCard));
 
         if (!exists)
         {
@@ -423,7 +431,7 @@ public class ClueBoardManager : MonoBehaviour
             _ropeLayer.MarkDirtyRepaint();
         }
 
-        _isRopeMode    = false;
+        _isRopeMode = false;
         _ropeStartCard = null;
         _actionRopeBtn.RemoveFromClassList("card-action-btn--active");
     }
@@ -439,7 +447,7 @@ public class ClueBoardManager : MonoBehaviour
         if (el == null) return;
 
         _dragTarget = el;
-        _didDrag    = false;
+        _didDrag = false;
 
         var local = _cardsLayer.WorldToLocal(evt.position);
         _dragOffset = new Vector2(
@@ -456,7 +464,7 @@ public class ClueBoardManager : MonoBehaviour
 
         var pos = _cardsLayer.WorldToLocal(evt.position);
         _dragTarget.style.left = pos.x - _dragOffset.x;
-        _dragTarget.style.top  = pos.y - _dragOffset.y;
+        _dragTarget.style.top = pos.y - _dragOffset.y;
         _didDrag = true;
 
         _ropeLayer.MarkDirtyRepaint();
@@ -471,12 +479,12 @@ public class ClueBoardManager : MonoBehaviour
     {
         if (_dragTarget == null) return;
 
-        var  card    = _cards.FirstOrDefault(c => c.Element == _dragTarget);
+        var card = _cards.FirstOrDefault(c => c.Element == _dragTarget);
         bool wasDrag = _didDrag;
 
         _dragTarget.ReleasePointer(evt.pointerId);
         _dragTarget = null;
-        _didDrag    = false;
+        _didDrag = false;
 
         if (wasDrag || card == null) return;
 
@@ -486,7 +494,7 @@ public class ClueBoardManager : MonoBehaviour
             if (card == _ropeStartCard)
             {
                 // Tap same card again → cancel rope mode
-                _isRopeMode    = false;
+                _isRopeMode = false;
                 _ropeStartCard = null;
                 _actionRopeBtn.RemoveFromClassList("card-action-btn--active");
             }
