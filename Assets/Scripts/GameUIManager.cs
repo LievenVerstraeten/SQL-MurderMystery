@@ -82,9 +82,14 @@ public class GameUIManager : MonoBehaviour
         DialogueManager.Instance?.ConnectToUI(uiDocument);
         UIDatabase.Instance?.ConnectToUI(uiDocument);
 
-        // Connect mute button — finds "mute-button" in the UXML and wires it up.
-        // Add a Button named "mute-button" to your GameUI.uxml to enable this.
+        // Connect mute button
         MuteManager.Instance?.ConnectToUI(uiDocument);
+
+        // Connect text size button — cycles Normal → Large → XL
+        TextSizeManager.Instance?.ConnectToUI(uiDocument);
+
+        // Connect ERD overlay — shows database diagram on button click
+        ERDManager.Instance?.ConnectToUI(uiDocument);
 
         StartStoryIfReady();
     }

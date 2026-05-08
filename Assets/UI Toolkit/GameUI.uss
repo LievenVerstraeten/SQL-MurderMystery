@@ -902,3 +902,14 @@
 }
 .mute-icon-on  { background-image: url('project://database/Assets/Textures/Graphics/icons/UI_VolumeOn.png'); }
 .mute-icon-off { background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Muted.png'); }
+
+    .text-size-large .dialogue-text  { font-size: 18px; }
+       .text-size-large .task-label     { font-size: 18px; }
+        .text-size-large .sql-output-text{ font-size: 18px; }
+        .text-size-large .card-body      { font-size: 18px; }
+       .text-size-large .speaker-name   { font-size: 18px; }
+        .text-size-xl .dialogue-text     { font-size: 22px; }
+        .text-size-xl .task-label        { font-size: 22px; }
+        .text-size-xl .sql-output-text   { font-size: 22px; }
+        .text-size-xl .card-body         { font-size: 22px; }
+        .text-size-xl .speaker-name      { font-size: 22px; }
