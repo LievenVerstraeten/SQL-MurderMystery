@@ -9,6 +9,9 @@
                 <ui:Button name="inventory-hud-btn" class="inventory-hud-btn">
                     <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Folder.png');"/>
                 </ui:Button>
+                <ui:Button name="erd-button" class="icon-button" tooltip="View Database ERD">
+                    <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_ERD.png');"/>
+                </ui:Button>
                 <ui:Button name="tutorial-button" class="icon-button">
                     <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Question.png');"/>
                 </ui:Button>
@@ -18,6 +21,9 @@
          <ui:Button tooltip="Toggle Sound" name="mute-button" class="menu-button">
         <ui:VisualElement name="mute-icon" class="btn-icon mute-icon-on"/>
         </ui:Button>
+            <ui:Button name="text-size-button" class="icon-button" tooltip="Text Size">
+                <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_FontSize.png');"/>
+            </ui:Button>
             <ui:Button tooltip="Detective Profile" name="profile-button" class="menu-button">
                 <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Profile.png');"/>
             </ui:Button>
@@ -91,4 +97,20 @@
         <ui:Template src="ClueBoard.uxml" name="ClueBoardTemplate" />
         <ui:Instance template="ClueBoardTemplate" name="clue-board-instance" picking-mode="Ignore" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;" />
     </ui:VisualElement>
+
+    <!-- ERD OVERLAY -->
+    <ui:VisualElement name="erd-overlay" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(10,10,18,0.97); flex-direction: column;">
+            <ui:VisualElement name="erd-header" style="flex-direction: row; align-items: center; padding: 10px 16px; background-color: rgba(20,20,35,1); flex-shrink: 0;">
+                <ui:Label text="DATABASE DIAGRAM" style="flex-grow: 1; font-size: 14px; color: rgb(200,200,220); -unity-font-style: bold;" />
+                <ui:Label name="erd-zoom-label" text="100%" style="font-size: 12px; color: rgb(140,140,160); margin-right: 16px;" />
+                <ui:Button name="erd-close-btn" text="✕" style="width: 32px; height: 32px; font-size: 16px;" />
+            </ui:VisualElement>
+            <ui:VisualElement name="erd-canvas-root" style="flex-grow: 1; overflow: hidden;">
+                <ui:VisualElement name="erd-canvas" style="position: absolute; left: 0; top: 0;">
+                    <ui:VisualElement name="erd-lines-layer" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+                    <ui:VisualElement name="erd-tables-layer" style="position: absolute; left: 0; top: 0;" />
+                    <ui:VisualElement name="erd-labels-layer" style="position:absolute; left:0; top:0;" />
+               </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
 </ui:UXML>
