@@ -1,4 +1,5 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:Template src="ClueBoard.uxml" name="ClueBoardTemplate" />
     <Style src="project://database/Assets/UI%20Toolkit/GameUI.uss?fileID=7433441132597879392&amp;guid=6158622be15bce24db8d826768ef4278&amp;type=3#GameUI"/>
     <ui:VisualElement name="root" class="root" style="background-color: rgba(0, 0, 0, 0);">
         <!-- Scene background — bottommost layer, swapped by DialogueManager -->
@@ -12,7 +13,7 @@
                 <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_BurgerMenu.png');"/>
             </ui:Button>
             <ui:VisualElement class="header-right">
-<ui:Button name="erd-button" class="icon-button" tooltip="View Database ERD">
+                <ui:Button name="erd-button" class="icon-button" tooltip="View Database ERD">
                     <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_ERD.png');"/>
                 </ui:Button>
                 <ui:Button name="tutorial-button" class="icon-button">
@@ -21,16 +22,19 @@
             </ui:VisualElement>
         </ui:VisualElement>
         <ui:VisualElement name="burger-menu-dropdown" class="burger-menu-dropdown">
-         <ui:Button tooltip="Toggle Sound" name="mute-button" class="menu-button">
-        <ui:VisualElement name="mute-icon" class="btn-icon mute-icon-on"/>
-        </ui:Button>
+            <ui:Button tooltip="Toggle Sound" name="mute-button" class="menu-button">
+                <ui:VisualElement name="mute-icon" class="btn-icon mute-icon-on"/>
+            </ui:Button>
             <ui:Button name="text-size-button" class="icon-button" tooltip="Text Size">
                 <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_FontSize.png');"/>
             </ui:Button>
             <ui:Button tooltip="Detective Profile" name="profile-button" class="menu-button">
                 <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Profile.png');"/>
             </ui:Button>
-<ui:Button text="SQL" tooltip="SQL Command Line Menu" name="sql-menu-button" enabled="true" class="menu-button sql-button"/>
+            <ui:Button tooltip="Found Clues" name="clues-button" class="menu-button">
+                <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_ClueBoard.png');"/>
+            </ui:Button>
+            <ui:Button text="SQL" tooltip="SQL Command Line Menu" name="sql-menu-button" enabled="true" class="menu-button sql-button"/>
             <ui:Button text="EXIT" tooltip="Save and return to main menu" name="save-exit-button" class="menu-button save-exit-button"/>
         </ui:VisualElement>
 
@@ -40,19 +44,9 @@
             <ui:Button name="cutscene-continue" class="cutscene-continue" text="[ Continue ]" />
         </ui:VisualElement>
 
-        <!-- ═══ DEBBIE HINT POPUP ════════════════════════════════════════════ -->
-        <ui:VisualElement name="hint-popup" class="hint-popup">
-            <ui:Label name="hint-popup-speaker" class="hint-popup-speaker" text="Debbie" />
-            <ui:Label name="hint-popup-text" class="hint-popup-text" text="" />
-            <ui:Button name="hint-popup-close" class="hint-popup-close" text="Got it, cluck!" />
-        </ui:VisualElement>
-
         <!-- ═══ VN DIALOGUE LAYER ════════════════════════════════════════════ -->
         <ui:VisualElement name="dialogue-layer" class="dialogue-layer">
-            <!-- NPC portrait (left side, behind box) -->
             <ui:VisualElement name="speaker-portrait" class="speaker-portrait" picking-mode="Ignore" />
-
-            <!-- Dialogue box -->
             <ui:VisualElement name="dialogue-box" class="dialogue-box">
                 <ui:Label name="speaker-name" class="speaker-name" text="" />
                 <ui:Label name="dialogue-text" class="dialogue-text" text="" />
@@ -67,16 +61,13 @@
             <ui:Button name="close-inventory-btn" class="inventory-action-btn" text="Close" />
         </ui:VisualElement>
 
-        <!-- SQL Terminal — task banner header + two equal columns -->
+        <!-- SQL Terminal -->
         <ui:VisualElement name="sql-terminal-container" style="position: absolute; top: 103px; left: 0; right: 0; bottom: 0; flex-direction: column; display: none;">
-            <!-- Task banner — visible above the columns so the player always sees the task -->
             <ui:VisualElement name="task-banner" class="task-banner">
                 <ui:Label name="task-label" class="task-label" text="" />
                 <ui:Button name="debbie-hint-btn" class="debbie-hint-btn" text="? Ask Debbie" />
             </ui:VisualElement>
-            <!-- Two columns: input | output -->
             <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
-                <!-- Left 50%: query input -->
                 <ui:VisualElement name="querie-input-menu" class="sql-input-panel" style="flex-grow: 1; flex-basis: 0; flex-direction: column;">
                     <ui:VisualElement class="sql-input-row" style="flex-direction: row; width: 100%; height: 80px; flex-shrink: 0;">
                         <ui:TextField label="" multiline="true" placeholder-text="put your queries here" name="query-input-field" class="sql-input-field" style="flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0;"/>
@@ -84,38 +75,46 @@
                     </ui:VisualElement>
                     <ui:ListView name="command-history-list" class="sql-history-list" style="flex-grow: 1; width: 100%;"/>
                 </ui:VisualElement>
-                <!-- Right 50%: query output -->
                 <ui:VisualElement name="query-output-panel" class="sql-output-panel" style="flex-grow: 1; flex-basis: 0;">
                     <ui:ScrollView style="flex-grow: 1; width: 100%; height: 100%;">
                         <ui:Label name="query-output-text" class="sql-output-text" text="Query results will appear here." style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;"/>
                     </ui:ScrollView>
-                    <!-- Ink stamp — flashes on task pass -->
                     <ui:VisualElement name="task-stamp" class="task-stamp" picking-mode="Ignore">
                         <ui:Label name="task-stamp-label" class="task-stamp-label" text="VERIFIED" />
                     </ui:VisualElement>
                 </ui:VisualElement>
             </ui:VisualElement>
+             <!-- ═══ DEBBIE HINT POPUP ════════════════════════════════════════════ -->
+        <ui:VisualElement name="hint-popup" class="hint-popup">
+            <ui:Label name="hint-popup-speaker" class="hint-popup-speaker" text="Debbie" />
+            <ui:Label name="hint-popup-text" class="hint-popup-text" text="" />
+            <ui:Button name="hint-popup-close" class="hint-popup-close" text="Got it, cluck!" />
+        </ui:VisualElement>
         </ui:VisualElement>
 
-<!-- Black fade — topmost inside root, used for bg cross-fade transitions -->
+        <!-- Black fade -->
         <ui:VisualElement name="scene-fade" class="scene-fade" picking-mode="Ignore" />
+
+        <!-- ═══ CLUE BOARD — last child of root so BringToFront() works ═══ -->
+        <ui:Instance template="ClueBoardTemplate" name="clue-board-instance" picking-mode="Ignore" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: none;" />
+
     </ui:VisualElement>
 
     <!-- ERD OVERLAY -->
     <ui:VisualElement name="erd-overlay" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(22,14,6,0.97); flex-direction: column;">
-            <ui:VisualElement name="erd-header" style="flex-direction: row; align-items: center; padding: 10px 16px; background-color: rgba(38,24,8,1); flex-shrink: 0; border-bottom-width: 2px; border-bottom-color: rgb(140,100,28);">
-                <ui:Label text="DATABASE DIAGRAM" style="flex-grow: 1; font-size: 14px; color: rgb(140,100,28); -unity-font-style: bold;" />
-                <ui:Label name="erd-zoom-label" text="100%" style="font-size: 12px; color: rgb(100,72,22); margin-right: 16px;" />
-                <ui:Button name="erd-close-btn" text="" style="width: 44px; height: 44px; background-image: url('project://database/Assets/Textures/actual%20assets/clue%20board/Untitled39_0000s_0000_Button-Close.png?fileID=2800000&amp;guid=653d1e86460b90649bc7cbc2b3bb651b&amp;type=3#Untitled39_0000s_0000_Button-Close'); -unity-background-scale-mode: scale-to-fit; background-color: rgba(0,0,0,0); border-width: 0;" />
-            </ui:VisualElement>
-            <ui:VisualElement name="erd-canvas-root" style="flex-grow: 1; overflow: hidden;">
-                <ui:VisualElement name="erd-canvas" style="position: absolute; left: 0; top: 0;">
-                    <ui:VisualElement name="erd-lines-layer" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
-                    <ui:VisualElement name="erd-tables-layer" style="position: absolute; left: 0; top: 0;" />
-                    <ui:VisualElement name="erd-labels-layer" style="position:absolute; left:0; top:0;" />
-               </ui:VisualElement>
+        <ui:VisualElement name="erd-header" style="flex-direction: row; align-items: center; padding: 10px 16px; background-color: rgba(38,24,8,1); flex-shrink: 0; border-bottom-width: 2px; border-bottom-color: rgb(140,100,28);">
+            <ui:Label text="DATABASE DIAGRAM" style="flex-grow: 1; font-size: 14px; color: rgb(140,100,28); -unity-font-style: bold;" />
+            <ui:Label name="erd-zoom-label" text="100%" style="font-size: 12px; color: rgb(100,72,22); margin-right: 16px;" />
+            <ui:Button name="erd-close-btn" text="" style="width: 44px; height: 44px; background-image: url('project://database/Assets/Textures/actual%20assets/clue%20board/Untitled39_0000s_0000_Button-Close.png?fileID=2800000&amp;guid=653d1e86460b90649bc7cbc2b3bb651b&amp;type=3#Untitled39_0000s_0000_Button-Close'); -unity-background-scale-mode: scale-to-fit; background-color: rgba(0,0,0,0); border-width: 0;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="erd-canvas-root" style="flex-grow: 1; overflow: hidden;">
+            <ui:VisualElement name="erd-canvas" style="position: absolute; left: 0; top: 0;">
+                <ui:VisualElement name="erd-lines-layer" style="position: absolute; left: 0; top: 0; right: 0; bottom: 0;" />
+                <ui:VisualElement name="erd-tables-layer" style="position: absolute; left: 0; top: 0;" />
+                <ui:VisualElement name="erd-labels-layer" style="position: absolute; left: 0; top: 0;" />
             </ui:VisualElement>
         </ui:VisualElement>
+    </ui:VisualElement>
 
     <!-- TUTORIAL OVERLAY -->
     <ui:VisualElement name="tutorial-overlay" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(12,8,4,0.97); flex-direction: column;">
@@ -125,16 +124,11 @@
         </ui:VisualElement>
         <ui:ScrollView class="tutorial-scroll" style="flex-grow: 1;">
             <ui:VisualElement class="tutorial-content">
-
-                <!-- The Basics -->
                 <ui:Label text="THE BASICS" class="tutorial-section-title" />
                 <ui:Label text="You are a Time Hound — a detective with query abilities, sent to investigate cold cases across time." class="tutorial-body" />
                 <ui:Label text="Advance dialogue by clicking [ Continue ]. SQL task nodes must be solved before the story moves forward." class="tutorial-body" />
                 <ui:Label text="Progress saves automatically. Exit and return any time — you will resume exactly where you left off." class="tutorial-body" />
-
                 <ui:VisualElement class="tutorial-divider" />
-
-                <!-- Buttons -->
                 <ui:Label text="BUTTONS" class="tutorial-section-title" />
                 <ui:VisualElement class="tutorial-row">
                     <ui:Label text="Burger Menu" class="tutorial-key" />
@@ -152,6 +146,10 @@
                     <ui:Label text="Profile" class="tutorial-key" />
                     <ui:Label text="Your detective profile — name and active case status." class="tutorial-val" />
                 </ui:VisualElement>
+                 <ui:VisualElement class="tutorial-row">
+                    <ui:Label text="Clue Board" class="tutorial-key" />
+                    <ui:Label text="Can be used by the player to make notes on the case." class="tutorial-val" />
+                </ui:VisualElement>
                 <ui:VisualElement class="tutorial-row">
                     <ui:Label text="SQL" class="tutorial-key" />
                     <ui:Label text="Opens the Timecase — your SQL terminal for querying the case database." class="tutorial-val" />
@@ -168,47 +166,33 @@
                     <ui:Label text="? This page" class="tutorial-key" />
                     <ui:Label text="You are reading it right now." class="tutorial-val" />
                 </ui:VisualElement>
-
                 <ui:VisualElement class="tutorial-divider" />
-
-                <!-- SQL Terminal -->
                 <ui:Label text="THE TIMECASE  (SQL TERMINAL)" class="tutorial-section-title" />
                 <ui:Label text="Type your query in the left panel and press Send or Ctrl + Enter to run it." class="tutorial-body" />
                 <ui:Label text="Results appear on the right panel. A task is solved when your output matches what the case expects — a green VERIFIED stamp will appear." class="tutorial-body" />
                 <ui:Label text="Click any entry in the history list (below the input field) to recall a past command." class="tutorial-body" />
                 <ui:Label text="The task banner at the top always shows what you need to find." class="tutorial-body" />
-
                 <ui:VisualElement class="tutorial-divider" />
-
-                <!-- Hints -->
                 <ui:Label text="ASKING FOR HELP" class="tutorial-section-title" />
                 <ui:Label text="Debbie will pop up with a hint after 30 seconds of inactivity on a SQL task." class="tutorial-body" />
                 <ui:Label text="You can also click  ? Ask Debbie  in the task banner at any time for an immediate nudge." class="tutorial-body" />
-
                 <ui:VisualElement class="tutorial-divider" />
-
-                <!-- About -->
                 <ui:Label text="ABOUT THE CASE" class="tutorial-section-title" />
                 <ui:Label text="The Somerton Man was found on Somerton Beach, Adelaide, on December 1, 1948. No identification. No cause of death. A torn scrap of paper in a hidden pocket reading 'Tamam Shud' — Persian for 'It is ended.'" class="tutorial-body" />
                 <ui:Label text="The case was never officially solved. Your job is to investigate it using the Time Travel Agency's database and see how far you get." class="tutorial-body" />
-
             </ui:VisualElement>
         </ui:ScrollView>
     </ui:VisualElement>
 
     <!-- PROFILE OVERLAY -->
     <ui:VisualElement name="profile-overlay" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(6,4,2,0.92); align-items: center; justify-content: center; flex-direction: column;">
-        <!-- Board card -->
         <ui:VisualElement class="profile-card">
-            <!-- Left: avatar + name -->
             <ui:VisualElement class="profile-left">
                 <ui:VisualElement class="profile-avatar" />
                 <ui:Label name="profile-n-name" text="DETECTIVE" class="profile-avatar-name" />
                 <ui:Label text="● Active — On Case" class="profile-avatar-status" />
             </ui:VisualElement>
-            <!-- Vertical rule -->
             <ui:VisualElement class="profile-vdivider" />
-            <!-- Right: dossier info -->
             <ui:VisualElement class="profile-right">
                 <ui:Label text="DETECTIVE DOSSIER" class="profile-dossier-title" />
                 <ui:VisualElement class="profile-info-row">
@@ -236,7 +220,7 @@
                 <ui:Label text="Arrived hungry. Acquired a talking chicken somehow. Survived a locked room mid-investigation. Shows genuine aptitude for query work despite claiming otherwise. Motivation: possibly the $200,000, possibly pride." class="profile-notes-body" />
             </ui:VisualElement>
         </ui:VisualElement>
-        <!-- Dismiss -->
         <ui:Button name="profile-close-btn" text="[ Dismiss ]" class="profile-close-btn" />
     </ui:VisualElement>
+
 </ui:UXML>

@@ -280,10 +280,13 @@
     top: 8px;
     left: 89px;
     flex-direction: row;
-    background-color: rgba(0, 0, 0, 0);
-    border-width: 0;
+    background-color: rgba(24, 18, 16, 0.96);
+    border-width: 1px;
+    border-color: rgba(212, 175, 55, 0.3);
+    border-radius: 6px;
     padding: 6px 8px;
     align-items: center;
+    translate: 0 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -382,7 +385,7 @@
 
 .cutscene-text {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 15px;
+    font-size: 25px;
     color: rgb(237, 224, 220);
     white-space: normal;
     -unity-text-align: middle-center;
@@ -396,7 +399,7 @@
 
 .cutscene-continue {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 20px;
     letter-spacing: 2px;
     color: rgb(242, 202, 80);
     background-color: rgba(40, 32, 28, 0.85);
@@ -443,7 +446,7 @@
 
 .cutscene-text--subtitle {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 15px;
+    font-size: 20px;
     color: rgb(237, 224, 220);
     white-space: normal;
     -unity-text-align: middle-center;
@@ -495,8 +498,8 @@
     border-radius: 0;
     padding-top: 18px;
     padding-bottom: 18px;
-    padding-left: 32px;
-    padding-right: 22px;
+    padding-left: 48px;
+    padding-right: 32px;
 }
 
 .speaker-name {
@@ -511,7 +514,7 @@
 
 .dialogue-text {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 12px;
+    font-size: 15px;
     color: rgb(42, 28, 14);
     white-space: normal;
     flex-grow: 1;
@@ -574,7 +577,7 @@
 
 .task-label {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 10px;
+    font-size: 14px;
     color: rgb(242, 202, 80);
     white-space: normal;
     flex-grow: 1;
@@ -584,7 +587,7 @@
 
 .debbie-hint-btn {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 9px;
+    font-size: 13px;
     letter-spacing: 1px;
     color: rgb(212, 175, 55);
     background-color: rgba(0, 0, 0, 0);
@@ -626,9 +629,9 @@
 
 .hint-popup {
     position: absolute;
-    left: 310px;
-    right: 30px;
-    bottom: 350px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
     background-color: rgba(30, 24, 20, 0.99);
     border-top-color: rgb(242, 202, 80);
     border-bottom-color: rgba(212, 175, 55, 0.40);
@@ -649,7 +652,7 @@
 
 .hint-popup-speaker {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 17px;
     color: rgb(242, 202, 80);
     margin-bottom: 8px;
     letter-spacing: 2px;
@@ -657,7 +660,7 @@
 
 .hint-popup-text {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 17px;
     color: rgb(237, 224, 220);
     white-space: normal;
     flex-grow: 1;
@@ -667,7 +670,7 @@
 
 .hint-popup-close {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 9px;
+    font-size: 12px;
     letter-spacing: 1px;
     color: rgb(212, 175, 55);
     background-color: rgba(0, 0, 0, 0);
@@ -816,7 +819,7 @@
 
 .sql-input-field {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 14px;
     color: rgb(237, 224, 220);
     background-color: rgb(20, 16, 13);
     border-top-color: rgba(212, 175, 55, 0.28);
@@ -829,7 +832,7 @@
 
 .sql-input-field .unity-base-text-field__input {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 14px;
     color: rgb(237, 224, 220);
     background-color: rgb(20, 16, 13);
     border-width: 0;
@@ -849,7 +852,7 @@
     height: 100%;
     flex-shrink: 0;
     margin: 0;
-    font-size: 8px;
+    font-size: 13px;
     letter-spacing: 1px;
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     background-color: rgb(212, 175, 55);
@@ -884,7 +887,7 @@
 
 .sql-output-text {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 14px;
     color: rgb(200, 175, 130);
     white-space: normal;
 }
@@ -1176,7 +1179,7 @@
 .tutorial-title {
     flex-grow: 1;
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 14px;
+    font-size: 20px;
     color: rgb(140, 100, 28);
     -unity-font-style: bold;
     letter-spacing: 3px;
@@ -1203,7 +1206,7 @@
 
 .tutorial-section-title {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 18px;
     color: rgb(242, 202, 80);
     letter-spacing: 3px;
     -unity-font-style: bold;
@@ -1216,7 +1219,7 @@
 
 .tutorial-body {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 17px;
     color: rgb(205, 193, 172);
     white-space: normal;
     margin-bottom: 10px;
@@ -1240,7 +1243,7 @@
 
 .tutorial-key {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 10px;
+    font-size: 18px;
     color: rgb(212, 175, 55);
     -unity-font-style: bold;
     width: 130px;
@@ -1251,10 +1254,37 @@
 
 .tutorial-val {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 11px;
+    font-size: 17px;
     color: rgb(205, 193, 172);
     white-space: normal;
     flex-grow: 1;
+}
+
+/* ── Tutorial scrollbar ──────────────────────────────────────────────────── */
+.tutorial-scroll .unity-scroller--vertical {
+    background-color: rgba(20, 14, 6, 0.9);
+    border-left-color: rgba(140, 100, 28, 0.5);
+    border-left-width: 1px;
+    width: 12px;
+}
+
+.tutorial-scroll .unity-scroller__low-button,
+.tutorial-scroll .unity-scroller__high-button {
+    background-color: rgba(140, 100, 28, 0.3);
+    border-color: rgba(140, 100, 28, 0.5);
+    border-width: 1px;
+}
+
+.tutorial-scroll .unity-base-slider__tracker {
+    background-color: rgba(140, 100, 28, 0.15);
+}
+
+.tutorial-scroll .unity-base-slider__dragger {
+    background-color: rgb(140, 100, 28);
+    border-radius: 4px;
+    border-width: 0;
+    margin-left: 2px;
+    margin-right: 2px;
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -1263,30 +1293,31 @@
 
 /* Board card — uses the corkboard image as background */
 .profile-card {
-    width: 720px;
-    height: 380px;
+    width: 960px;
+    height: 580px;
     background-image: url("project://database/Assets/Textures/actual%20assets/clue%20board/example%20of%20how%20it%20looks.png?fileID=2800000&guid=c2bd95316f279694aaeada7eee7fa241&type=3#example%20of%20how%20it%20looks");
     -unity-background-scale-mode: stretch-to-fill;
     flex-direction: row;
-    padding-top: 44px;
-    padding-bottom: 44px;
-    padding-left: 52px;
-    padding-right: 52px;
+    padding-top: 80px;
+    padding-bottom: 50px;
+    padding-left: 60px;
+    padding-right: 60px;
     align-items: stretch;
 }
 
 /* Left column: avatar + name */
 .profile-left {
-    width: 170px;
+    width: 220px;
     flex-shrink: 0;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+    padding-bottom: 80px;
 }
 
 .profile-avatar {
-    width: 110px;
-    height: 110px;
+    width: 140px;
+    height: 140px;
     background-image: url("project://database/Assets/Textures/actual%20assets/profile_icon.png");
     -unity-background-scale-mode: scale-to-fit;
     border-radius: 60px;
@@ -1295,7 +1326,7 @@
 
 .profile-avatar-name {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 10px;
+    font-size: 14px;
     color: rgb(242, 202, 80);
     letter-spacing: 2px;
     -unity-font-style: bold;
@@ -1305,7 +1336,7 @@
 
 .profile-avatar-status {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 9px;
+    font-size: 14px;
     color: rgb(120, 190, 110);
     -unity-text-align: middle-center;
     letter-spacing: 1px;
@@ -1328,7 +1359,7 @@
 
 .profile-dossier-title {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 10px;
+    font-size: 16px;
     color: rgb(140, 100, 28);
     letter-spacing: 3px;
     -unity-font-style: bold;
@@ -1346,10 +1377,10 @@
 
 .profile-info-key {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 9px;
+    font-size: 15px;
     color: rgb(175, 148, 80);
     -unity-font-style: bold;
-    width: 90px;
+    width: 140px;
     flex-shrink: 0;
     letter-spacing: 1px;
     padding-top: 1px;
@@ -1357,7 +1388,7 @@
 
 .profile-info-val {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 10px;
+    font-size: 14px;
     color: rgb(210, 198, 175);
     white-space: normal;
     flex-grow: 1;
@@ -1372,7 +1403,7 @@
 
 .profile-notes-title {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 9px;
+    font-size: 15px;
     color: rgb(175, 148, 80);
     letter-spacing: 2px;
     -unity-font-style: bold;
@@ -1381,16 +1412,17 @@
 
 .profile-notes-body {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 9px;
+    font-size: 14px;
     color: rgb(190, 178, 155);
     white-space: normal;
     flex-grow: 1;
+    max-width: 85%;
 }
 
 /* Dismiss button below the card */
 .profile-close-btn {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 10px;
+    font-size: 16px;
     letter-spacing: 2px;
     color: rgb(175, 162, 148);
     background-color: rgba(0, 0, 0, 0);
@@ -1401,10 +1433,10 @@
     border-width: 1px;
     border-radius: 3px;
     margin-top: 18px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 30px;
+    padding-right: 30px;
     scale: 1;
     transition-property: scale, color, border-top-color;
     transition-duration: 0.12s, 0.12s, 0.12s;
@@ -1415,4 +1447,18 @@
     color: rgb(242, 202, 80);
     border-top-color: rgba(242, 202, 80, 0.70);
     scale: 1.05;
+}
+
+
+    /* ── Text cursor / caret — visible in all text fields ───────────────────── */
+TextInput {
+    -unity-cursor-color: rgb(242, 202, 80);
+}
+
+TextField > .unity-base-text-field__input {
+    -unity-cursor-color: rgb(242, 202, 80);
+}
+
+.card-edit-field > .unity-base-field__input {
+    -unity-cursor-color: rgb(242, 202, 80);
 }

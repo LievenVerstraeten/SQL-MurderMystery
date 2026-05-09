@@ -24,7 +24,7 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
 
-    [SerializeField] private UIDocument  uiDocument;
+    [SerializeField] private UIDocument uiDocument;
     [SerializeField] private AudioSource _dialogueAudio;
 
     private AudioClip _sfxDebbie;
@@ -42,18 +42,18 @@ public class DialogueManager : MonoBehaviour
     };
 
     private List<DialogueNode> _story;
-    private int  _nodeIndex   = 0;
+    private int _nodeIndex = 0;
     private bool _awaitingSQL = false;
-    private bool _bgFading      = false;
+    private bool _bgFading = false;
     private bool _bgInitialized = false;
 
     private VisualElement _sceneBg;
     private VisualElement _sceneFade;
 
-    private static readonly WaitForSeconds WaitFadeSwap       = new WaitForSeconds(0.05f);
-    private static readonly WaitForSeconds WaitEndCredits     = new WaitForSeconds(0.5f);
-    private static readonly WaitForSeconds WaitIdleCluck      = new WaitForSeconds(30f);
-    private static readonly WaitForSeconds WaitIdleCluckHold  = new WaitForSeconds(7f);
+    private static readonly WaitForSeconds WaitFadeSwap = new WaitForSeconds(0.05f);
+    private static readonly WaitForSeconds WaitEndCredits = new WaitForSeconds(0.5f);
+    private static readonly WaitForSeconds WaitIdleCluck = new WaitForSeconds(30f);
+    private static readonly WaitForSeconds WaitIdleCluckHold = new WaitForSeconds(7f);
 
     private static readonly string[] BgClasses =
     {
@@ -63,29 +63,29 @@ public class DialogueManager : MonoBehaviour
         "bg-neil-interview", "bg-cleland", "bg-escape-room", "bg-coffee",
     };
 
-//typewriter state here
+    //typewriter state here
     private Coroutine _typewriterCoroutine;
-    private bool      _isTyping;
-    private string    _fullText;
-    private Label     _activeTypewriterLabel;
-    private bool      _typewriterSkipGuard;
+    private bool _isTyping;
+    private string _fullText;
+    private Label _activeTypewriterLabel;
+    private bool _typewriterSkipGuard;
 
     private const float TypewriterCharsPerSec = 40f;
 
     private VisualElement _dialogueLayer;
     private VisualElement _cutsceneLayer;
     private VisualElement _speakerPortrait;
-    private Label         _speakerNameLbl;
-    private Label         _dialogueTextLbl;
-    private Button        _continueBtn;
-    private Label         _cutsceneTextLbl;
-    private Button        _cutsceneContinueBtn;
+    private Label _speakerNameLbl;
+    private Label _dialogueTextLbl;
+    private Button _continueBtn;
+    private Label _cutsceneTextLbl;
+    private Button _cutsceneContinueBtn;
     private VisualElement _taskBanner;
-    private Label         _taskLbl;
-    private Button        _debbieHintBtn;
+    private Label _taskLbl;
+    private Button _debbieHintBtn;
     private VisualElement _hintPopup;
-    private Label         _hintPopupText;
-    private Button        _hintPopupClose;
+    private Label _hintPopupText;
+    private Button _hintPopupClose;
 
     private Coroutine _idleCluckCoroutine;
 
@@ -108,8 +108,8 @@ public class DialogueManager : MonoBehaviour
 
         if (_dialogueAudio == null)
             _dialogueAudio = GetComponent<AudioSource>() ?? gameObject.AddComponent<AudioSource>();
-        _dialogueAudio.loop         = true;
-        _dialogueAudio.playOnAwake  = false;
+        _dialogueAudio.loop = true;
+        _dialogueAudio.playOnAwake = false;
         _dialogueAudio.spatialBlend = 0f; // 2D — not distance-attenuated
 
         _sfxDebbie = Resources.Load<AudioClip>("Dialogue_Debbie");
@@ -138,29 +138,29 @@ public class DialogueManager : MonoBehaviour
 
     private void BindUI(VisualElement root)
     {
-        _sceneBg   = root.Q("scene-bg");
+        _sceneBg = root.Q("scene-bg");
         _sceneFade = root.Q("scene-fade");
 
-        _dialogueLayer       = root.Q("dialogue-layer");
-        _cutsceneLayer       = root.Q("cutscene-layer");
-        _speakerPortrait     = root.Q("speaker-portrait");
-        _speakerNameLbl      = root.Q<Label>("speaker-name");
-        _dialogueTextLbl     = root.Q<Label>("dialogue-text");
-        _continueBtn         = root.Q<Button>("continue-btn");
-        _cutsceneTextLbl     = root.Q<Label>("cutscene-text");
+        _dialogueLayer = root.Q("dialogue-layer");
+        _cutsceneLayer = root.Q("cutscene-layer");
+        _speakerPortrait = root.Q("speaker-portrait");
+        _speakerNameLbl = root.Q<Label>("speaker-name");
+        _dialogueTextLbl = root.Q<Label>("dialogue-text");
+        _continueBtn = root.Q<Button>("continue-btn");
+        _cutsceneTextLbl = root.Q<Label>("cutscene-text");
         _cutsceneContinueBtn = root.Q<Button>("cutscene-continue");
-        _taskBanner          = root.Q("task-banner");
-        _taskLbl             = root.Q<Label>("task-label");
-        _debbieHintBtn       = root.Q<Button>("debbie-hint-btn");
+        _taskBanner = root.Q("task-banner");
+        _taskLbl = root.Q<Label>("task-label");
+        _debbieHintBtn = root.Q<Button>("debbie-hint-btn");
 
-        _hintPopup      = root.Q("hint-popup");
-        _hintPopupText  = root.Q<Label>("hint-popup-text");
+        _hintPopup = root.Q("hint-popup");
+        _hintPopupText = root.Q<Label>("hint-popup-text");
         _hintPopupClose = root.Q<Button>("hint-popup-close");
 
-        if (_continueBtn         != null) _continueBtn.clicked         += OnContinueClicked;
+        if (_continueBtn != null) _continueBtn.clicked += OnContinueClicked;
         if (_cutsceneContinueBtn != null) _cutsceneContinueBtn.clicked += OnContinueClicked;
-        if (_debbieHintBtn       != null) _debbieHintBtn.clicked       += OnDebbieHintClicked;
-        if (_hintPopupClose      != null) _hintPopupClose.clicked      += CloseHintPopup;
+        if (_debbieHintBtn != null) _debbieHintBtn.clicked += OnDebbieHintClicked;
+        if (_hintPopupClose != null) _hintPopupClose.clicked += CloseHintPopup;
 
         // Clicking anywhere on the dialogue layer or cutscene layer advances the story
         _dialogueLayer?.RegisterCallback<ClickEvent>(_ => OnContinueClicked());
@@ -169,10 +169,10 @@ public class DialogueManager : MonoBehaviour
 
     private void UnbindUI()
     {
-        if (_continueBtn         != null) _continueBtn.clicked         -= OnContinueClicked;
+        if (_continueBtn != null) _continueBtn.clicked -= OnContinueClicked;
         if (_cutsceneContinueBtn != null) _cutsceneContinueBtn.clicked -= OnContinueClicked;
-        if (_debbieHintBtn       != null) _debbieHintBtn.clicked       -= OnDebbieHintClicked;
-        if (_hintPopupClose      != null) _hintPopupClose.clicked      -= CloseHintPopup;
+        if (_debbieHintBtn != null) _debbieHintBtn.clicked -= OnDebbieHintClicked;
+        if (_hintPopupClose != null) _hintPopupClose.clicked -= CloseHintPopup;
     }
 
     /// <summary>
@@ -191,10 +191,10 @@ public class DialogueManager : MonoBehaviour
 
     public void StartStory(List<DialogueNode> story, int startIndex = 0)
     {
-        _story       = story;
-        _nodeIndex   = startIndex;
+        _story = story;
+        _nodeIndex = startIndex;
         _awaitingSQL = false;
-        _bgFading    = false;
+        _bgFading = false;
         _bgInitialized = false;
 
         // Restore the correct background when resuming a saved game mid-story
@@ -204,7 +204,7 @@ public class DialogueManager : MonoBehaviour
             {
                 var n = story[i];
                 string key = n.Type == NodeType.Background ? n.BackgroundKey :
-                             n.Type == NodeType.Cutscene   ? n.BackgroundKey : null;
+                             n.Type == NodeType.Cutscene ? n.BackgroundKey : null;
                 if (key != null)
                 {
                     ApplyBackgroundClass(key);
@@ -218,7 +218,7 @@ public class DialogueManager : MonoBehaviour
         ShowNode();
     }
 
-    public int  GetNodeIndex() => _nodeIndex;
+    public int GetNodeIndex() => _nodeIndex;
     public void SetNodeIndex(int index) { _nodeIndex = index; }
 
     private void ShowNode()
@@ -237,12 +237,12 @@ public class DialogueManager : MonoBehaviour
 
         switch (node.Type)
         {
-            case NodeType.Dialogue:     ShowDialogue(node);     break;
-            case NodeType.SQLTask:      ShowTask(node);         break;
-            case NodeType.DemoSQL:      RunDemo(node);          break;
-            case NodeType.Cutscene:     ShowCutscene(node);     break;
+            case NodeType.Dialogue: ShowDialogue(node); break;
+            case NodeType.SQLTask: ShowTask(node); break;
+            case NodeType.DemoSQL: RunDemo(node); break;
+            case NodeType.Cutscene: ShowCutscene(node); break;
             case NodeType.InventoryAdd: TriggerInventory(node); break;
-            case NodeType.Background:   StartCoroutine(CrossFadeBackground(node.BackgroundKey)); break;
+            case NodeType.Background: StartCoroutine(CrossFadeBackground(node.BackgroundKey)); break;
         }
     }
 
@@ -251,12 +251,12 @@ public class DialogueManager : MonoBehaviour
         // Close the terminal in case a Demo node left it open
         UIDatabase.Instance?.CloseTerminal();
 
-        SetLayerVisible(_dialogueLayer,  true);
-        SetLayerVisible(_cutsceneLayer,  false);
-        SetLayerVisible(_taskBanner,     false);
-        SetButtonVisible(_continueBtn,   true);
+        SetLayerVisible(_dialogueLayer, true);
+        SetLayerVisible(_cutsceneLayer, false);
+        SetLayerVisible(_taskBanner, false);
+        SetButtonVisible(_continueBtn, true);
 
-        if (_speakerNameLbl  != null) _speakerNameLbl.text = node.Speaker;
+        if (_speakerNameLbl != null) _speakerNameLbl.text = node.Speaker;
         if (_dialogueTextLbl != null) StartTypewriter(_dialogueTextLbl, node.Text, node.Speaker);
 
         if (_speakerPortrait != null)
@@ -277,11 +277,11 @@ public class DialogueManager : MonoBehaviour
                 // Default portrait per speaker
                 portraitClass = node.Speaker switch
                 {
-                    "Debbie"    => "portrait-debbie",
-                    "Jessica"   => "portrait-jessica",
-                    "Neil"      => "portrait-neil",
+                    "Debbie" => "portrait-debbie",
+                    "Jessica" => "portrait-jessica",
+                    "Neil" => "portrait-neil",
                     "TimeHound" => "portrait-timehound",
-                    _           => node.Speaker == playerName ? "portrait-detective" : null,
+                    _ => node.Speaker == playerName ? "portrait-detective" : null,
                 };
             }
 
@@ -293,10 +293,54 @@ public class DialogueManager : MonoBehaviour
     private void ShowTask(DialogueNode node)
     {
         SkipTypewriter();
-        SetLayerVisible(_taskBanner,   true);
+        SetLayerVisible(_taskBanner, true);
         SetButtonVisible(_continueBtn, false);
 
         if (_taskLbl != null) _taskLbl.text = node.TaskLabel;
+
+        // Keep the dialogue layer and portrait visible during SQL tasks.
+        // When resuming from a save, the last dialogue node before this task
+        // is looked up so the speaker and portrait are correctly restored.
+        SetLayerVisible(_dialogueLayer, true);
+
+        // Find the last Dialogue node before this task to restore speaker/portrait
+        for (int i = _nodeIndex - 1; i >= 0; i--)
+        {
+            var prev = _story[i];
+            if (prev.Type == NodeType.Dialogue)
+            {
+                // Restore speaker name
+                if (_speakerNameLbl != null)
+                    _speakerNameLbl.text = prev.Speaker;
+
+                // Restore dialogue text
+                if (_dialogueTextLbl != null)
+                    _dialogueTextLbl.text = prev.Text;
+
+                // Restore portrait
+                if (_speakerPortrait != null)
+                {
+                    foreach (var cls in PortraitClasses)
+                        _speakerPortrait.RemoveFromClassList(cls);
+
+                    string playerName = GameManager.Instance?.ActiveProfileName ?? "";
+                    string portraitClass = prev.Portrait ?? prev.Speaker switch
+                    {
+                        "Debbie" => "portrait-debbie",
+                        "Jessica" => "portrait-jessica",
+                        "Neil" => "portrait-neil",
+                        "TimeHound" => "portrait-timehound",
+                        _ => prev.Speaker == playerName ? "portrait-detective" : null,
+                    };
+                    if (portraitClass != null)
+                        _speakerPortrait.AddToClassList(portraitClass);
+                }
+
+                // Hide the continue button — player must solve the SQL task
+                SetButtonVisible(_continueBtn, false);
+                break;
+            }
+        }
 
         if (UIDatabase.Instance != null) UIDatabase.Instance.OpenTerminal();
         _awaitingSQL = true;
@@ -317,9 +361,12 @@ public class DialogueManager : MonoBehaviour
 
     private void ShowCutscene(DialogueNode node)
     {
+        // Close the burger menu so it doesn't float above the cutscene
+        GameUIManager.Instance?.ForceCloseBurgerMenu();
+
         SetLayerVisible(_dialogueLayer, false);
         SetLayerVisible(_cutsceneLayer, true);
-        SetLayerVisible(_taskBanner,    false);
+        SetLayerVisible(_taskBanner, false);
 
         // Clean up any image classes from a previous image cutscene
         if (_cutsceneLayer != null)
@@ -348,7 +395,7 @@ public class DialogueManager : MonoBehaviour
         }
 
         if (_cutsceneTextLbl != null) StartTypewriter(_cutsceneTextLbl, node.CutsceneText);
-        if (_cutsceneLayer   != null)
+        if (_cutsceneLayer != null)
             _cutsceneLayer.style.backgroundColor = new StyleColor(node.CutsceneColor);
 
         if (!string.IsNullOrEmpty(node.BackgroundKey))
@@ -365,7 +412,7 @@ public class DialogueManager : MonoBehaviour
     {
         SetLayerVisible(_dialogueLayer, false);
         SetLayerVisible(_cutsceneLayer, false);
-        SetLayerVisible(_taskBanner,    false);
+        SetLayerVisible(_taskBanner, false);
     }
 
     private void OnContinueClicked()
@@ -390,9 +437,15 @@ public class DialogueManager : MonoBehaviour
         _nodeIndex++;
         ShowNode();
 
-        // Auto-save story progress
-        if (GameManager.Instance != null)
+        // Save exact dialogue position so player resumes mid-story on load
+        if (GameManager.Instance != null && CaseManager.Instance?.ActiveCase != null)
+        {
+            CaseManager.Instance.SaveDialogueNode(
+                GameManager.Instance.ActiveProfileId,
+                CaseManager.Instance.ActiveCase.CaseId,
+                _nodeIndex);
             GameManager.Instance.AutoSave("story_advance");
+        }
     }
 
     private void OnSQLValidated(TaskValidator.ValidationResult result)
@@ -404,7 +457,7 @@ public class DialogueManager : MonoBehaviour
             _awaitingSQL = false;
             if (_idleCluckCoroutine != null) { StopCoroutine(_idleCluckCoroutine); _idleCluckCoroutine = null; }
             CloseHintPopup();
-            SetLayerVisible(_taskBanner,   false);
+            SetLayerVisible(_taskBanner, false);
             SetButtonVisible(_continueBtn, true);
             UIDatabase.Instance?.CloseTerminal();
             Advance();
@@ -426,8 +479,8 @@ public class DialogueManager : MonoBehaviour
         string hint = tasks[taskIdx].Hint;
         if (string.IsNullOrEmpty(hint)) hint = "Trust the data. Read the task label carefully.";
 
-        if (_hintPopupText  != null) _hintPopupText.text = $"Cluck! {hint}";
-        if (_hintPopup      != null) _hintPopup.style.display = DisplayStyle.Flex;
+        if (_hintPopupText != null) _hintPopupText.text = $"Cluck! {hint}";
+        if (_hintPopup != null) _hintPopup.style.display = DisplayStyle.Flex;
     }
 
     private void CloseHintPopup()
@@ -435,12 +488,15 @@ public class DialogueManager : MonoBehaviour
         if (_hintPopup != null) _hintPopup.style.display = DisplayStyle.None;
     }
 
+    /// <summary>Public version — called when clue board opens so hint doesn't float over it.</summary>
+    public void CloseHintPopupPublic() => CloseHintPopup();
+
     private void StartTypewriter(Label label, string text, string speaker = "")
     {
         if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
-        _fullText              = text;
+        _fullText = text;
         _activeTypewriterLabel = label;
-        _typewriterSkipGuard   = false;
+        _typewriterSkipGuard = false;
 
         PlayTypewriterSound(speaker);
 
@@ -449,16 +505,16 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator TypewriterRoutine(Label label, string text)
     {
-        _isTyping  = true;
+        _isTyping = true;
         label.text = "";
-        var delay  = new WaitForSeconds(1f / TypewriterCharsPerSec);
+        var delay = new WaitForSeconds(1f / TypewriterCharsPerSec);
         for (int i = 0; i < text.Length; i++)
         {
             label.text = text[..(i + 1)] + "|";
             yield return delay;
         }
-        label.text           = text;
-        _isTyping            = false;
+        label.text = text;
+        _isTyping = false;
         _typewriterCoroutine = null;
         _dialogueAudio?.Stop();
     }
@@ -467,7 +523,7 @@ public class DialogueManager : MonoBehaviour
     {
         if (_typewriterCoroutine != null) StopCoroutine(_typewriterCoroutine);
         _typewriterCoroutine = null;
-        _isTyping            = false;
+        _isTyping = false;
         if (_activeTypewriterLabel != null)
             _activeTypewriterLabel.text = _fullText;
         _dialogueAudio?.Stop();
@@ -475,25 +531,43 @@ public class DialogueManager : MonoBehaviour
 
     private IEnumerator IdleCluckRoutine()
     {
+        // FLOW:
+        // 1. Wait 30 seconds (timer runs regardless of terminal open/closed)
+        // 2. When 30s elapsed, mark hint as pending
+        // 3. As soon as terminal opens (or if already open), show hint immediately
+        // 4. Hint stays visible for 7 seconds regardless of terminal open/closed
+        // 5. Close hint, reset 30s timer, repeat
+
         while (_awaitingSQL)
         {
+            // ── Step 1: Wait 30 seconds regardless of terminal state ──────────
             yield return WaitIdleCluck;
             if (!_awaitingSQL) break;
 
-            // Don't stack on top of a player-opened hint
-            bool hintOpen = _hintPopup != null &&
-                            _hintPopup.style.display == DisplayStyle.Flex;
-            if (!hintOpen)
+            // ── Step 2: Hint is now pending — wait for terminal to be open ────
+            // If terminal already open, show immediately.
+            // If closed, wait until player opens it.
+            while (_awaitingSQL)
             {
-                string line = IdleClucks[Random.Range(0, IdleClucks.Length)];
-                line = line.Replace("{name}", GameManager.Instance != null ? GameManager.Instance.ActiveProfileName : "detective");
-                if (_hintPopupText != null) _hintPopupText.text = line;
-                if (_hintPopup     != null) _hintPopup.style.display = DisplayStyle.Flex;
-
-                yield return WaitIdleCluckHold;
-                if (!_awaitingSQL) { CloseHintPopup(); break; }
-                CloseHintPopup();
+                bool terminalOpen = UIDatabase.Instance != null && UIDatabase.Instance.IsTerminalOpen();
+                bool clueBoardOpen = ClueBoardManager.Instance != null && ClueBoardManager.Instance.IsVisible();
+                if (terminalOpen && !clueBoardOpen) break;
+                yield return null;
             }
+            if (!_awaitingSQL) break;
+
+            // ── Step 3: Show hint ─────────────────────────────────────────────
+            string line = IdleClucks[Random.Range(0, IdleClucks.Length)];
+            line = line.Replace("{name}", GameManager.Instance != null
+                ? GameManager.Instance.ActiveProfileName : "detective");
+            if (_hintPopupText != null) _hintPopupText.text = line;
+            if (_hintPopup != null) _hintPopup.style.display = DisplayStyle.Flex;
+
+            // ── Step 4: Keep hint for 7 seconds regardless of terminal state ──
+            yield return WaitIdleCluckHold;
+
+            // ── Step 5: Close and reset ───────────────────────────────────────
+            CloseHintPopup();
         }
         _idleCluckCoroutine = null;
     }

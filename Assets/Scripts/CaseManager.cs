@@ -18,8 +18,8 @@ public class CaseManager : MonoBehaviour
     // ─── Singleton ────────────────────────────────────────────────────────────
     public static CaseManager Instance { get; private set; }
 
-    public CaseDefinition        ActiveCase { get; private set; }
-    public List<CaseDefinition>  AllCases   { get; private set; }
+    public CaseDefinition ActiveCase { get; private set; }
+    public List<CaseDefinition> AllCases { get; private set; }
 
     void Awake()
     {
@@ -42,17 +42,17 @@ public class CaseManager : MonoBehaviour
         //          JOIN, LIKE, ORDER BY, UPDATE, COUNT/GROUP BY, NULL,
         //          sqlite_master, UNION, computed columns / aliases, hashing concept
         var case1 = new CaseDefinition(
-            caseId:         "case_01",
-            title:          "Murder of the Somerton Man",
-            overview:       "A body was found on Somerton Beach. No ID. No cause of death.",
-            timeline:       "1948, 1st of December",
-            reward:         200000,
-            difficulty:     "Beginner",
+            caseId: "case_01",
+            title: "Murder of the Somerton Man",
+            overview: "A body was found on Somerton Beach. No ID. No cause of death.",
+            timeline: "1948, 1st of December",
+            reward: 200000,
+            difficulty: "Beginner",
             requiredCaseId: "",
-            isReady:        true
+            isReady: true
         );
         case1.ConclusionType = "inconclusive";
-        case1.EpilogueText   =
+        case1.EpilogueText =
             "The Somerton Man was found on December 1, 1948. He was never officially identified. " +
             "The cause of his death was never confirmed. The cipher in the Rubaiyat was never decoded. " +
             "Jessica Thomson died in 2007 without ever publicly revealing what she knew. " +
@@ -188,22 +188,23 @@ public class CaseManager : MonoBehaviour
             "Show everyone listed in the hounds table.",
             "Use SELECT * FROM hounds; to read every row.",
             "SELECT", anyOrder: true);
-        t0.ExpectedRows.Add(new Dictionary<string, string> { {"id","01"}, {"name","Jerry"} });
+        t0.ExpectedRows.Add(new Dictionary<string, string> { { "id", "01" }, { "name", "Jerry" } });
         case1.Tasks.Add(t0);
 
         // Task 1 — INSERT yourself into hounds (free write)
         case1.Tasks.Add(new SQLTask(
             "Add your name to the hounds table using INSERT INTO.",
             "INSERT INTO hounds (id, name) VALUES ('03', 'YourName');",
-            "INSERT") { RequiredTargetTable = "hounds" });
+            "INSERT")
+        { RequiredTargetTable = "hounds" });
 
         // Task 2 — SELECT * FROM hounds  (result: 3 rows; partial match on Jerry+Debbie)
         var t2 = new SQLTask(
             "Verify all three hounds are now listed.",
             "SELECT * FROM hounds;",
             "SELECT", anyOrder: true, partialMatch: true);
-        t2.ExpectedRows.Add(new Dictionary<string, string> { {"id","01"}, {"name","Jerry"} });
-        t2.ExpectedRows.Add(new Dictionary<string, string> { {"id","02"}, {"name","Debbie"} });
+        t2.ExpectedRows.Add(new Dictionary<string, string> { { "id", "01" }, { "name", "Jerry" } });
+        t2.ExpectedRows.Add(new Dictionary<string, string> { { "id", "02" }, { "name", "Debbie" } });
         case1.Tasks.Add(t2);
 
         // Task 3 — SELECT * FROM logfile
@@ -219,21 +220,23 @@ public class CaseManager : MonoBehaviour
         case1.Tasks.Add(new SQLTask(
             "Create a table called clues with columns: id, name, type, details, found_at.",
             "CREATE TABLE clues (id TEXT PRIMARY KEY, name TEXT, type TEXT, details TEXT, found_at TEXT);",
-            "CREATE TABLE") { RequiredTargetTable = "clues" });
+            "CREATE TABLE")
+        { RequiredTargetTable = "clues" });
 
         // Task 5 — INSERT CL002 Tamam Shud (free write)
         case1.Tasks.Add(new SQLTask(
             "Insert the Tamam Shud clue into the clues table.",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL002', ...);",
-            "INSERT") { RequiredTargetTable = "clues" });
+            "INSERT")
+        { RequiredTargetTable = "clues" });
 
         // Task 6 — SELECT * FROM clues (2 rows after CL001 demo + CL002 player insert)
         var t6 = new SQLTask(
             "Verify both clues are in the table.",
             "SELECT * FROM clues;",
             "SELECT", anyOrder: true, partialMatch: true);
-        t6.ExpectedRows.Add(new Dictionary<string, string> { {"id","CL001"}, {"name","The Body"} });
-        t6.ExpectedRows.Add(new Dictionary<string, string> { {"id","CL002"}, {"name","Tamam Shud"} });
+        t6.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CL001" }, { "name", "The Body" } });
+        t6.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CL002" }, { "name", "Tamam Shud" } });
         case1.Tasks.Add(t6);
 
         // Task 7 — SELECT * FROM witnesses (4 rows)
@@ -241,10 +244,10 @@ public class CaseManager : MonoBehaviour
             "Show all data from the witnesses table.",
             "SELECT * FROM witnesses;",
             "SELECT", anyOrder: true);
-        t7.ExpectedRows.Add(new Dictionary<string, string> { {"id","W001"}, {"name","John Lyons"} });
-        t7.ExpectedRows.Add(new Dictionary<string, string> { {"id","W002"}, {"name","Neil Hamilton"} });
-        t7.ExpectedRows.Add(new Dictionary<string, string> { {"id","W003"}, {"name","Jessica Thomson"} });
-        t7.ExpectedRows.Add(new Dictionary<string, string> { {"id","W004"}, {"name","John Burton Cleland"} });
+        t7.ExpectedRows.Add(new Dictionary<string, string> { { "id", "W001" }, { "name", "John Lyons" } });
+        t7.ExpectedRows.Add(new Dictionary<string, string> { { "id", "W002" }, { "name", "Neil Hamilton" } });
+        t7.ExpectedRows.Add(new Dictionary<string, string> { { "id", "W003" }, { "name", "Jessica Thomson" } });
+        t7.ExpectedRows.Add(new Dictionary<string, string> { { "id", "W004" }, { "name", "John Burton Cleland" } });
         case1.Tasks.Add(t7);
 
         // Task 8 — JOIN witnesses + contacts
@@ -252,10 +255,10 @@ public class CaseManager : MonoBehaviour
             "Join the witnesses table with contacts to get each witness's name and address.",
             "SELECT witnesses.name, contacts.address, contacts.phone FROM witnesses JOIN contacts ON witnesses.contact_id = contacts.id;",
             "JOIN", anyOrder: true);
-        t8.ExpectedRows.Add(new Dictionary<string, string> { {"name","John Lyons"},           {"address","40 Moseley Street, Glenelg"},        {"phone","unlisted"} });
-        t8.ExpectedRows.Add(new Dictionary<string, string> { {"name","Neil Hamilton"},        {"address","12 Jetty Road, Glenelg"},             {"phone","unlisted"} });
-        t8.ExpectedRows.Add(new Dictionary<string, string> { {"name","Jessica Thomson"},      {"address","90A Moseley Street, Glenelg"},        {"phone","X3239"} });
-        t8.ExpectedRows.Add(new Dictionary<string, string> { {"name","John Burton Cleland"}, {"address","University of Adelaide, North Tce"}, {"phone","unlisted"} });
+        t8.ExpectedRows.Add(new Dictionary<string, string> { { "name", "John Lyons" }, { "address", "40 Moseley Street, Glenelg" }, { "phone", "unlisted" } });
+        t8.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Neil Hamilton" }, { "address", "12 Jetty Road, Glenelg" }, { "phone", "unlisted" } });
+        t8.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Jessica Thomson" }, { "address", "90A Moseley Street, Glenelg" }, { "phone", "X3239" } });
+        t8.ExpectedRows.Add(new Dictionary<string, string> { { "name", "John Burton Cleland" }, { "address", "University of Adelaide, North Tce" }, { "phone", "unlisted" } });
         case1.Tasks.Add(t8);
 
         // Task 9 — SELECT * FROM cipher_fragments (6 rows)
@@ -263,12 +266,12 @@ public class CaseManager : MonoBehaviour
             "Show all rows from the cipher_fragments table.",
             "SELECT * FROM cipher_fragments;",
             "SELECT", anyOrder: true);
-        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF001"}, {"fragment","WRGOABABD"} });
-        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF002"}, {"fragment","MLIAOI"} });
-        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF003"}, {"fragment","WTMTSMSA"} });
-        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF004"}, {"fragment","ITTMTSAS"} });
-        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF005"}, {"fragment","AIAQC"} });
-        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF006"}, {"fragment","TAMAM SHUD"} });
+        t9.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF001" }, { "fragment", "WRGOABABD" } });
+        t9.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF002" }, { "fragment", "MLIAOI" } });
+        t9.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF003" }, { "fragment", "WTMTSMSA" } });
+        t9.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF004" }, { "fragment", "ITTMTSAS" } });
+        t9.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF005" }, { "fragment", "AIAQC" } });
+        t9.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF006" }, { "fragment", "TAMAM SHUD" } });
         case1.Tasks.Add(t9);
 
         // Task 10 — SELECT WHERE decoded = 0 (5 rows)
@@ -276,11 +279,11 @@ public class CaseManager : MonoBehaviour
             "Show only cipher fragments that have not been decoded (decoded = 0).",
             "SELECT * FROM cipher_fragments WHERE decoded = 0;",
             "WHERE", anyOrder: true);
-        t10.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF001"} });
-        t10.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF002"} });
-        t10.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF003"} });
-        t10.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF004"} });
-        t10.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF005"} });
+        t10.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF001" } });
+        t10.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF002" } });
+        t10.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF003" } });
+        t10.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF004" } });
+        t10.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF005" } });
         case1.Tasks.Add(t10);
 
         // Task 11 — SELECT WHERE fragment LIKE '%TSM%' (1 row)
@@ -288,7 +291,7 @@ public class CaseManager : MonoBehaviour
             "Find fragments that contain the pattern 'TSM' using LIKE.",
             "SELECT * FROM cipher_fragments WHERE fragment LIKE '%TSM%';",
             "LIKE");
-        t11.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF003"}, {"fragment","WTMTSMSA"} });
+        t11.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CF003" }, { "fragment", "WTMTSMSA" } });
         case1.Tasks.Add(t11);
 
         // Task 12 — SELECT witnesses WHERE interviewed = 0 ORDER BY name ASC (all 4)
@@ -296,43 +299,47 @@ public class CaseManager : MonoBehaviour
             "Show all witnesses not yet interviewed, ordered alphabetically by name.",
             "SELECT name, role FROM witnesses WHERE interviewed = 0 ORDER BY name ASC;",
             "ORDER BY");
-        t12.ExpectedRows.Add(new Dictionary<string, string> { {"name","Jessica Thomson"},      {"role","Linked to the Rubaiyat"} });
-        t12.ExpectedRows.Add(new Dictionary<string, string> { {"name","John Burton Cleland"}, {"role","Examined the Tamam Shud"} });
-        t12.ExpectedRows.Add(new Dictionary<string, string> { {"name","John Lyons"},           {"role","Found the body"} });
-        t12.ExpectedRows.Add(new Dictionary<string, string> { {"name","Neil Hamilton"},        {"role","Saw man alive night before"} });
+        t12.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Jessica Thomson" }, { "role", "Linked to the Rubaiyat" } });
+        t12.ExpectedRows.Add(new Dictionary<string, string> { { "name", "John Burton Cleland" }, { "role", "Examined the Tamam Shud" } });
+        t12.ExpectedRows.Add(new Dictionary<string, string> { { "name", "John Lyons" }, { "role", "Found the body" } });
+        t12.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Neil Hamilton" }, { "role", "Saw man alive night before" } });
         case1.Tasks.Add(t12);
 
         // Task 13 — UPDATE Jessica Thomson interviewed = 1 (free write)
         case1.Tasks.Add(new SQLTask(
             "Update Jessica Thomson's interviewed status to 1.",
             "UPDATE witnesses SET interviewed = 1 WHERE name = 'Jessica Thomson';",
-            "UPDATE") { RequiredTargetTable = "witnesses" });
+            "UPDATE")
+        { RequiredTargetTable = "witnesses" });
 
         // Task 14 — UPDATE Neil Hamilton interviewed = 1 (free write)
         case1.Tasks.Add(new SQLTask(
             "Update Neil Hamilton's interviewed status to 1.",
             "UPDATE witnesses SET interviewed = 1 WHERE name = 'Neil Hamilton';",
-            "UPDATE") { RequiredTargetTable = "witnesses" });
+            "UPDATE")
+        { RequiredTargetTable = "witnesses" });
 
         // Task 15 — INSERT CL003 Neil Hamilton Testimony (free write)
         case1.Tasks.Add(new SQLTask(
             "Insert Neil Hamilton's testimony as a new clue (CL003) into the clues table.",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL003', 'Neil Hamilton Testimony', 'Testimony', '...', '1948-12-02 10:00:00');",
-            "INSERT") { RequiredTargetTable = "clues" });
+            "INSERT")
+        { RequiredTargetTable = "clues" });
 
         // Task 16 — UPDATE John Burton Cleland interviewed = 1 (free write)
         case1.Tasks.Add(new SQLTask(
             "Update John Burton Cleland's interviewed status to 1.",
             "UPDATE witnesses SET interviewed = 1 WHERE name = 'John Burton Cleland';",
-            "UPDATE") { RequiredTargetTable = "witnesses" });
+            "UPDATE")
+        { RequiredTargetTable = "witnesses" });
 
         // Task 17 — COUNT + GROUP BY clues type
         var t17 = new SQLTask(
             "Count how many clues you have per type using COUNT and GROUP BY.",
             "SELECT type, COUNT(*) AS total FROM clues GROUP BY type;",
             "GROUP BY", anyOrder: true);
-        t17.ExpectedRows.Add(new Dictionary<string, string> { {"type","Physical"},  {"total","2"} });
-        t17.ExpectedRows.Add(new Dictionary<string, string> { {"type","Testimony"}, {"total","1"} });
+        t17.ExpectedRows.Add(new Dictionary<string, string> { { "type", "Physical" }, { "total", "2" } });
+        t17.ExpectedRows.Add(new Dictionary<string, string> { { "type", "Testimony" }, { "total", "1" } });
         case1.Tasks.Add(t17);
 
         // Task 18 — SELECT name FROM sqlite_master WHERE type='table' (partial match)
@@ -340,7 +347,7 @@ public class CaseManager : MonoBehaviour
             "List all tables available in the local database using sqlite_master.",
             "SELECT name FROM sqlite_master WHERE type = 'table';",
             "sqlite_master", partialMatch: true);
-        t18.ExpectedRows.Add(new Dictionary<string, string> { {"name","hounds"} });
+        t18.ExpectedRows.Add(new Dictionary<string, string> { { "name", "hounds" } });
         case1.Tasks.Add(t18);
 
         // Task 19 — SELECT * FROM suspects (4 rows)
@@ -348,10 +355,10 @@ public class CaseManager : MonoBehaviour
             "Show all suspects in the database.",
             "SELECT * FROM suspects;",
             "SELECT", anyOrder: true);
-        t19.ExpectedRows.Add(new Dictionary<string, string> { {"id","S001"}, {"name","Jessica Thomson"} });
-        t19.ExpectedRows.Add(new Dictionary<string, string> { {"id","S002"}, {"name","Unknown Soviet Agent"} });
-        t19.ExpectedRows.Add(new Dictionary<string, string> { {"id","S003"}, {"name","Alfred Boxall"} });
-        t19.ExpectedRows.Add(new Dictionary<string, string> { {"id","S004"}, {"name","The Rival Hound"} });
+        t19.ExpectedRows.Add(new Dictionary<string, string> { { "id", "S001" }, { "name", "Jessica Thomson" } });
+        t19.ExpectedRows.Add(new Dictionary<string, string> { { "id", "S002" }, { "name", "Unknown Soviet Agent" } });
+        t19.ExpectedRows.Add(new Dictionary<string, string> { { "id", "S003" }, { "name", "Alfred Boxall" } });
+        t19.ExpectedRows.Add(new Dictionary<string, string> { { "id", "S004" }, { "name", "The Rival Hound" } });
         case1.Tasks.Add(t19);
 
         // Task 20 — JOIN suspects + clues WHERE linked_clue = 'CL002'
@@ -359,8 +366,8 @@ public class CaseManager : MonoBehaviour
             "Join suspects with clues to find who is linked to the Tamam Shud (CL002).",
             "SELECT suspects.name, suspects.motive, clues.name AS clue_name FROM suspects JOIN clues ON suspects.linked_clue = clues.id WHERE suspects.linked_clue = 'CL002';",
             "JOIN", anyOrder: true);
-        t20.ExpectedRows.Add(new Dictionary<string, string> { {"name","Jessica Thomson"}, {"clue_name","Tamam Shud"} });
-        t20.ExpectedRows.Add(new Dictionary<string, string> { {"name","Alfred Boxall"},   {"clue_name","Tamam Shud"} });
+        t20.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Jessica Thomson" }, { "clue_name", "Tamam Shud" } });
+        t20.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Alfred Boxall" }, { "clue_name", "Tamam Shud" } });
         case1.Tasks.Add(t20);
 
         // Task 21 — SELECT * FROM passwords (3 rows)
@@ -368,9 +375,9 @@ public class CaseManager : MonoBehaviour
             "Show all rows in the passwords table.",
             "SELECT * FROM passwords;",
             "SELECT", anyOrder: true);
-        t21.ExpectedRows.Add(new Dictionary<string, string> { {"id","P001"}, {"label","room_exit_code"} });
-        t21.ExpectedRows.Add(new Dictionary<string, string> { {"id","P002"}, {"label","agency_master"} });
-        t21.ExpectedRows.Add(new Dictionary<string, string> { {"id","P003"}, {"label","case_completion"} });
+        t21.ExpectedRows.Add(new Dictionary<string, string> { { "id", "P001" }, { "label", "room_exit_code" } });
+        t21.ExpectedRows.Add(new Dictionary<string, string> { { "id", "P002" }, { "label", "agency_master" } });
+        t21.ExpectedRows.Add(new Dictionary<string, string> { { "id", "P003" }, { "label", "case_completion" } });
         case1.Tasks.Add(t21);
 
         // Task 22 — SELECT * FROM keys (3 rows)
@@ -378,16 +385,17 @@ public class CaseManager : MonoBehaviour
             "Show all rows in the keys table.",
             "SELECT * FROM keys;",
             "SELECT IS NULL", anyOrder: true);
-        t22.ExpectedRows.Add(new Dictionary<string, string> { {"id","K001"}, {"password_id","P001"} });
-        t22.ExpectedRows.Add(new Dictionary<string, string> { {"id","K002"}, {"password_id","P002"} });
-        t22.ExpectedRows.Add(new Dictionary<string, string> { {"id","K003"}, {"password_id","P003"} });
+        t22.ExpectedRows.Add(new Dictionary<string, string> { { "id", "K001" }, { "password_id", "P001" } });
+        t22.ExpectedRows.Add(new Dictionary<string, string> { { "id", "K002" }, { "password_id", "P002" } });
+        t22.ExpectedRows.Add(new Dictionary<string, string> { { "id", "K003" }, { "password_id", "P003" } });
         case1.Tasks.Add(t22);
 
         // Task 23 — UPDATE keys SET value = 'It is ended' WHERE id = 'K001' (free write)
         case1.Tasks.Add(new SQLTask(
             "Update the value in the keys table for K001 to 'It is ended'.",
             "UPDATE keys SET value = 'It is ended' WHERE id = 'K001';",
-            "UPDATE") { RequiredTargetTable = "keys" });
+            "UPDATE")
+        { RequiredTargetTable = "keys" });
 
         // Task 24 — SELECT * FROM keys WHERE id = 'K001' (verify value)
         var t24 = new SQLTask(
@@ -403,11 +411,11 @@ public class CaseManager : MonoBehaviour
             "List all tables available in the internet archive database.",
             "SELECT name FROM internet.sqlite_master WHERE type = 'table';",
             "attached schema", anyOrder: true);
-        t25.ExpectedRows.Add(new Dictionary<string, string> { {"name","bbc_news"} });
-        t25.ExpectedRows.Add(new Dictionary<string, string> { {"name","abc_australia"} });
-        t25.ExpectedRows.Add(new Dictionary<string, string> { {"name","sa_police_records"} });
-        t25.ExpectedRows.Add(new Dictionary<string, string> { {"name","adelaide_advertiser"} });
-        t25.ExpectedRows.Add(new Dictionary<string, string> { {"name","forensic_reports"} });
+        t25.ExpectedRows.Add(new Dictionary<string, string> { { "name", "bbc_news" } });
+        t25.ExpectedRows.Add(new Dictionary<string, string> { { "name", "abc_australia" } });
+        t25.ExpectedRows.Add(new Dictionary<string, string> { { "name", "sa_police_records" } });
+        t25.ExpectedRows.Add(new Dictionary<string, string> { { "name", "adelaide_advertiser" } });
+        t25.ExpectedRows.Add(new Dictionary<string, string> { { "name", "forensic_reports" } });
         case1.Tasks.Add(t25);
 
         // Task 26 — SELECT sql FROM internet_meta WHERE name='sa_police_records' (1 row)
@@ -415,7 +423,7 @@ public class CaseManager : MonoBehaviour
             "Inspect the structure of the sa_police_records table.",
             "SELECT sql FROM internet.sqlite_master WHERE name = 'sa_police_records';",
             "sqlite_master", partialMatch: true);
-        t26.ExpectedRows.Add(new Dictionary<string, string> { {"sql","CREATE TABLE sa_police_records (id INTEGER PRIMARY KEY, headline TEXT, date TEXT, keywords TEXT, content TEXT, source TEXT)"} });
+        t26.ExpectedRows.Add(new Dictionary<string, string> { { "sql", "CREATE TABLE sa_police_records (id INTEGER PRIMARY KEY, headline TEXT, date TEXT, keywords TEXT, content TEXT, source TEXT)" } });
         case1.Tasks.Add(t26);
 
         // Task 27 — UNION across all internet tables (8 rows, any order)
@@ -423,8 +431,8 @@ public class CaseManager : MonoBehaviour
             "Search all internet archive tables for records mentioning Somerton, Webb, Tamam Shud, or Jestyn using UNION.",
             "SELECT headline, date, source FROM internet.bbc_news WHERE keywords LIKE '%Somerton%' OR keywords LIKE '%Webb%' UNION SELECT headline, date, source FROM internet.abc_australia WHERE keywords LIKE '%Somerton%' OR keywords LIKE '%Webb%' UNION ...",
             "UNION", anyOrder: true, partialMatch: true);
-        t27.ExpectedRows.Add(new Dictionary<string, string> { {"headline","DNA Analysis Identifies Somerton Man as Carl \"Charles\" Webb"} });
-        t27.ExpectedRows.Add(new Dictionary<string, string> { {"headline","Forensic Genealogy Confirms Webb Identity with 99.9% Confidence"} });
+        t27.ExpectedRows.Add(new Dictionary<string, string> { { "headline", "DNA Analysis Identifies Somerton Man as Carl \"Charles\" Webb" } });
+        t27.ExpectedRows.Add(new Dictionary<string, string> { { "headline", "Forensic Genealogy Confirms Webb Identity with 99.9% Confidence" } });
         case1.Tasks.Add(t27);
 
         // Task 28 — SELECT * FROM clues WHERE name = 'Neil Hamilton Testimony' (1 row)
@@ -432,34 +440,37 @@ public class CaseManager : MonoBehaviour
             "Select the Neil Hamilton testimony from the clues table.",
             "SELECT * FROM clues WHERE name = 'Neil Hamilton Testimony';",
             "WHERE");
-        t28.ExpectedRows.Add(new Dictionary<string, string> { {"id","CL003"}, {"name","Neil Hamilton Testimony"} });
+        t28.ExpectedRows.Add(new Dictionary<string, string> { { "id", "CL003" }, { "name", "Neil Hamilton Testimony" } });
         case1.Tasks.Add(t28);
 
         // Task 29 — INSERT CL004 Carl Webb DNA (free write)
         case1.Tasks.Add(new SQLTask(
             "Insert the 2022 DNA identification of Carl Webb as a new clue (CL004).",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL004', 'Carl Webb Identity (2022 DNA)', 'Documentary', '...', '2022-07-26 00:00:00');",
-            "INSERT") { RequiredTargetTable = "clues" });
+            "INSERT")
+        { RequiredTargetTable = "clues" });
 
         // Task 30 — INSERT CL005 Dorothy Webb (free write)
         case1.Tasks.Add(new SQLTask(
             "Insert Dorothy Webb's testimony as a new clue (CL005).",
             "INSERT INTO clues (id, name, type, details, found_at) VALUES ('CL005', 'Dorothy Webb Testimony', 'Testimony', '...', '2022-08-01 00:00:00');",
-            "INSERT") { RequiredTargetTable = "clues" });
+            "INSERT")
+        { RequiredTargetTable = "clues" });
 
         // Task 31 — UPDATE logfile SET victim = '...' WHERE id = '01' (free write)
         case1.Tasks.Add(new SQLTask(
             "Update the victim field in the logfile to reflect the 2022 DNA finding.",
             "UPDATE logfile SET victim = 'Carl \"Charles\" Webb (unconfirmed, DNA 2022)' WHERE id = '01';",
-            "UPDATE") { RequiredTargetTable = "logfile" });
+            "UPDATE")
+        { RequiredTargetTable = "logfile" });
 
         // Task 32 — SELECT clues ORDER BY found_at ASC (5 rows)
         var t32 = new SQLTask(
             "Show all clues ordered by found_at ascending.",
             "SELECT name, type, details, found_at FROM clues ORDER BY found_at ASC;",
             "ORDER BY", partialMatch: true);
-        t32.ExpectedRows.Add(new Dictionary<string, string> { {"name","The Body"} });
-        t32.ExpectedRows.Add(new Dictionary<string, string> { {"name","Tamam Shud"} });
+        t32.ExpectedRows.Add(new Dictionary<string, string> { { "name", "The Body" } });
+        t32.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Tamam Shud" } });
         case1.Tasks.Add(t32);
 
         // Task 33 — SELECT suspects WHERE eliminated = 0 (4 rows)
@@ -467,17 +478,18 @@ public class CaseManager : MonoBehaviour
             "Show all uneliminated suspects.",
             "SELECT name, motive FROM suspects WHERE eliminated = 0;",
             "WHERE", anyOrder: true);
-        t33.ExpectedRows.Add(new Dictionary<string, string> { {"name","Jessica Thomson"} });
-        t33.ExpectedRows.Add(new Dictionary<string, string> { {"name","Unknown Soviet Agent"} });
-        t33.ExpectedRows.Add(new Dictionary<string, string> { {"name","Alfred Boxall"} });
-        t33.ExpectedRows.Add(new Dictionary<string, string> { {"name","The Rival Hound"} });
+        t33.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Jessica Thomson" } });
+        t33.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Unknown Soviet Agent" } });
+        t33.ExpectedRows.Add(new Dictionary<string, string> { { "name", "Alfred Boxall" } });
+        t33.ExpectedRows.Add(new Dictionary<string, string> { { "name", "The Rival Hound" } });
         case1.Tasks.Add(t33);
 
         // Task 34 — UPDATE logfile final summary (free write)
         case1.Tasks.Add(new SQLTask(
             "Update the logfile — set status to 'Investigated - Inconclusive' and write your final summary in details.",
             "UPDATE logfile SET status = 'Investigated - Inconclusive', details = 'Your summary here.' WHERE id = '01';",
-            "UPDATE") { RequiredTargetTable = "logfile" });
+            "UPDATE")
+        { RequiredTargetTable = "logfile" });
 
         // Task 35 — SELECT * FROM logfile WHERE id = '01' (verify final state)
         var t35 = new SQLTask(
@@ -491,10 +503,10 @@ public class CaseManager : MonoBehaviour
         AllCases.Add(case1);
 
         // ── Cases 2–5 (placeholders) ──────────────────────────────────────────
-        AllCases.Add(new CaseDefinition("case_02","Case 02 — Coming Soon","Placeholder.","TBD",0,"Easy","case_01"));
-        AllCases.Add(new CaseDefinition("case_03","Case 03 — Coming Soon","Placeholder.","TBD",0,"Intermediate","case_02"));
-        AllCases.Add(new CaseDefinition("case_04","Case 04 — Coming Soon","Placeholder.","TBD",0,"Hard","case_03"));
-        AllCases.Add(new CaseDefinition("case_05","Case 05 — Coming Soon","Placeholder.","TBD",0,"Expert","case_04"));
+        AllCases.Add(new CaseDefinition("case_02", "Case 02 — Coming Soon", "Placeholder.", "TBD", 0, "Easy", "case_01"));
+        AllCases.Add(new CaseDefinition("case_03", "Case 03 — Coming Soon", "Placeholder.", "TBD", 0, "Intermediate", "case_02"));
+        AllCases.Add(new CaseDefinition("case_04", "Case 04 — Coming Soon", "Placeholder.", "TBD", 0, "Hard", "case_03"));
+        AllCases.Add(new CaseDefinition("case_05", "Case 05 — Coming Soon", "Placeholder.", "TBD", 0, "Expert", "case_04"));
 
         Debug.Log($"[CaseManager] {AllCases.Count} cases loaded.");
     }
@@ -558,6 +570,26 @@ public class CaseManager : MonoBehaviour
             profileId.ToString(), caseId);
         if (result == null || result.Count == 0) return 0;
         return int.TryParse(result[0]["current_task"], out int idx) ? idx : 0;
+    }
+
+    /// <summary>Saves the exact dialogue node index so the player resumes mid-story.</summary>
+    public void SaveDialogueNode(int profileId, string caseId, int nodeIndex)
+    {
+        DatabaseManager.Instance.RunSaveNonQuery(
+            @"INSERT INTO case_progress (profile_id, case_id, current_task, dialogue_node, completed)
+              VALUES (?, ?, 0, ?, 0)
+              ON CONFLICT(profile_id, case_id) DO UPDATE SET dialogue_node = ?",
+            profileId, caseId, nodeIndex, nodeIndex);
+    }
+
+    /// <summary>Returns the saved dialogue node index, or 0 if none saved.</summary>
+    public int GetDialogueNode(int profileId, string caseId)
+    {
+        var result = DatabaseManager.Instance.RunSaveQueryWithResults(
+            "SELECT dialogue_node FROM case_progress WHERE profile_id = ? AND case_id = ?",
+            profileId.ToString(), caseId);
+        if (result == null || result.Count == 0) return 0;
+        return int.TryParse(result[0]["dialogue_node"], out int idx) ? idx : 0;
     }
 
     public void AdvanceTask(int profileId, string caseId, int nextTaskIndex)

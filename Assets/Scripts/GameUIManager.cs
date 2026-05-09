@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 
 public class GameUIManager : MonoBehaviour
 {
+    public static GameUIManager Instance { get; private set; }
     [SerializeField]
     private UIDocument uiDocument;
 
@@ -13,6 +14,7 @@ public class GameUIManager : MonoBehaviour
 
     private Button tutorialButton;
     private Button profileButton;
+    private Button cluesButton;
     private Button notesButton;
     private Button sqlMenuButton;
     private Button saveExitButton;
@@ -21,6 +23,9 @@ public class GameUIManager : MonoBehaviour
     private bool isInputMenuOpen = false;
     private bool isTutorialOpen = false;
     private bool isProfileOpen = false;
+    // Mirror of DialogueManager._awaitingSQL — true when a SQL task is active
+    // Used to prevent closing the terminal when the burger menu closes
+    private bool _awaitingSQL => DialogueManager.Instance != null && UIDatabase.Instance != null && UIDatabase.Instance.IsTerminalOpen();
 
     private VisualElement _tutorialOverlay;
     private VisualElement _profileOverlay;
@@ -29,11 +34,18 @@ public class GameUIManager : MonoBehaviour
     private VisualElement _root;
     private VisualElement _sceneBg;
     private VisualElement _speakerPortrait;
-    private const float BgDepth   = 14f;
-    private const float PortDepth =  6f;
-    private const float LerpSpeed =  5f;
+    private const float BgDepth = 14f;
+    private const float PortDepth = 6f;
+    private const float LerpSpeed = 5f;
     private Vector2 _parallaxTarget;
     private Vector2 _parallaxCurrent;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(gameObject); return; }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void OnEnable()
     {
@@ -59,6 +71,7 @@ public class GameUIManager : MonoBehaviour
 
         tutorialButton = root.Q<Button>("tutorial-button");
         profileButton = root.Q<Button>("profile-button");
+        cluesButton = root.Q<Button>("clues-button");
         notesButton = root.Q<Button>("notes-button");
         sqlMenuButton = root.Q<Button>("sql-menu-button");
         saveExitButton = root.Q<Button>("save-exit-button");
@@ -82,6 +95,15 @@ public class GameUIManager : MonoBehaviour
         // Burger menu items
         if (tutorialButton != null) tutorialButton.clicked += OnTutorialClicked;
         if (profileButton != null) profileButton.clicked += OnProfileClicked;
+        if (cluesButton != null) cluesButton.clicked += () =>
+        {
+            ClueBoardManager.Instance?.SetVisible(true);
+            // Close burger menu but leave SQL terminal open —
+            // player may want both clue board and terminal visible
+            if (isMenuOpen) OnBurgerMenuClicked();
+            // Also close hint popup so it doesn't float over the clue board
+            DialogueManager.Instance?.CloseHintPopupPublic();
+        };
         if (notesButton != null) notesButton.clicked += () => Debug.Log("Notes clicked");
         if (sqlMenuButton != null) sqlMenuButton.clicked += OnSqlQuerieMenuClicked;
         if (saveExitButton != null) saveExitButton.clicked += OnSaveExitClicked;
@@ -99,8 +121,11 @@ public class GameUIManager : MonoBehaviour
         // Connect ERD overlay — shows database diagram on button click
         ERDManager.Instance?.ConnectToUI(uiDocument);
 
+        // Connect clue board
+        ClueBoardManager.Instance?.ConnectToUI(uiDocument);
+
         // Parallax — query layers and start listening to mouse
-        _sceneBg         = root.Q("scene-bg");
+        _sceneBg = root.Q("scene-bg");
         _speakerPortrait = root.Q("speaker-portrait");
         root.RegisterCallback<MouseMoveEvent>(OnMouseMove);
 
@@ -122,15 +147,15 @@ public class GameUIManager : MonoBehaviour
     private void Update()
     {
         _parallaxCurrent = Vector2.Lerp(_parallaxCurrent, _parallaxTarget, Time.deltaTime * LerpSpeed);
-        ApplyTranslate(_sceneBg,         -_parallaxCurrent.x * BgDepth,   -_parallaxCurrent.y * BgDepth);
-        ApplyTranslate(_speakerPortrait,  -_parallaxCurrent.x * PortDepth, -_parallaxCurrent.y * PortDepth);
+        ApplyTranslate(_sceneBg, -_parallaxCurrent.x * BgDepth, -_parallaxCurrent.y * BgDepth);
+        ApplyTranslate(_speakerPortrait, -_parallaxCurrent.x * PortDepth, -_parallaxCurrent.y * PortDepth);
     }
 
     private void OnMouseMove(MouseMoveEvent e)
     {
         var layout = _root.layout;
         if (layout.width <= 0 || layout.height <= 0) return;
-        float nx = (e.localMousePosition.x / layout.width  - 0.5f) * 2f;
+        float nx = (e.localMousePosition.x / layout.width - 0.5f) * 2f;
         float ny = (e.localMousePosition.y / layout.height - 0.5f) * 2f;
         _parallaxTarget = new Vector2(nx, ny);
     }
@@ -184,6 +209,18 @@ public class GameUIManager : MonoBehaviour
 
     // ─── Burger menu ──────────────────────────────────────────────────────────
 
+    /// <summary>Force-closes the burger menu and SQL panel. Called by DialogueManager on cutscene start.</summary>
+    public void ForceCloseBurgerMenu()
+    {
+        if (!isMenuOpen && !isInputMenuOpen) return;
+        isMenuOpen = false;
+        isInputMenuOpen = false;
+        if (burgerMenuDropdown != null)
+            burgerMenuDropdown.style.display = DisplayStyle.None;
+        if (querieInputMenu != null)
+            querieInputMenu.style.display = DisplayStyle.None;
+    }
+
     private void OnBurgerMenuClicked()
     {
         if (burgerMenuDropdown == null) return;
@@ -191,8 +228,10 @@ public class GameUIManager : MonoBehaviour
         burgerMenuDropdown.style.display = isMenuOpen ? DisplayStyle.Flex : DisplayStyle.None;
         if (isMenuOpen) burgerMenuDropdown.BringToFront();
 
-        // Closing the burger menu also closes the SQL panel
-        if (!isMenuOpen && isInputMenuOpen)
+        // Only close SQL panel if it was opened via the burger menu toggle,
+        // not if the player has it open for a task
+        bool sqlOpenedManually = isInputMenuOpen && !_awaitingSQL;
+        if (!isMenuOpen && sqlOpenedManually)
         {
             isInputMenuOpen = false;
             if (querieInputMenu != null)
@@ -239,32 +278,36 @@ public class GameUIManager : MonoBehaviour
 
         Debug.Log($"[GameUIManager] Starting story for profile {profileId}, case {activeCase.CaseId}");
 
-        // Retrieve saved task index so we resume mid-story on load
-        int savedTaskIndex = CaseManager.Instance.GetCurrentTaskIndex(profileId, activeCase.CaseId);
-
         string playerName = GameManager.Instance.ActiveProfileName;
         var nodes = Case01Story.Build(playerName);
 
-        // Convert the SQL task index to the matching dialogue node index
-        int dialogueNodeIndex = 0;
-        if (savedTaskIndex > 0)
+        // Use the saved dialogue node index for exact resume position.
+        // Falls back to task-based resume if dialogue_node is 0 (older saves).
+        int dialogueNodeIndex = CaseManager.Instance.GetDialogueNode(profileId, activeCase.CaseId);
+
+        if (dialogueNodeIndex == 0)
         {
-            int seenTasks = 0;
-            for (int i = 0; i < nodes.Count; i++)
+            // Legacy fallback — convert task index to dialogue node
+            int savedTaskIndex = CaseManager.Instance.GetCurrentTaskIndex(profileId, activeCase.CaseId);
+            if (savedTaskIndex > 0)
             {
-                if (nodes[i].Type == NodeType.SQLTask)
+                int seenTasks = 0;
+                for (int i = 0; i < nodes.Count; i++)
                 {
-                    seenTasks++;
-                    if (seenTasks == savedTaskIndex)
+                    if (nodes[i].Type == NodeType.SQLTask)
                     {
-                        // Found the last completed task. Start at the node right after it.
-                        dialogueNodeIndex = i + 1;
-                        break;
+                        seenTasks++;
+                        if (seenTasks == savedTaskIndex)
+                        {
+                            dialogueNodeIndex = i + 1;
+                            break;
+                        }
                     }
                 }
             }
         }
 
+        Debug.Log($"[GameUIManager] Resuming at dialogue node {dialogueNodeIndex}");
         DialogueManager.Instance.StartStory(nodes, dialogueNodeIndex);
     }
 }

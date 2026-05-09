@@ -163,14 +163,18 @@ public class DatabaseManager : MonoBehaviour
         // Tracks which task each profile is on per case, and whether it's completed
         RunSaveNonQuery(@"
             CREATE TABLE IF NOT EXISTS case_progress (
-                id           INTEGER PRIMARY KEY AUTOINCREMENT,
-                profile_id   INTEGER NOT NULL,
-                case_id      TEXT    NOT NULL,
-                current_task INTEGER DEFAULT 0,
-                completed    INTEGER DEFAULT 0,
-                completed_at TEXT,
+                id             INTEGER PRIMARY KEY AUTOINCREMENT,
+                profile_id     INTEGER NOT NULL,
+                case_id        TEXT    NOT NULL,
+                current_task   INTEGER DEFAULT 0,
+                dialogue_node  INTEGER DEFAULT 0,
+                completed      INTEGER DEFAULT 0,
+                completed_at   TEXT,
                 UNIQUE(profile_id, case_id)
             )");
+        // Add dialogue_node column if upgrading from older save
+        try { RunSaveNonQuery(@"ALTER TABLE case_progress ADD COLUMN dialogue_node INTEGER DEFAULT 0"); }
+        catch { /* column already exists */ }
 
         Debug.Log("[DatabaseManager] Save schema ready.");
     }
@@ -289,6 +293,42 @@ public class DatabaseManager : MonoBehaviour
         RunSaveNonQuery("DELETE FROM case_progress         WHERE profile_id = ?", profileId);
 
         Debug.Log($"[DatabaseManager] Profile {profileId} fully deleted.");
+    }
+
+    // =========================================================================
+    // CLUE BOARD NOTES
+    // =========================================================================
+
+    /// <summary>
+    /// Saves all board cards for a profile. Clears existing cards first so
+    /// the saved state always matches exactly what is on the board.
+    /// Each card is stored as a JSON string in note_text.
+    /// </summary>
+    public void SaveBoardCards(int profileId, string cardsJson)
+    {
+        // Delete all existing board cards for this profile
+        RunSaveNonQuery(
+            "DELETE FROM player_notes WHERE profile_id = ? AND target_type = 'board_card'",
+            profileId);
+
+        if (string.IsNullOrEmpty(cardsJson)) return;
+
+        string now = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+        RunSaveNonQuery(
+            "INSERT INTO player_notes (profile_id, target_type, target_id, note_text, created_at) VALUES (?, 'board_card', 0, ?, ?)",
+            profileId, cardsJson, now);
+    }
+
+    /// <summary>
+    /// Loads the saved board cards JSON for a profile.
+    /// Returns null if nothing saved yet.
+    /// </summary>
+    public string LoadBoardCards(int profileId)
+    {
+        var result = RunSaveQueryWithResults(
+            "SELECT note_text FROM player_notes WHERE profile_id = ? AND target_type = 'board_card' ORDER BY id DESC LIMIT 1",
+            profileId.ToString());
+        return (result != null && result.Count > 0) ? result[0]["note_text"] : null;
     }
 
     // =========================================================================
