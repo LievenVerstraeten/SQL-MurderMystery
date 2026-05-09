@@ -80,42 +80,60 @@ public class ClueBoardManager : MonoBehaviour
 
     private void Awake() => Instance = this;
 
-    private void OnEnable()
-    {
-        var rve = GetComponent<UIDocument>().rootVisualElement;
-        // Target the instance container if embedded, otherwise fallback
-        _root = rve.Q("clue-board-instance") ?? rve.Q("cb-root") ?? rve;
-
-        _cardsLayer = _root.Q("cards-layer");
-        _ropeLayer = _root.Q("rope-layer");
-        _cardActions = _root.Q("card-actions");
-        _inventoryTray = _root.Q("inventory-tray");
-        _inventoryBtn = _root.Q<Button>("inventory-btn");
-        _actionRopeBtn = _root.Q<Button>("action-rope");
-
-        _ropeLayer.generateVisualContent += DrawRopes;
-
-        _root.Q<Button>("close-btn").clicked += () => SetVisible(false);
-        _root.Q<Button>("add-note-btn").clicked += AddNote;
-        _inventoryBtn.clicked += ToggleTray;
-        _root.Q<Button>("tray-close").clicked += CloseTray;
-
-        _root.Q<Button>("action-delete").clicked += ActionDelete;
-        _root.Q<Button>("action-edit").clicked += ActionEdit;
-        _actionRopeBtn.clicked += ActionStartRope;
-        _root.Q<Button>("action-rotate-l").clicked += () => ActionRotate(-15f);
-        _root.Q<Button>("action-rotate-r").clicked += () => ActionRotate(+15f);
-
-        // Tapping the empty board deselects
-        _cardsLayer.RegisterCallback<PointerDownEvent>(OnBoardPointerDown);
-
-        PopulateTray();
-    }
-
     private void OnDisable()
     {
         if (_ropeLayer != null)
             _ropeLayer.generateVisualContent -= DrawRopes;
+    }
+
+    /// <summary>
+    /// Called by GameUIManager.OnEnable() to bind this manager to the game scene's UIDocument.
+    /// The clue board elements are inlined directly in GameUI.uxml so they are always queryable.
+    /// </summary>
+    public void ConnectToUI(UIDocument doc)
+    {
+        if (doc == null || doc.rootVisualElement == null) return;
+
+        // Detach previous rope painter if reconnecting
+        if (_ropeLayer != null)
+            _ropeLayer.generateVisualContent -= DrawRopes;
+
+        var root = doc.rootVisualElement;
+        _root = root.Q("clue-board-instance");
+        if (_root == null) { Debug.LogError("[ClueBoardManager] clue-board-instance not found in UIDocument"); return; }
+
+        _cardsLayer    = _root.Q("cards-layer");
+        _ropeLayer     = _root.Q("rope-layer");
+        _cardActions   = _root.Q("card-actions");
+        _inventoryTray = _root.Q("inventory-tray");
+        _inventoryBtn  = _root.Q<Button>("inventory-btn");
+        _actionRopeBtn = _root.Q<Button>("action-rope");
+
+        if (_ropeLayer != null) _ropeLayer.generateVisualContent += DrawRopes;
+
+        var closeBtn   = _root.Q<Button>("close-btn");
+        var addNoteBtn = _root.Q<Button>("add-note-btn");
+        var trayClose  = _root.Q<Button>("tray-close");
+        var actDelete  = _root.Q<Button>("action-delete");
+        var actEdit    = _root.Q<Button>("action-edit");
+        var rotateL    = _root.Q<Button>("action-rotate-l");
+        var rotateR    = _root.Q<Button>("action-rotate-r");
+
+        if (closeBtn       != null) closeBtn.clicked       += () => SetVisible(false);
+        if (addNoteBtn     != null) addNoteBtn.clicked     += AddNote;
+        if (_inventoryBtn  != null) _inventoryBtn.clicked  += ToggleTray;
+        if (trayClose      != null) trayClose.clicked      += CloseTray;
+        if (actDelete      != null) actDelete.clicked      += ActionDelete;
+        if (actEdit        != null) actEdit.clicked        += ActionEdit;
+        if (_actionRopeBtn != null) _actionRopeBtn.clicked += ActionStartRope;
+        if (rotateL        != null) rotateL.clicked        += () => ActionRotate(-15f);
+        if (rotateR        != null) rotateR.clicked        += () => ActionRotate(+15f);
+
+        if (_cardsLayer != null)
+            _cardsLayer.RegisterCallback<PointerDownEvent>(OnBoardPointerDown);
+
+        PopulateTray();
+        SetVisible(false);
     }
 
     // ── Board Visibility ─────────────────────────────────────────────────────
@@ -146,6 +164,7 @@ public class ClueBoardManager : MonoBehaviour
     /// </summary>
     public void SetVisible(bool visible)
     {
+        if (_root == null) return;
         _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
 
         if (visible)
@@ -193,7 +212,8 @@ public class ClueBoardManager : MonoBehaviour
 
     private void PopulateTray()
     {
-        var scroll = _root.Q<ScrollView>("tray-scroll");
+        var scroll = _root?.Q<ScrollView>("tray-scroll");
+        if (scroll == null) return;
         scroll.Clear();
         foreach (var (title, body) in PlaceholderItems)
             scroll.Add(BuildTrayItem(title, body));
@@ -243,6 +263,7 @@ public class ClueBoardManager : MonoBehaviour
 
     private void CloseTray()
     {
+        if (_inventoryTray == null) return;
         _isTrayOpen = false;
         _inventoryTray.RemoveFromClassList("inventory-tray--open");
         _inventoryTray.AddToClassList("inventory-tray--closed");

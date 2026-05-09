@@ -13,6 +13,12 @@ using UnityEngine.UIElements;
 
 public class MainMenuManager : MonoBehaviour
 {
+    // Parallax depth — how many pixels each layer shifts at full mouse offset
+    private const float BgDepth     = 18f;
+    private const float LogoDepth   = 32f;
+    private const float BtnDepth    = 12f;
+    private const float LerpSpeed   = 5f;
+
     private UIDocument uiDocument;
 
     private Button newGameButton;
@@ -21,6 +27,14 @@ public class MainMenuManager : MonoBehaviour
     private Button creditsButton;
     private VisualElement creditsPanel;
     private Button creditsBackButton;
+
+    private VisualElement _bgLayer;
+    private VisualElement _logoWrap;
+    private VisualElement _buttonContainer;
+
+    private Vector2 _parallaxTarget;
+    private Vector2 _parallaxCurrent;
+    private bool    _mouseTracking;
 
     private void OnEnable()
     {
@@ -42,6 +56,14 @@ public class MainMenuManager : MonoBehaviour
         creditsPanel   = root.Q<VisualElement>("credits-panel");
         creditsBackButton = root.Q<Button>("credits-back-button");
 
+        // Parallax layers
+        _bgLayer         = root.Q<VisualElement>("bg-layer");
+        _logoWrap        = root.Q<VisualElement>("logo-wrap");
+        _buttonContainer = root.Q<VisualElement>("button-container");
+
+        root.RegisterCallback<MouseMoveEvent>(OnMouseMove);
+        root.RegisterCallback<MouseLeaveEvent>(OnMouseLeave);
+
         // Warn if any button wasn't found — catches typos in UI Builder names
         if (newGameButton  == null) Debug.LogError("[MainMenuManager] 'play-button' not found.");
         if (loadGameButton == null) Debug.LogError("[MainMenuManager] 'settings-button' not found.");
@@ -61,12 +83,53 @@ public class MainMenuManager : MonoBehaviour
 
     private void OnDisable()
     {
-        // Always unregister callbacks to avoid memory leaks
         newGameButton?.UnregisterCallback<ClickEvent>(OnNewGameClicked);
         loadGameButton?.UnregisterCallback<ClickEvent>(OnLoadGameClicked);
         exitButton?.UnregisterCallback<ClickEvent>(OnExitClicked);
         creditsButton?.UnregisterCallback<ClickEvent>(OnCreditsClicked);
         creditsBackButton?.UnregisterCallback<ClickEvent>(OnCreditsBackClicked);
+
+        var root = uiDocument?.rootVisualElement;
+        root?.UnregisterCallback<MouseMoveEvent>(OnMouseMove);
+        root?.UnregisterCallback<MouseLeaveEvent>(OnMouseLeave);
+    }
+
+    // ─── Parallax ─────────────────────────────────────────────────────────────
+
+    private void OnMouseMove(MouseMoveEvent e)
+    {
+        var layout = uiDocument.rootVisualElement.layout;
+        // Normalise to -1..1 from screen centre
+        float nx = (e.localMousePosition.x / layout.width  - 0.5f) * 2f;
+        float ny = (e.localMousePosition.y / layout.height - 0.5f) * 2f;
+        _parallaxTarget = new Vector2(nx, ny);
+        _mouseTracking  = true;
+    }
+
+    private void OnMouseLeave(MouseLeaveEvent e)
+    {
+        _parallaxTarget = Vector2.zero;
+    }
+
+    private void Update()
+    {
+        if (!_mouseTracking && _parallaxCurrent == Vector2.zero) return;
+
+        _parallaxCurrent = Vector2.Lerp(_parallaxCurrent, _parallaxTarget, Time.deltaTime * LerpSpeed);
+
+        // Each layer shifts opposite to mouse (background "recedes", logo "floats closer")
+        ApplyTranslate(_bgLayer,         -_parallaxCurrent.x * BgDepth,   -_parallaxCurrent.y * BgDepth);
+        ApplyTranslate(_logoWrap,        -_parallaxCurrent.x * LogoDepth, -_parallaxCurrent.y * LogoDepth);
+        ApplyTranslate(_buttonContainer, -_parallaxCurrent.x * BtnDepth,  -_parallaxCurrent.y * BtnDepth);
+    }
+
+    private static void ApplyTranslate(VisualElement el, float x, float y)
+    {
+        if (el == null) return;
+        el.style.translate = new StyleTranslate(new Translate(
+            new Length(x, LengthUnit.Pixel),
+            new Length(y, LengthUnit.Pixel)
+        ));
     }
 
     // ─── Button Handlers ──────────────────────────────────────────────────────

@@ -221,6 +221,7 @@ public class GameManager : MonoBehaviour
         string timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
         int playtime = Mathf.FloorToInt(Time.realtimeSinceStartup);
 
+        if (DatabaseManager.Instance == null) return;
         DatabaseManager.Instance.RunSaveNonQuery(
             "UPDATE save_slots SET last_played = ?, playtime_seconds = playtime_seconds + ? WHERE id = ?",
             timestamp, playtime, ActiveProfileId

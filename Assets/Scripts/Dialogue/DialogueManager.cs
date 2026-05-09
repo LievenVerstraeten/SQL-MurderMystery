@@ -33,13 +33,35 @@ public class DialogueManager : MonoBehaviour
 
     private static readonly string[] PortraitClasses =
     {
-        "portrait-debbie", "portrait-detective", "portrait-jessica",
-        "portrait-neil",   "portrait-cleland",   "portrait-timehound",
+        "portrait-debbie", "portrait-debbie-mad",
+        "portrait-detective", "portrait-detective-smile", "portrait-detective-frown",
+        "portrait-detective-doubt", "portrait-detective-stubborn", "portrait-detective-proud",
+        "portrait-jessica", "portrait-jessica-screaming",
+        "portrait-neil", "portrait-neil-speaking",
+        "portrait-timehound", "portrait-timehound-speaking", "portrait-timehound-happy",
     };
 
     private List<DialogueNode> _story;
     private int  _nodeIndex   = 0;
     private bool _awaitingSQL = false;
+    private bool _bgFading      = false;
+    private bool _bgInitialized = false;
+
+    private VisualElement _sceneBg;
+    private VisualElement _sceneFade;
+
+    private static readonly WaitForSeconds WaitFadeSwap       = new WaitForSeconds(0.05f);
+    private static readonly WaitForSeconds WaitEndCredits     = new WaitForSeconds(0.5f);
+    private static readonly WaitForSeconds WaitIdleCluck      = new WaitForSeconds(30f);
+    private static readonly WaitForSeconds WaitIdleCluckHold  = new WaitForSeconds(7f);
+
+    private static readonly string[] BgClasses =
+    {
+        "bg-first-scene", "bg-wormhole", "bg-thinking",
+        "bg-somerton-beach", "bg-timehound",
+        "bg-jessica-outside", "bg-jessica-interior", "bg-after-jessica",
+        "bg-neil-interview", "bg-cleland", "bg-escape-room", "bg-coffee",
+    };
 
 //typewriter state here
     private Coroutine _typewriterCoroutine;
@@ -64,6 +86,19 @@ public class DialogueManager : MonoBehaviour
     private VisualElement _hintPopup;
     private Label         _hintPopupText;
     private Button        _hintPopupClose;
+
+    private Coroutine _idleCluckCoroutine;
+
+    private static readonly string[] IdleClucks =
+    {
+        "Cluck.",
+        "Still thinking, are we?",
+        "The data will not query itself, {name}.",
+        "I have seen faster detectives in 1948.",
+        "Cluck cluck cluck.",
+        "Perhaps try reading the task label again.",
+        "* taps beak impatiently *",
+    };
 
     void Awake()
     {
@@ -103,6 +138,9 @@ public class DialogueManager : MonoBehaviour
 
     private void BindUI(VisualElement root)
     {
+        _sceneBg   = root.Q("scene-bg");
+        _sceneFade = root.Q("scene-fade");
+
         _dialogueLayer       = root.Q("dialogue-layer");
         _cutsceneLayer       = root.Q("cutscene-layer");
         _speakerPortrait     = root.Q("speaker-portrait");
@@ -153,9 +191,30 @@ public class DialogueManager : MonoBehaviour
 
     public void StartStory(List<DialogueNode> story, int startIndex = 0)
     {
-        _story      = story;
-        _nodeIndex  = startIndex;
+        _story       = story;
+        _nodeIndex   = startIndex;
         _awaitingSQL = false;
+        _bgFading    = false;
+        _bgInitialized = false;
+
+        // Restore the correct background when resuming a saved game mid-story
+        if (startIndex > 0)
+        {
+            for (int i = startIndex - 1; i >= 0; i--)
+            {
+                var n = story[i];
+                string key = n.Type == NodeType.Background ? n.BackgroundKey :
+                             n.Type == NodeType.Cutscene   ? n.BackgroundKey : null;
+                if (key != null)
+                {
+                    ApplyBackgroundClass(key);
+                    _bgInitialized = true;
+                    StartCoroutine(FadeSceneIn(0.4f));
+                    break;
+                }
+            }
+        }
+
         ShowNode();
     }
 
@@ -167,18 +226,23 @@ public class DialogueManager : MonoBehaviour
         if (_story == null || _nodeIndex >= _story.Count)
         {
             HideAll();
+            StartCoroutine(FadeToMainMenu());
             return;
         }
 
         var node = _story[_nodeIndex];
 
+        // Ensure scene-fade is faded out for any non-bg node (handles edge cases)
+        if (node.Type != NodeType.Background) EnsureFadedIn();
+
         switch (node.Type)
         {
-            case NodeType.Dialogue:    ShowDialogue(node);    break;
-            case NodeType.SQLTask:     ShowTask(node);        break;
-            case NodeType.DemoSQL:     RunDemo(node);         break;
-            case NodeType.Cutscene:    ShowCutscene(node);    break;
+            case NodeType.Dialogue:     ShowDialogue(node);     break;
+            case NodeType.SQLTask:      ShowTask(node);         break;
+            case NodeType.DemoSQL:      RunDemo(node);          break;
+            case NodeType.Cutscene:     ShowCutscene(node);     break;
             case NodeType.InventoryAdd: TriggerInventory(node); break;
+            case NodeType.Background:   StartCoroutine(CrossFadeBackground(node.BackgroundKey)); break;
         }
     }
 
@@ -201,15 +265,25 @@ public class DialogueManager : MonoBehaviour
                 _speakerPortrait.RemoveFromClassList(cls);
 
             string playerName = GameManager.Instance?.ActiveProfileName ?? "";
-            string portraitClass = node.Speaker switch
+
+            string portraitClass;
+            if (node.Portrait != null)
             {
-                "Debbie"    => "portrait-debbie",
-                "Jessica"   => "portrait-jessica",
-                "Neil"      => "portrait-neil",
-                "Cleland"   => "portrait-cleland",
-                "TimeHound" => "portrait-timehound",
-                _           => node.Speaker == playerName ? "portrait-detective" : null,
-            };
+                // Explicit expression set on this node
+                portraitClass = node.Portrait;
+            }
+            else
+            {
+                // Default portrait per speaker
+                portraitClass = node.Speaker switch
+                {
+                    "Debbie"    => "portrait-debbie",
+                    "Jessica"   => "portrait-jessica",
+                    "Neil"      => "portrait-neil",
+                    "TimeHound" => "portrait-timehound",
+                    _           => node.Speaker == playerName ? "portrait-detective" : null,
+                };
+            }
 
             if (portraitClass != null)
                 _speakerPortrait.AddToClassList(portraitClass);
@@ -218,17 +292,18 @@ public class DialogueManager : MonoBehaviour
 
     private void ShowTask(DialogueNode node)
     {
-        SkipTypewriter(); // task banner appears over dialogue, stop any running typewriter
-        // Keep dialogue layer visible for context; add task banner on top
+        SkipTypewriter();
         SetLayerVisible(_taskBanner,   true);
         SetButtonVisible(_continueBtn, false);
 
         if (_taskLbl != null) _taskLbl.text = node.TaskLabel;
 
-        // Open the terminal
-        UIDatabase.Instance?.OpenTerminal();
-
+        if (UIDatabase.Instance != null) UIDatabase.Instance.OpenTerminal();
         _awaitingSQL = true;
+
+        // Idle cluck — Debbie gets impatient after 30 s of no submission
+        if (_idleCluckCoroutine != null) StopCoroutine(_idleCluckCoroutine);
+        _idleCluckCoroutine = StartCoroutine(IdleCluckRoutine());
     }
 
     private void RunDemo(DialogueNode node)
@@ -238,15 +313,46 @@ public class DialogueManager : MonoBehaviour
         Advance();
     }
 
+    private string _activeCutsceneImageClass;
+
     private void ShowCutscene(DialogueNode node)
     {
-        SetLayerVisible(_dialogueLayer,  false);
-        SetLayerVisible(_cutsceneLayer,  true);
-        SetLayerVisible(_taskBanner,     false);
+        SetLayerVisible(_dialogueLayer, false);
+        SetLayerVisible(_cutsceneLayer, true);
+        SetLayerVisible(_taskBanner,    false);
+
+        // Clean up any image classes from a previous image cutscene
+        if (_cutsceneLayer != null)
+        {
+            _cutsceneLayer.RemoveFromClassList("cutscene-layer--image");
+            if (_activeCutsceneImageClass != null)
+            {
+                _cutsceneLayer.RemoveFromClassList(_activeCutsceneImageClass);
+                _activeCutsceneImageClass = null;
+            }
+        }
+        _cutsceneTextLbl?.RemoveFromClassList("cutscene-text--subtitle");
+
+        bool hasImage = !string.IsNullOrEmpty(node.CutsceneImageKey);
+        if (hasImage)
+        {
+            _activeCutsceneImageClass = $"cutscene-img-{node.CutsceneImageKey}";
+            _cutsceneLayer?.AddToClassList("cutscene-layer--image");
+            _cutsceneLayer?.AddToClassList(_activeCutsceneImageClass);
+            _cutsceneTextLbl?.AddToClassList("cutscene-text--subtitle");
+            SetButtonVisible(_cutsceneContinueBtn, false);
+        }
+        else
+        {
+            SetButtonVisible(_cutsceneContinueBtn, true);
+        }
 
         if (_cutsceneTextLbl != null) StartTypewriter(_cutsceneTextLbl, node.CutsceneText);
         if (_cutsceneLayer   != null)
             _cutsceneLayer.style.backgroundColor = new StyleColor(node.CutsceneColor);
+
+        if (!string.IsNullOrEmpty(node.BackgroundKey))
+            ApplyBackgroundClass(node.BackgroundKey);
     }
 
     private void TriggerInventory(DialogueNode node)
@@ -264,7 +370,7 @@ public class DialogueManager : MonoBehaviour
 
     private void OnContinueClicked()
     {
-        if (_awaitingSQL) return;
+        if (_awaitingSQL || _bgFading) return;
 
         // Absorb the bubbled ClickEvent that arrives right after a skip click
         if (_typewriterSkipGuard) { _typewriterSkipGuard = false; return; }
@@ -296,6 +402,8 @@ public class DialogueManager : MonoBehaviour
         if (result.Passed)
         {
             _awaitingSQL = false;
+            if (_idleCluckCoroutine != null) { StopCoroutine(_idleCluckCoroutine); _idleCluckCoroutine = null; }
+            CloseHintPopup();
             SetLayerVisible(_taskBanner,   false);
             SetButtonVisible(_continueBtn, true);
             UIDatabase.Instance?.CloseTerminal();
@@ -346,9 +454,10 @@ public class DialogueManager : MonoBehaviour
         var delay  = new WaitForSeconds(1f / TypewriterCharsPerSec);
         for (int i = 0; i < text.Length; i++)
         {
-            label.text = text[..(i + 1)];
+            label.text = text[..(i + 1)] + "|";
             yield return delay;
         }
+        label.text           = text;
         _isTyping            = false;
         _typewriterCoroutine = null;
         _dialogueAudio?.Stop();
@@ -362,6 +471,31 @@ public class DialogueManager : MonoBehaviour
         if (_activeTypewriterLabel != null)
             _activeTypewriterLabel.text = _fullText;
         _dialogueAudio?.Stop();
+    }
+
+    private IEnumerator IdleCluckRoutine()
+    {
+        while (_awaitingSQL)
+        {
+            yield return WaitIdleCluck;
+            if (!_awaitingSQL) break;
+
+            // Don't stack on top of a player-opened hint
+            bool hintOpen = _hintPopup != null &&
+                            _hintPopup.style.display == DisplayStyle.Flex;
+            if (!hintOpen)
+            {
+                string line = IdleClucks[Random.Range(0, IdleClucks.Length)];
+                line = line.Replace("{name}", GameManager.Instance != null ? GameManager.Instance.ActiveProfileName : "detective");
+                if (_hintPopupText != null) _hintPopupText.text = line;
+                if (_hintPopup     != null) _hintPopup.style.display = DisplayStyle.Flex;
+
+                yield return WaitIdleCluckHold;
+                if (!_awaitingSQL) { CloseHintPopup(); break; }
+                CloseHintPopup();
+            }
+        }
+        _idleCluckCoroutine = null;
     }
 
     private void PlayTypewriterSound(string speaker)
@@ -409,5 +543,81 @@ public class DialogueManager : MonoBehaviour
     {
         if (btn != null)
             btn.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+    }
+
+    // =========================================================================
+    // BACKGROUND MANAGEMENT
+    // =========================================================================
+
+    private void ApplyBackgroundClass(string key)
+    {
+        if (_sceneBg == null || string.IsNullOrEmpty(key)) return;
+        foreach (var cls in BgClasses) _sceneBg.RemoveFromClassList(cls);
+        _sceneBg.AddToClassList($"bg-{key}");
+    }
+
+    private void EnsureFadedIn()
+    {
+        if (_bgInitialized) return;
+        _bgInitialized = true;
+        StartCoroutine(FadeSceneIn(0.4f));
+    }
+
+    private IEnumerator FadeSceneIn(float dur)
+    {
+        for (float t = 0f; t < dur; t += Time.deltaTime)
+        {
+            SetFadeOpacity(1f - t / dur);
+            yield return null;
+        }
+        SetFadeOpacity(0f);
+    }
+
+    private IEnumerator CrossFadeBackground(string key)
+    {
+        _bgFading = true;
+
+        if (!_bgInitialized)
+        {
+            // First background: apply instantly then fade in from black
+            _bgInitialized = true;
+            ApplyBackgroundClass(key);
+            yield return StartCoroutine(FadeSceneIn(0.4f));
+            _bgFading = false;
+            Advance();
+            yield break;
+        }
+
+        // Subsequent backgrounds: fade to black, swap, fade back
+        const float half = 0.28f;
+        for (float t = 0f; t < half; t += Time.deltaTime) { SetFadeOpacity(t / half); yield return null; }
+        SetFadeOpacity(1f);
+
+        ApplyBackgroundClass(key);
+        yield return WaitFadeSwap;
+
+        for (float t = 0f; t < half; t += Time.deltaTime) { SetFadeOpacity(1f - t / half); yield return null; }
+        SetFadeOpacity(0f);
+
+        _bgFading = false;
+        Advance();
+    }
+
+    private void SetFadeOpacity(float v)
+    {
+        if (_sceneFade != null) _sceneFade.style.opacity = Mathf.Clamp01(v);
+    }
+
+    private IEnumerator FadeToMainMenu()
+    {
+        const float dur = 1.2f;
+        for (float t = 0f; t < dur; t += Time.deltaTime)
+        {
+            SetFadeOpacity(t / dur);
+            yield return null;
+        }
+        SetFadeOpacity(1f);
+        yield return WaitEndCredits;
+        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
     }
 }

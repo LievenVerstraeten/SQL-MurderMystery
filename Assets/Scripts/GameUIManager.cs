@@ -13,14 +13,27 @@ public class GameUIManager : MonoBehaviour
 
     private Button tutorialButton;
     private Button profileButton;
-    private Button cluesButton;
     private Button notesButton;
     private Button sqlMenuButton;
-    private Button inventoryHudBtn;
     private Button saveExitButton;
 
     private bool isMenuOpen = false;
     private bool isInputMenuOpen = false;
+    private bool isTutorialOpen = false;
+    private bool isProfileOpen = false;
+
+    private VisualElement _tutorialOverlay;
+    private VisualElement _profileOverlay;
+
+    // ── Parallax ──────────────────────────────────────────────────────────────
+    private VisualElement _root;
+    private VisualElement _sceneBg;
+    private VisualElement _speakerPortrait;
+    private const float BgDepth   = 14f;
+    private const float PortDepth =  6f;
+    private const float LerpSpeed =  5f;
+    private Vector2 _parallaxTarget;
+    private Vector2 _parallaxCurrent;
 
     private void OnEnable()
     {
@@ -30,14 +43,8 @@ public class GameUIManager : MonoBehaviour
             return;
         }
 
-        // Ensure ClueBoardManager is attached so the embedded clue board UI functions!
-        if (GetComponent<ClueBoardManager>() == null)
-        {
-            gameObject.AddComponent<ClueBoardManager>();
-            ClueBoardManager.Instance?.SetVisible(false);
-        }
-
-        var root = uiDocument.rootVisualElement;
+        _root = uiDocument.rootVisualElement;
+        var root = _root;
 
         // Querying elements
         burgerMenuButton = root.Q<Button>("burger-menu-button");
@@ -52,31 +59,32 @@ public class GameUIManager : MonoBehaviour
 
         tutorialButton = root.Q<Button>("tutorial-button");
         profileButton = root.Q<Button>("profile-button");
-        cluesButton = root.Q<Button>("clues-button");
         notesButton = root.Q<Button>("notes-button");
         sqlMenuButton = root.Q<Button>("sql-menu-button");
-        inventoryHudBtn = root.Q<Button>("inventory-hud-btn");
         saveExitButton = root.Q<Button>("save-exit-button");
 
         // Burger menu
         if (burgerMenuButton != null)
             burgerMenuButton.clicked += OnBurgerMenuClicked;
 
+        // Tutorial overlay
+        _tutorialOverlay = root.Q("tutorial-overlay");
+        if (_tutorialOverlay != null) _tutorialOverlay.style.display = DisplayStyle.None;
+        var tutorialCloseBtn = root.Q<Button>("tutorial-close-btn");
+        if (tutorialCloseBtn != null) tutorialCloseBtn.clicked += CloseTutorial;
+
+        // Profile overlay
+        _profileOverlay = root.Q("profile-overlay");
+        if (_profileOverlay != null) _profileOverlay.style.display = DisplayStyle.None;
+        var profileCloseBtn = root.Q<Button>("profile-close-btn");
+        if (profileCloseBtn != null) profileCloseBtn.clicked += CloseProfile;
+
         // Burger menu items
-        if (tutorialButton != null) tutorialButton.clicked += () => Debug.Log("Tutorial clicked");
-        if (profileButton != null) profileButton.clicked += () => Debug.Log("Profile clicked");
-        if (cluesButton != null) cluesButton.clicked += () => {
-            ClueBoardManager.Instance?.SetVisible(true);
-            // Close burger menu when opening clues
-            if (isMenuOpen) OnBurgerMenuClicked();
-        };
+        if (tutorialButton != null) tutorialButton.clicked += OnTutorialClicked;
+        if (profileButton != null) profileButton.clicked += OnProfileClicked;
         if (notesButton != null) notesButton.clicked += () => Debug.Log("Notes clicked");
         if (sqlMenuButton != null) sqlMenuButton.clicked += OnSqlQuerieMenuClicked;
         if (saveExitButton != null) saveExitButton.clicked += OnSaveExitClicked;
-
-        // Inventory HUD button
-        if (inventoryHudBtn != null)
-            inventoryHudBtn.clicked += () => InventoryManager.Instance?.ToggleInventory();
 
         // Connect persistent managers to this scene's UIDocument
         DialogueManager.Instance?.ConnectToUI(uiDocument);
@@ -91,6 +99,11 @@ public class GameUIManager : MonoBehaviour
         // Connect ERD overlay — shows database diagram on button click
         ERDManager.Instance?.ConnectToUI(uiDocument);
 
+        // Parallax — query layers and start listening to mouse
+        _sceneBg         = root.Q("scene-bg");
+        _speakerPortrait = root.Q("speaker-portrait");
+        root.RegisterCallback<MouseMoveEvent>(OnMouseMove);
+
         StartStoryIfReady();
     }
 
@@ -99,7 +112,74 @@ public class GameUIManager : MonoBehaviour
         if (burgerMenuButton != null) burgerMenuButton.clicked -= OnBurgerMenuClicked;
         if (sqlMenuButton != null) sqlMenuButton.clicked -= OnSqlQuerieMenuClicked;
         if (saveExitButton != null) saveExitButton.clicked -= OnSaveExitClicked;
-        if (inventoryHudBtn != null) inventoryHudBtn.clicked -= () => InventoryManager.Instance?.ToggleInventory();
+        if (tutorialButton != null) tutorialButton.clicked -= OnTutorialClicked;
+        if (profileButton != null) profileButton.clicked -= OnProfileClicked;
+        if (_root != null) _root.UnregisterCallback<MouseMoveEvent>(OnMouseMove);
+    }
+
+    // ── Parallax ──────────────────────────────────────────────────────────────
+
+    private void Update()
+    {
+        _parallaxCurrent = Vector2.Lerp(_parallaxCurrent, _parallaxTarget, Time.deltaTime * LerpSpeed);
+        ApplyTranslate(_sceneBg,         -_parallaxCurrent.x * BgDepth,   -_parallaxCurrent.y * BgDepth);
+        ApplyTranslate(_speakerPortrait,  -_parallaxCurrent.x * PortDepth, -_parallaxCurrent.y * PortDepth);
+    }
+
+    private void OnMouseMove(MouseMoveEvent e)
+    {
+        var layout = _root.layout;
+        if (layout.width <= 0 || layout.height <= 0) return;
+        float nx = (e.localMousePosition.x / layout.width  - 0.5f) * 2f;
+        float ny = (e.localMousePosition.y / layout.height - 0.5f) * 2f;
+        _parallaxTarget = new Vector2(nx, ny);
+    }
+
+    private static void ApplyTranslate(VisualElement el, float x, float y)
+    {
+        if (el == null) return;
+        el.style.translate = new StyleTranslate(new Translate(
+            new Length(x, LengthUnit.Pixel),
+            new Length(y, LengthUnit.Pixel)));
+    }
+
+    // ─── Tutorial overlay ─────────────────────────────────────────────────────
+
+    private void OnTutorialClicked()
+    {
+        isTutorialOpen = !isTutorialOpen;
+        if (_tutorialOverlay == null) return;
+        _tutorialOverlay.style.display = isTutorialOpen ? DisplayStyle.Flex : DisplayStyle.None;
+        if (isTutorialOpen) _tutorialOverlay.BringToFront();
+    }
+
+    private void CloseTutorial()
+    {
+        isTutorialOpen = false;
+        if (_tutorialOverlay != null) _tutorialOverlay.style.display = DisplayStyle.None;
+    }
+
+    private void OnProfileClicked()
+    {
+        isProfileOpen = !isProfileOpen;
+        if (_profileOverlay == null) return;
+        _profileOverlay.style.display = isProfileOpen ? DisplayStyle.Flex : DisplayStyle.None;
+        if (isProfileOpen)
+        {
+            var nameLabel = _root.Q<Label>("profile-n-name");
+            if (nameLabel != null)
+            {
+                string pName = GameManager.Instance != null ? GameManager.Instance.ActiveProfileName : "DETECTIVE";
+                nameLabel.text = pName.ToUpper();
+            }
+            _profileOverlay.BringToFront();
+        }
+    }
+
+    private void CloseProfile()
+    {
+        isProfileOpen = false;
+        if (_profileOverlay != null) _profileOverlay.style.display = DisplayStyle.None;
     }
 
     // ─── Burger menu ──────────────────────────────────────────────────────────
@@ -110,6 +190,14 @@ public class GameUIManager : MonoBehaviour
         isMenuOpen = !isMenuOpen;
         burgerMenuDropdown.style.display = isMenuOpen ? DisplayStyle.Flex : DisplayStyle.None;
         if (isMenuOpen) burgerMenuDropdown.BringToFront();
+
+        // Closing the burger menu also closes the SQL panel
+        if (!isMenuOpen && isInputMenuOpen)
+        {
+            isInputMenuOpen = false;
+            if (querieInputMenu != null)
+                querieInputMenu.style.display = DisplayStyle.None;
+        }
     }
 
     // ─── SQL terminal toggle ──────────────────────────────────────────────────

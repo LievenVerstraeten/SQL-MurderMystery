@@ -1,11 +1,14 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/MainMenu.uss?fileID=7433441132597879392&amp;guid=065c6dc4896d97841b55af4f5bca2b15&amp;type=3#MainMenu"/>
     <ui:VisualElement name="root" class="root">
-        <ui:Label text="SQL Murder Mystery" name="title" class="title" />
-        <ui:Label text="CASE FILES" name="subtitle" class="subtitle" />
+        <ui:VisualElement name="bg-layer" class="bg-layer" />
+        <ui:VisualElement name="logo-wrap" class="logo-wrap">
+            <ui:VisualElement name="logo-shadow" class="logo-shadow" />
+            <ui:VisualElement name="logo" class="logo" />
+        </ui:VisualElement>
         <ui:VisualElement name="button-container" class="button-container">
             <ui:Button text="PLAY"     name="play-button"     class="menu-btn"/>
-            <ui:Button text="SETTINGS" name="settings-button" class="menu-btn"/>
+            <ui:Button text="PAST CASES" name="settings-button" class="menu-btn"/>
             <ui:Button text="CREDITS"  name="credits-button"  class="menu-btn"/>
             <ui:Button text="EXIT"     name="exit-button"     class="menu-btn exit-btn"/>
         </ui:VisualElement>
@@ -15,7 +18,7 @@
             <ui:Label text="Anton Yarosh"       class="credits-name" />
             <ui:Label text="Lieven Verstraeten" class="credits-name" />
             <ui:Label text="Violet"             class="credits-name credits-name--last" />
-            <ui:Button text="BACK" name="credits-back-button" class="menu-btn" style="width: 220px;"/>
+            <ui:Button text="BACK" name="credits-back-button" class="menu-btn" style="width: 480px;"/>
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

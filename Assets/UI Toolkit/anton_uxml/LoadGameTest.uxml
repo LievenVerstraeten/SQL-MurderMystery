@@ -1,13 +1,38 @@
-<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/anton_uxml/LoadGameTestStyle.uss?fileID=7433441132597879392&amp;guid=ca0918e7c221d3c47b70e2bd97342d0b&amp;type=3#LoadGameTestStyle"/>
-    <ui:VisualElement name="Content" style="flex-grow: 1;">
-        <ui:VisualElement name="TopBar" style="flex-grow: 1;">
-            <ui:Label text="Load Game" name="TitleLabel"/>
-            <ui:Button text="Back" name="BackButton"/>
+    <ui:VisualElement name="root" class="root">
+
+        <!-- Cork board background — same as main menu -->
+        <ui:VisualElement name="bg-layer" class="bg-layer" />
+
+        <!-- Dark tint over cork board -->
+        <ui:VisualElement class="bg-tint" picking-mode="Ignore" />
+
+        <!-- Logo — reused from main menu -->
+        <ui:VisualElement class="logo-wrap">
+            <ui:VisualElement class="logo-shadow" />
+            <ui:VisualElement class="logo" />
         </ui:VisualElement>
-        <ui:ScrollView name="ProfileScroll">
-            <ui:VisualElement name="ProfileList" style="flex-grow: 1;"/>
+
+        <!-- Screen title -->
+        <ui:Label name="TitleLabel" class="screen-title" text="LOAD GAME" />
+
+        <!-- Divider rule -->
+        <ui:VisualElement class="divider" />
+
+        <!-- Profile list -->
+        <ui:ScrollView name="ProfileScroll" class="profile-scroll"
+                       horizontal-scroller-visibility="Hidden"
+                       vertical-scroller-visibility="Hidden">
+            <ui:VisualElement name="ProfileList" class="profile-list" />
         </ui:ScrollView>
+
+        <!-- Empty state -->
+        <ui:Label name="NoProfilesLabel" class="no-profiles-label"
+                  text="No saved investigations yet. Start a new game." />
+
+        <!-- Back to main menu -->
+        <ui:Button name="BackButton" text="← MAIN MENU" class="back-btn" />
+
     </ui:VisualElement>
-    <ui:Label text="No Profiles" name="NoProfilesLabel" style="visibility: hidden;"/>
 </ui:UXML>
