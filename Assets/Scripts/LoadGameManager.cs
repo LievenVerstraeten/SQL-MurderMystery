@@ -46,29 +46,6 @@ public class LoadGameManager : MonoBehaviour
         if (profileList == null) Debug.LogError("[LoadGameManager] 'ProfileList' not found.");
         if (noProfilesLabel == null) Debug.LogError("[LoadGameManager] 'NoProfilesLabel' not found.");
 
-        // ── Title — large, gold, matches main menu style ──────────────────────
-        if (titleLabel != null)
-        {
-            titleLabel.text = "Load Game";
-            titleLabel.style.fontSize = 34f;
-            titleLabel.style.color = new StyleColor(new Color(0.97f, 0.84f, 0.20f));
-            titleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            titleLabel.style.marginTop = 40f;
-            titleLabel.style.marginLeft = 48f;
-            titleLabel.style.marginBottom = 8f;
-        }
-
-        // ── Back button — keep USS red styling, only override size ─────────────
-        if (backButton != null)
-        {
-            backButton.style.fontSize = 16f;
-            backButton.style.paddingTop = backButton.style.paddingBottom = 12f;
-            backButton.style.paddingLeft = backButton.style.paddingRight = 28f;
-            backButton.style.marginTop = 40f;
-            backButton.style.marginRight = 48f;
-            backButton.style.unityFontStyleAndWeight = FontStyle.Bold;
-        }
-
         // Wire back button
         backButton?.RegisterCallback<ClickEvent>(OnBackClicked);
 
@@ -142,19 +119,15 @@ public class LoadGameManager : MonoBehaviour
         var card = new VisualElement();
         card.AddToClassList("profile-card");
 
-        // ── Left section — detective icon placeholder + name ──────────────────
+        // ── Left section — name ───────────────────────────────────────────────
         var leftSection = new VisualElement();
         leftSection.AddToClassList("card-left");
-
-        var iconLabel = new Label { text = "🔍" };
-        iconLabel.AddToClassList("card-icon");
 
         var nameLabel = new Label { text = profileName };
         nameLabel.AddToClassList("card-name");
         nameLabel.style.fontSize = 20f;
         nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
 
-        leftSection.Add(iconLabel);
         leftSection.Add(nameLabel);
 
         // ── Right section — case and timestamp ────────────────────────────────

@@ -78,7 +78,7 @@ public class CaseManager : MonoBehaviour
             "id TEXT PRIMARY KEY, fragment TEXT, origin TEXT, known_language TEXT, decoded INTEGER)");
         cipherTable.InsertStatements.Add("INSERT INTO cipher_fragments VALUES ('CF001','WRGOABABD','Rubaiyat back cover','Unknown',0)");
         cipherTable.InsertStatements.Add("INSERT INTO cipher_fragments VALUES ('CF002','MLIAOI','Rubaiyat back cover','Unknown',0)");
-        cipherTable.InsertStatements.Add("INSERT INTO cipher_fragments VALUES ('CF003','WTMTSTMSA','Rubaiyat back cover','Unknown',0)");
+        cipherTable.InsertStatements.Add("INSERT INTO cipher_fragments VALUES ('CF003','WTMTSMSA','Rubaiyat back cover','Unknown',0)");
         cipherTable.InsertStatements.Add("INSERT INTO cipher_fragments VALUES ('CF004','ITTMTSAS','Rubaiyat back cover','Unknown',0)");
         cipherTable.InsertStatements.Add("INSERT INTO cipher_fragments VALUES ('CF005','AIAQC','Rubaiyat back cover','Unknown',0)");
         cipherTable.InsertStatements.Add("INSERT INTO cipher_fragments VALUES ('CF006','TAMAM SHUD','Torn page, trouser pocket','Persian',1)");
@@ -265,7 +265,7 @@ public class CaseManager : MonoBehaviour
             "SELECT", anyOrder: true);
         t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF001"}, {"fragment","WRGOABABD"} });
         t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF002"}, {"fragment","MLIAOI"} });
-        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF003"}, {"fragment","WTMTSTMSA"} });
+        t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF003"}, {"fragment","WTMTSMSA"} });
         t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF004"}, {"fragment","ITTMTSAS"} });
         t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF005"}, {"fragment","AIAQC"} });
         t9.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF006"}, {"fragment","TAMAM SHUD"} });
@@ -288,7 +288,7 @@ public class CaseManager : MonoBehaviour
             "Find fragments that contain the pattern 'TSM' using LIKE.",
             "SELECT * FROM cipher_fragments WHERE fragment LIKE '%TSM%';",
             "LIKE");
-        t11.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF003"}, {"fragment","WTMTSTMSA"} });
+        t11.ExpectedRows.Add(new Dictionary<string, string> { {"id","CF003"}, {"fragment","WTMTSMSA"} });
         case1.Tasks.Add(t11);
 
         // Task 12 — SELECT witnesses WHERE interviewed = 0 ORDER BY name ASC (all 4)
@@ -415,7 +415,7 @@ public class CaseManager : MonoBehaviour
             "Inspect the structure of the sa_police_records table.",
             "SELECT sql FROM internet.sqlite_master WHERE name = 'sa_police_records';",
             "sqlite_master", partialMatch: true);
-        t26.ExpectedRows.Add(new Dictionary<string, string> { {"name","sa_police_records"} });
+        t26.ExpectedRows.Add(new Dictionary<string, string> { {"sql","CREATE TABLE sa_police_records (id INTEGER PRIMARY KEY, headline TEXT, date TEXT, keywords TEXT, content TEXT, source TEXT)"} });
         case1.Tasks.Add(t26);
 
         // Task 27 — UNION across all internet tables (8 rows, any order)
@@ -485,7 +485,7 @@ public class CaseManager : MonoBehaviour
             "SELECT * FROM logfile WHERE id = '01';",
             "SELECT", partialMatch: true);
         t35.ExpectedRows.Add(new Dictionary<string, string> {
-            {"id","01"}, {"namecase","Murder of Somerton Man"}, {"status","Investigated - Inconclusive"} });
+            {"id","01"}, {"namecase","Murder of Somerton Man"} });
         case1.Tasks.Add(t35);
 
         AllCases.Add(case1);

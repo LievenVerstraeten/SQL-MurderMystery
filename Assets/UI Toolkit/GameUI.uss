@@ -15,10 +15,6 @@
  *   danger       rgb(180, 65, 65)           exit / error
  */
 
-/* ═══════════════════════════════════════════════════════════════════
-   KEYFRAME ANIMATIONS
-   ═══════════════════════════════════════════════════════════════════ */
-
 /* Continue button — slow amber blink to draw attention */
 @keyframes continue-blink {
     0%   { opacity: 1.0; }
@@ -48,6 +44,171 @@
     100% { opacity: 1.0; }
 }
 
+/* Button entrance — bouncy pop when panel becomes visible */
+@keyframes btn-pop {
+    0%   { scale: 0.82; opacity: 0.5; }
+    55%  { scale: 1.12; opacity: 1.0; }
+    80%  { scale: 0.95; }
+    100% { scale: 1.00; opacity: 1.0; }
+}
+
+/* CRT scanline — single bright band scrolling top-to-bottom */
+@keyframes scanline-scroll {
+    from { top: -20%; }
+    to   { top: 110%; }
+}
+
+/* Typewriter cursor — sharp blink (on/off at 50%) */
+@keyframes cursor-blink {
+    0%   { opacity: 1; }
+    49%  { opacity: 1; }
+    50%  { opacity: 0; }
+    99%  { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Ink stamp — slap in, hold, fade out */
+@keyframes stamp-appear {
+    0%   { opacity: 0;   scale: 1.9; }
+    18%  { opacity: 1;   scale: 0.93; }
+    35%  { opacity: 1;   scale: 1.0; }
+    72%  { opacity: 0.9; scale: 1.0; }
+    100% { opacity: 0;   scale: 1.0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ROOT
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCENE BACKGROUND + VIGNETTE + FADE
+   ═══════════════════════════════════════════════════════════════════ */
+
+.scene-bg {
+    position: absolute;
+    left: -20px; top: -20px; right: -20px; bottom: -20px;
+    background-color: rgb(14, 10, 8);
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* 12 scene backgrounds — DialogueManager swaps these classes on scene-bg */
+.bg-first-scene {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0003_First-Scene-Bg.png?fileID=2800000&guid=8e025c172213e4e4588797cac22f46a0&type=3#Untitled39_0003s_0003_First-Scene-Bg");
+}
+.bg-wormhole {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0011_Wormole-Bg.png?fileID=2800000&guid=9223d813842a91e40a840f9c324b9894&type=3#Untitled39_0003s_0011_Wormole-Bg");
+}
+.bg-somerton-beach {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0005_Somerton-Beach-Bg.png?fileID=2800000&guid=125b09d1d1bb26c4fab35a7f2780e8ae&type=3#Untitled39_0003s_0005_Somerton-Beach-Bg");
+}
+.bg-timehound {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0002_Somerton-Beach-Time-Hound-Bg.png?fileID=2800000&guid=f7cf0672079381a4196086e5e0f6ae96&type=3#Untitled39_0003s_0002_Somerton-Beach-Time-Hound-Bg");
+}
+.bg-thinking {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0001_Thinking_Learning-Bg.png?fileID=2800000&guid=0fa8de6e95a7e47449034cbb9d710c0c&type=3#Untitled39_0003s_0001_Thinking_Learning-Bg");
+}
+.bg-jessica-outside {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0009_Moseley-Street-Jessica-Inside-Bg.png?fileID=2800000&guid=44c6d534a48c8804f881c9d3c9adbc39&type=3#Untitled39_0003s_0009_Moseley-Street-Jessica-Inside-Bg");
+}
+.bg-jessica-interior {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0010_Jessica-Interior-Bg.png?fileID=2800000&guid=e335e98e79c20b840ab680da13a828fe&type=3#Untitled39_0003s_0010_Jessica-Interior-Bg");
+}
+.bg-after-jessica {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0012_After-Jessica-Outside-Bg.png?fileID=2800000&guid=8e280fe9932a516449a6083cefebb866&type=3#Untitled39_0003s_0012_After-Jessica-Outside-Bg");
+}
+.bg-escape-room {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0006_Escape-Room-Bg.png?fileID=2800000&guid=3f949f10ea197c5488fb165047e48ed9&type=3#Untitled39_0003s_0006_Escape-Room-Bg");
+}
+.bg-neil-interview {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0008_Neil-Halilton-Interview-Bg.png?fileID=2800000&guid=37d2e7ab30c5cf94bab8243f138d5238&type=3#Untitled39_0003s_0008_Neil-Halilton-Interview-Bg");
+}
+.bg-cleland {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0004_Uni-Lab-Cleland-Bg.png?fileID=2800000&guid=3e23bc0c06dd9e44e862320d373f2180&type=3#Untitled39_0003s_0004_Uni-Lab-Cleland-Bg");
+}
+.bg-coffee {
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/Untitled39_0003s_0007_Coffee-Momeng-Bg.png?fileID=2800000&guid=6a59f3aec0918e444ab0e468341e5839&type=3#Untitled39_0003s_0007_Coffee-Momeng-Bg");
+}
+
+/* Vignette — darkens corners for vintage atmosphere, purely decorative */
+.vignette-overlay {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-image: url("project://database/Assets/Textures/actual%20assets/backgrounds/vindette%20for%20backgrounds.png?fileID=2800000&guid=dad2106eebca34f4b995bd46f9916acd&type=3#vindette%20for%20backgrounds");
+    -unity-background-scale-mode: stretch-to-fill;
+    opacity: 0.85;
+}
+
+/* Black screen used for fade-in/out transitions between scenes.
+   Starts fully opaque (opacity 1) so the game opens to black until first bg fades in. */
+.scene-fade {
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background-color: rgb(0, 0, 0);
+    opacity: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ATMOSPHERE OVERLAYS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* CSS vignette — handled by .vignette-overlay texture above; this element is kept as a hook */
+.vignette-css {
+    display: none;
+}
+
+/* Single soft band of light drifting downward — CRT scan effect */
+.scanline-sweep {
+    position: absolute;
+    left: 0; right: 0;
+    top: -20%;
+    height: 18%;
+    background-image: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.022),
+        rgba(255, 255, 255, 0)
+    );
+    animation-name: scanline-scroll;
+    animation-duration: 7s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+
+/* ── Task pass stamp ─────────────────────────────────────────────── */
+
+.task-stamp {
+    display: none;
+    position: absolute;
+    left: 0; top: 0; right: 0; bottom: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-stamp--active {
+    display: flex;
+    animation-name: stamp-appear;
+    animation-duration: 2.5s;
+    animation-timing-function: ease-out;
+    animation-iteration-count: 1;
+}
+
+.task-stamp-label {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 46px;
+    color: rgba(155, 38, 38, 0.88);
+    border-width: 5px;
+    border-color: rgba(155, 38, 38, 0.80);
+    border-radius: 5px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 24px;
+    padding-right: 24px;
+    letter-spacing: 8px;
+    rotate: -9deg;
+    -unity-font-style: bold;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    ROOT
    ═══════════════════════════════════════════════════════════════════ */
@@ -56,7 +217,7 @@
     width: 100%;
     height: 100%;
     padding: 18px;
-    background-color: rgb(20, 15, 13);
+    background-color: rgba(0, 0, 0, 0);
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
 }
 
@@ -76,30 +237,32 @@
     height: 54px;
     font-size: 14px;
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    background-color: rgb(40, 32, 28);
+    background-image: url("project://database/Assets/Textures/actual%20assets/loading%20new%20game%20-%20name/proceed%20button.png?fileID=2800000&guid=9ccb91f489f4a2a4b9757175198f434f&type=3#proceed%20button");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
     color: rgb(212, 175, 55);
-    border-top-color: rgba(242, 202, 80, 0.70);
-    border-bottom-color: rgba(212, 175, 55, 0.28);
-    border-left-color: rgba(212, 175, 55, 0.28);
-    border-right-color: rgba(212, 175, 55, 0.28);
-    border-width: 1px;
-    border-radius: 3px;
     padding: 10px;
     -unity-text-align: middle-center;
     scale: 1;
-    transition-property: scale, background-color, border-top-color, border-bottom-color, border-left-color, border-right-color, color;
-    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s;
-    transition-timing-function: ease-out, ease-out, ease-out, ease-out, ease-out, ease-out, ease-out;
+    transition-property: scale, -unity-background-image-tint-color, color;
+    transition-duration: 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out;
+    animation-name: btn-pop;
+    animation-duration: 0.28s;
+    animation-timing-function: ease-out;
 }
 
 .icon-button:hover {
-    background-color: rgb(58, 48, 40);
-    border-top-color: rgb(255, 224, 136);
-    border-bottom-color: rgba(242, 202, 80, 0.55);
-    border-left-color: rgba(242, 202, 80, 0.55);
-    border-right-color: rgba(242, 202, 80, 0.55);
+    -unity-background-image-tint-color: rgb(255, 238, 190);
     color: rgb(255, 224, 136);
     scale: 1.08;
+}
+
+.icon-button:active {
+    scale: 0.93;
 }
 
 .btn-icon {
@@ -117,14 +280,9 @@
     top: 8px;
     left: 89px;
     flex-direction: row;
-    background-color: rgb(40, 32, 28);
-    border-top-color: rgba(242, 202, 80, 0.65);
-    border-bottom-color: rgba(212, 175, 55, 0.25);
-    border-left-color: rgba(212, 175, 55, 0.25);
-    border-right-color: rgba(212, 175, 55, 0.25);
-    border-width: 1px;
-    border-radius: 3px;
-    padding: 10px 12px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    padding: 6px 8px;
     align-items: center;
 }
 
@@ -141,29 +299,31 @@
     font-size: 10px;
     letter-spacing: 1px;
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    background-color: rgb(40, 32, 28);
+    background-image: url("project://database/Assets/Textures/actual%20assets/loading%20new%20game%20-%20name/proceed%20button.png?fileID=2800000&guid=9ccb91f489f4a2a4b9757175198f434f&type=3#proceed%20button");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
     color: rgb(212, 175, 55);
-    border-top-color: rgba(242, 202, 80, 0.60);
-    border-bottom-color: rgba(212, 175, 55, 0.22);
-    border-left-color: rgba(212, 175, 55, 0.22);
-    border-right-color: rgba(212, 175, 55, 0.22);
-    border-width: 1px;
-    border-radius: 3px;
     -unity-text-align: middle-center;
     scale: 1;
-    transition-property: scale, background-color, border-top-color, border-bottom-color, border-left-color, border-right-color, color;
-    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s, 0.15s;
-    transition-timing-function: ease-out, ease-out, ease-out, ease-out, ease-out, ease-out, ease-out;
+    transition-property: scale, -unity-background-image-tint-color, color;
+    transition-duration: 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out;
+    animation-name: btn-pop;
+    animation-duration: 0.28s;
+    animation-timing-function: ease-out;
 }
 
 .menu-button:hover {
-    background-color: rgb(58, 48, 40);
-    border-top-color: rgb(255, 224, 136);
-    border-bottom-color: rgba(242, 202, 80, 0.55);
-    border-left-color: rgba(242, 202, 80, 0.55);
-    border-right-color: rgba(242, 202, 80, 0.55);
+    -unity-background-image-tint-color: rgb(255, 238, 190);
     color: rgb(255, 224, 136);
     scale: 1.08;
+}
+
+.menu-button:active {
+    scale: 0.93;
 }
 
 .sql-button {
@@ -174,21 +334,13 @@
 .save-exit-button {
     font-size: 7px;
     margin-right: 0;
-    background-color: rgb(38, 18, 18);
-    border-top-color: rgba(200, 80, 80, 0.70);
-    border-bottom-color: rgba(180, 65, 65, 0.28);
-    border-left-color: rgba(180, 65, 65, 0.28);
-    border-right-color: rgba(180, 65, 65, 0.28);
-    color: rgb(200, 100, 100);
+    color: rgb(210, 110, 110);
+    -unity-background-image-tint-color: rgba(180, 100, 100, 0.85);
 }
 
 .save-exit-button:hover {
-    background-color: rgb(55, 24, 24);
-    border-top-color: rgb(230, 110, 110);
-    border-bottom-color: rgba(210, 85, 85, 0.55);
-    border-left-color: rgba(210, 85, 85, 0.55);
-    border-right-color: rgba(210, 85, 85, 0.55);
-    color: rgb(230, 130, 130);
+    -unity-background-image-tint-color: rgba(220, 110, 110, 1.0);
+    color: rgb(240, 140, 140);
     scale: 1.08;
 }
 
@@ -239,6 +391,7 @@
     padding-left: 40px;
     padding-right: 40px;
     letter-spacing: 1px;
+    -unity-text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .cutscene-continue {
@@ -270,6 +423,41 @@
     scale: 1.06;
 }
 
+/* ── Image cutscene — fullscreen art with subtitle text ──────────────────── */
+.cutscene-layer--image {
+    background-color: rgba(0, 0, 0, 0);
+    justify-content: flex-end;
+    align-items: stretch;
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.cutscene-img-debbiepoof {
+    background-image: url("project://database/Assets/Textures/cutscenes/debbiepoof.png?fileID=2800000&guid=608e6966c4a96d643b0bdb36071dc947&type=3#debbiepoof");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.cutscene-img-wormhole {
+    background-image: url("project://database/Assets/Textures/cutscenes/jumping%20wormhole.png?fileID=2800000&guid=e5974929f9441384ebad9cea4895986c&type=3#jumping%20wormhole");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+.cutscene-text--subtitle {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 15px;
+    color: rgb(237, 224, 220);
+    white-space: normal;
+    -unity-text-align: middle-center;
+    background-color: rgba(0, 0, 0, 0.65);
+    max-width: none;
+    width: 100%;
+    padding-top: 18px;
+    padding-bottom: 18px;
+    padding-left: 40px;
+    padding-right: 40px;
+    margin-bottom: 0;
+    letter-spacing: 1px;
+}
+
 .dialogue-layer {
     position: absolute;
     left: 0;
@@ -279,31 +467,32 @@
     flex-direction: row;
     align-items: flex-end;
     display: none;
+    overflow: visible;
 }
 
 .speaker-portrait {
-    width: 260px;
-    height: 300px;
-    margin-left: 30px;
-    margin-bottom: 0;
+    position: absolute;
+    bottom: -100px;
+    left: 15px;
+    width: 360px;
+    height: 480px;
     background-color: rgba(0, 0, 0, 0);
     border-width: 0;
-    flex-shrink: 0;
     -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
 }
 
 .dialogue-box {
     flex-grow: 1;
-    margin-left: 20px;
+    margin-left: 300px;
     margin-right: 30px;
     margin-bottom: 20px;
-    background-color: rgba(40, 32, 28, 0.97);
-    border-top-color: rgba(242, 202, 80, 0.80);
-    border-bottom-color: rgba(212, 175, 55, 0.22);
-    border-left-color: rgba(212, 175, 55, 0.35);
-    border-right-color: rgba(212, 175, 55, 0.18);
-    border-width: 1px;
-    border-radius: 3px;
+    background-image: url("project://database/Assets/Textures/actual%20assets/Untitled39_0001_Speech-Bubble.png?fileID=2800000&guid=d9ae14ae8e5cd6a46a41a0bf5033140d&type=3#Untitled39_0001_Speech-Bubble");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
     padding-top: 18px;
     padding-bottom: 18px;
     padding-left: 32px;
@@ -312,19 +501,22 @@
 
 .speaker-name {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
-    font-size: 12px;
-    color: rgb(242, 202, 80);
+    font-size: 13px;
+    color: rgb(140, 100, 28);
+    -unity-font-style: bold;
     margin-bottom: 10px;
     letter-spacing: 2px;
+    -unity-text-shadow: 0px 1px 2px rgba(255, 200, 80, 0.3);
 }
 
 .dialogue-text {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 12px;
-    color: rgb(237, 224, 220);
+    color: rgb(42, 28, 14);
     white-space: normal;
     flex-grow: 1;
     margin-bottom: 12px;
+    -unity-text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.35);
 }
 
 /* Continue button — blinks slowly to signal it's clickable */
@@ -387,6 +579,7 @@
     white-space: normal;
     flex-grow: 1;
     letter-spacing: 1px;
+    -unity-text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .debbie-hint-btn {
@@ -469,6 +662,7 @@
     white-space: normal;
     flex-grow: 1;
     margin-bottom: 12px;
+    -unity-text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.55);
 }
 
 .hint-popup-close {
@@ -576,30 +770,32 @@
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 10px;
     color: rgb(212, 175, 55);
-    background-color: rgb(40, 32, 28);
-    border-top-color: rgba(242, 202, 80, 0.70);
-    border-bottom-color: rgba(212, 175, 55, 0.28);
-    border-left-color: rgba(212, 175, 55, 0.28);
-    border-right-color: rgba(212, 175, 55, 0.28);
-    border-width: 1px;
-    border-radius: 3px;
+    background-image: url("project://database/Assets/Textures/actual%20assets/loading%20new%20game%20-%20name/proceed%20button.png?fileID=2800000&guid=9ccb91f489f4a2a4b9757175198f434f&type=3#proceed%20button");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
     padding: 10px;
     -unity-text-align: middle-center;
     margin-right: 6px;
     scale: 1;
-    transition-property: scale, background-color, border-top-color, color;
-    transition-duration: 0.15s, 0.15s, 0.15s, 0.15s;
-    transition-timing-function: ease-out, ease-out, ease-out, ease-out;
+    transition-property: scale, -unity-background-image-tint-color, color;
+    transition-duration: 0.15s, 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out, ease-out;
+    animation-name: btn-pop;
+    animation-duration: 0.28s;
+    animation-timing-function: ease-out;
 }
 
 .inventory-hud-btn:hover {
-    background-color: rgb(58, 48, 40);
-    border-top-color: rgb(255, 224, 136);
-    border-bottom-color: rgba(242, 202, 80, 0.55);
-    border-left-color: rgba(242, 202, 80, 0.55);
-    border-right-color: rgba(242, 202, 80, 0.55);
+    -unity-background-image-tint-color: rgb(255, 238, 190);
     color: rgb(255, 224, 136);
     scale: 1.08;
+}
+
+.inventory-hud-btn:active {
+    scale: 0.93;
 }
 
 .header-right {
@@ -689,42 +885,91 @@
 .sql-output-text {
     -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
     font-size: 11px;
-    color: rgb(175, 162, 148);
+    color: rgb(200, 175, 130);
     white-space: normal;
 }
 
+/* ── Debbie portraits ────────────────────────────────────────────── */
 .portrait-debbie {
-    background-image: url("project://database/Assets/Textures/Tutorial_Guy.png");
+    background-image: url("project://database/Assets/Textures/sprites/debbie/debbie_normal.png?fileID=2800000&guid=69a8bf8cfe3e5dc4486e6fc5a6e66ce1&type=3#debbie_normal");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-debbie-mad {
+    background-image: url("project://database/Assets/Textures/sprites/debbie/debbie_mad.png?fileID=2800000&guid=dd8ee26b62205e44f895dd37ac909697&type=3#debbie_mad");
     -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(0, 0, 0, 0);
 }
 
+/* ── Detective portraits ──────────────────────────────────────────── */
 .portrait-detective {
-    background-image: url("project://database/Assets/Textures/detective.png");
+    background-image: url("project://database/Assets/Textures/sprites/detective_main_character/openeyes_speaking_neutral.png?fileID=2800000&guid=8872bc07b7b8df44da34201d0d57e0d7&type=3#openeyes_speaking_neutral");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-detective-smile {
+    background-image: url("project://database/Assets/Textures/sprites/detective_main_character/openeyes_smile.png?fileID=2800000&guid=bf155c52f32fcb54e97c03e51f7cb44f&type=3#openeyes_smile");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-detective-frown {
+    background-image: url("project://database/Assets/Textures/sprites/detective_main_character/openeyes_frown.png?fileID=2800000&guid=e16a18a5f5ec623469f4ebfc8c1c5225&type=3#openeyes_frown");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-detective-doubt {
+    background-image: url("project://database/Assets/Textures/sprites/detective_main_character/openeyes_doubtspeak.png?fileID=2800000&guid=a17ac3c8e2549014b967dbd447bf84d5&type=3#openeyes_doubtspeak");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-detective-stubborn {
+    background-image: url("project://database/Assets/Textures/sprites/detective_main_character/closedeyes_mouthclosed_stubborn.png?fileID=2800000&guid=43a5946388237e745b422eeecf9b1596&type=3#closedeyes_mouthclosed_stubborn");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-detective-proud {
+    background-image: url("project://database/Assets/Textures/sprites/detective_main_character/closedeyes_mouthopen_happy_proud.png?fileID=2800000&guid=e94e3b999278e574e9bef6d5b34c2e63&type=3#closedeyes_mouthopen_happy_proud");
     -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(0, 0, 0, 0);
 }
 
+/* ── Jessica portraits ───────────────────────────────────────────── */
 .portrait-jessica {
-    background-image: url("project://database/Assets/Textures/jessica.png");
+    background-image: url("project://database/Assets/Textures/sprites/jessica/jessica_average.png?fileID=2800000&guid=c8a0e5e6ebc4c5340936fcc7cb7938c9&type=3#jessica_average");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-jessica-screaming {
+    background-image: url("project://database/Assets/Textures/sprites/jessica/jessica_screaming.png?fileID=2800000&guid=b62bcff34a8864a4ab8311f279319df3&type=3#jessica_screaming");
     -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(0, 0, 0, 0);
 }
 
+/* ── Neil portraits ───────────────────────────────────────────────── */
 .portrait-neil {
-    background-image: url("project://database/Assets/Textures/neil.png");
+    background-image: url("project://database/Assets/Textures/sprites/neil/neil_average.png?fileID=2800000&guid=5d97d67bcd1fb624b9121a1498fb2046&type=3#neil_average");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-neil-speaking {
+    background-image: url("project://database/Assets/Textures/sprites/neil/neil_speaking.png?fileID=2800000&guid=6cbf8a531ac3b01499d13697580126e0&type=3#neil_speaking");
     -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(0, 0, 0, 0);
 }
 
-.portrait-cleland {
-    background-image: url("project://database/Assets/Textures/cleland.png");
-    -unity-background-scale-mode: scale-to-fit;
-    background-color: rgba(0, 0, 0, 0);
-}
-
+/* ── Timehound portraits ─────────────────────────────────────────── */
 .portrait-timehound {
-    background-image: url("project://database/Assets/Textures/randomtimehound.png");
+    background-image: url("project://database/Assets/Textures/sprites/timehound/timehound_openeyes_average_closedmouth.png?fileID=2800000&guid=b4a29f02d59b8484385fd46d00f39f76&type=3#timehound_openeyes_average_closedmouth");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-timehound-speaking {
+    background-image: url("project://database/Assets/Textures/sprites/timehound/timehound_speaking.png?fileID=2800000&guid=876bea8dc6b57354fbff596489af33c2&type=3#timehound_speaking");
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+}
+.portrait-timehound-happy {
+    background-image: url("project://database/Assets/Textures/sprites/timehound/timehound_closedeyes_openmouth_happy.png?fileID=2800000&guid=0dbfaf3da81e26b4291e9c0cba61f336&type=3#timehound_closedeyes_openmouth_happy");
     -unity-background-scale-mode: scale-to-fit;
     background-color: rgba(0, 0, 0, 0);
 }
@@ -913,3 +1158,261 @@
         .text-size-xl .sql-output-text   { font-size: 22px; }
         .text-size-xl .card-body         { font-size: 22px; }
         .text-size-xl .speaker-name      { font-size: 22px; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   TUTORIAL OVERLAY
+   ═══════════════════════════════════════════════════════════════════ */
+
+.tutorial-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 16px;
+    background-color: rgba(38, 24, 8, 1);
+    flex-shrink: 0;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(140, 100, 28);
+}
+
+.tutorial-title {
+    flex-grow: 1;
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 14px;
+    color: rgb(140, 100, 28);
+    -unity-font-style: bold;
+    letter-spacing: 3px;
+}
+
+.tutorial-close-btn {
+    width: 44px;
+    height: 44px;
+    background-image: url('project://database/Assets/Textures/actual%20assets/clue%20board/Untitled39_0000s_0000_Button-Close.png?fileID=2800000&guid=653d1e86460b90649bc7cbc2b3bb651b&type=3#Untitled39_0000s_0000_Button-Close');
+    -unity-background-scale-mode: scale-to-fit;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+}
+
+.tutorial-content {
+    padding-top: 28px;
+    padding-bottom: 40px;
+    padding-left: 64px;
+    padding-right: 64px;
+    max-width: 740px;
+    align-self: center;
+    width: 100%;
+}
+
+.tutorial-section-title {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(242, 202, 80);
+    letter-spacing: 3px;
+    -unity-font-style: bold;
+    margin-top: 28px;
+    margin-bottom: 14px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(212, 175, 55, 0.28);
+    padding-bottom: 6px;
+}
+
+.tutorial-body {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(205, 193, 172);
+    white-space: normal;
+    margin-bottom: 10px;
+}
+
+.tutorial-divider {
+    height: 1px;
+    background-color: rgba(212, 175, 55, 0.12);
+    margin-top: 10px;
+    margin-bottom: 2px;
+}
+
+.tutorial-row {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(255, 255, 255, 0.04);
+}
+
+.tutorial-key {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 10px;
+    color: rgb(212, 175, 55);
+    -unity-font-style: bold;
+    width: 130px;
+    flex-shrink: 0;
+    letter-spacing: 1px;
+    padding-top: 1px;
+}
+
+.tutorial-val {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 11px;
+    color: rgb(205, 193, 172);
+    white-space: normal;
+    flex-grow: 1;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROFILE OVERLAY
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Board card — uses the corkboard image as background */
+.profile-card {
+    width: 720px;
+    height: 380px;
+    background-image: url("project://database/Assets/Textures/actual%20assets/clue%20board/example%20of%20how%20it%20looks.png?fileID=2800000&guid=c2bd95316f279694aaeada7eee7fa241&type=3#example%20of%20how%20it%20looks");
+    -unity-background-scale-mode: stretch-to-fill;
+    flex-direction: row;
+    padding-top: 44px;
+    padding-bottom: 44px;
+    padding-left: 52px;
+    padding-right: 52px;
+    align-items: stretch;
+}
+
+/* Left column: avatar + name */
+.profile-left {
+    width: 170px;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.profile-avatar {
+    width: 110px;
+    height: 110px;
+    background-image: url("project://database/Assets/Textures/actual%20assets/profile_icon.png");
+    -unity-background-scale-mode: scale-to-fit;
+    border-radius: 60px;
+    margin-bottom: 12px;
+}
+
+.profile-avatar-name {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 10px;
+    color: rgb(242, 202, 80);
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    margin-bottom: 6px;
+}
+
+.profile-avatar-status {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(120, 190, 110);
+    -unity-text-align: middle-center;
+    letter-spacing: 1px;
+}
+
+/* Vertical rule between columns */
+.profile-vdivider {
+    width: 1px;
+    background-color: rgba(212, 175, 55, 0.30);
+    margin-left: 18px;
+    margin-right: 22px;
+    flex-shrink: 0;
+}
+
+/* Right column: dossier text */
+.profile-right {
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.profile-dossier-title {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 10px;
+    color: rgb(140, 100, 28);
+    letter-spacing: 3px;
+    -unity-font-style: bold;
+    margin-bottom: 14px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(212, 175, 55, 0.25);
+    padding-bottom: 6px;
+}
+
+.profile-info-row {
+    flex-direction: row;
+    align-items: flex-start;
+    margin-bottom: 7px;
+}
+
+.profile-info-key {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(175, 148, 80);
+    -unity-font-style: bold;
+    width: 90px;
+    flex-shrink: 0;
+    letter-spacing: 1px;
+    padding-top: 1px;
+}
+
+.profile-info-val {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 10px;
+    color: rgb(210, 198, 175);
+    white-space: normal;
+    flex-grow: 1;
+}
+
+.profile-notes-divider {
+    height: 1px;
+    background-color: rgba(212, 175, 55, 0.18);
+    margin-top: 6px;
+    margin-bottom: 10px;
+}
+
+.profile-notes-title {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(175, 148, 80);
+    letter-spacing: 2px;
+    -unity-font-style: bold;
+    margin-bottom: 6px;
+}
+
+.profile-notes-body {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 9px;
+    color: rgb(190, 178, 155);
+    white-space: normal;
+    flex-grow: 1;
+}
+
+/* Dismiss button below the card */
+.profile-close-btn {
+    -unity-font: url("project://database/Assets/Fonts/SpecialElite.ttf");
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgb(175, 162, 148);
+    background-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(212, 175, 55, 0.35);
+    border-bottom-color: rgba(212, 175, 55, 0.10);
+    border-left-color: rgba(212, 175, 55, 0.10);
+    border-right-color: rgba(212, 175, 55, 0.10);
+    border-width: 1px;
+    border-radius: 3px;
+    margin-top: 18px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 24px;
+    padding-right: 24px;
+    scale: 1;
+    transition-property: scale, color, border-top-color;
+    transition-duration: 0.12s, 0.12s, 0.12s;
+    transition-timing-function: ease-out, ease-out, ease-out;
+}
+
+.profile-close-btn:hover {
+    color: rgb(242, 202, 80);
+    border-top-color: rgba(242, 202, 80, 0.70);
+    scale: 1.05;
+}

@@ -52,21 +52,21 @@ public class ERDManager : MonoBehaviour
 {
     public static ERDManager Instance { get; private set; }
 
-    // ─── Palette (matches game theme) ────────────────────────────────────────
-    private static readonly Color C_BG = new Color(0.06f, 0.06f, 0.06f); // near-black card bg
-    private static readonly Color C_BORDER = new Color(0.90f, 0.78f, 0.20f); // gold border
-    private static readonly Color C_HDR_BG = new Color(0.14f, 0.12f, 0.04f); // dark gold tint header bg
-    private static readonly Color C_HDR_TEXT = new Color(0.97f, 0.84f, 0.20f); // yellow table name
-    private static readonly Color C_HDR_DB = new Color(0.70f, 0.60f, 0.18f); // dimmer gold sub-label
-    private static readonly Color C_ROW_DEFAULT = new Color(0.10f, 0.10f, 0.10f); // very dark row
-    private static readonly Color C_ROW_PK = new Color(0.16f, 0.14f, 0.04f); // warm PK row
-    private static readonly Color C_ROW_FK = new Color(0.06f, 0.12f, 0.18f); // cool FK row
-    private static readonly Color C_ROW_DIVIDER = new Color(0.20f, 0.20f, 0.20f);
-    private static readonly Color C_COL_NAME = new Color(0.95f, 0.95f, 0.95f); // white text
-    private static readonly Color C_COL_TYPE = new Color(0.55f, 0.55f, 0.55f); // grey type
-    private static readonly Color C_BADGE_PK = new Color(0.97f, 0.84f, 0.20f); // gold
-    private static readonly Color C_BADGE_FK = new Color(0.35f, 0.75f, 1.00f); // cyan
-    private static readonly Color C_ARROW = new Color(0.97f, 0.84f, 0.20f); // yellow arrows
+    // ─── Palette (dark gold + warm brown aesthetic) ───────────────────────────
+    private static readonly Color C_BG = new Color(0.08f, 0.06f, 0.04f);       // warm near-black
+    private static readonly Color C_BORDER = new Color(0.55f, 0.40f, 0.11f);   // dark gold border
+    private static readonly Color C_HDR_BG = new Color(0.18f, 0.12f, 0.04f);   // dark brown header
+    private static readonly Color C_HDR_TEXT = new Color(0.55f, 0.40f, 0.11f); // dark gold table name
+    private static readonly Color C_HDR_DB = new Color(0.40f, 0.28f, 0.09f);   // dimmer dark gold
+    private static readonly Color C_ROW_DEFAULT = new Color(0.09f, 0.07f, 0.05f); // warm dark row
+    private static readonly Color C_ROW_PK = new Color(0.16f, 0.11f, 0.04f);   // warm PK row
+    private static readonly Color C_ROW_FK = new Color(0.06f, 0.10f, 0.16f);   // cool FK row
+    private static readonly Color C_ROW_DIVIDER = new Color(0.22f, 0.16f, 0.08f); // warm divider
+    private static readonly Color C_COL_NAME = new Color(0.82f, 0.70f, 0.54f); // warm cream
+    private static readonly Color C_COL_TYPE = new Color(0.50f, 0.38f, 0.24f); // muted warm
+    private static readonly Color C_BADGE_PK = new Color(0.55f, 0.40f, 0.11f); // dark gold
+    private static readonly Color C_BADGE_FK = new Color(0.35f, 0.70f, 0.95f); // cyan (FK stays distinct)
+    private static readonly Color C_ARROW = new Color(0.55f, 0.40f, 0.11f);    // dark gold arrows
 
     // ─── Layout constants ─────────────────────────────────────────────────────
     private const float CARD_W = 210f;   // card width

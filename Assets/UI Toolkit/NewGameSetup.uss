@@ -1,0 +1,165 @@
+/*
+ * NewGameSetup.uss — Queryhound: Case of Somerton Man
+ * Name entry screen with parallax depth layers.
+ */
+
+@keyframes input-rise {
+    0%   { opacity: 0; translate: 0 18px; }
+    100% { opacity: 1; translate: 0 0; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ROOT
+   ═══════════════════════════════════════════════════════════════════ */
+
+.root {
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BACKGROUND LAYER (oversized for parallax headroom)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.bg-layer {
+    position: absolute;
+    left: -40px;
+    top: -40px;
+    right: -40px;
+    bottom: -40px;
+    background-image: url("project://database/Assets/Textures/actual%20assets/loading%20new%20game%20-%20name/background.png?fileID=2800000&guid=e69612cb3f36d5342a29ea0fe2525824&type=3#background");
+    -unity-background-scale-mode: scale-and-crop;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TITLE IMAGE (absolute, top-left, parallax layer 2)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.title-img {
+    position: absolute;
+    left: 60px;
+    top: 36px;
+    width: 700px;
+    height: 240px;
+    background-image: url("project://database/Assets/Textures/actual%20assets/loading%20new%20game%20-%20name/decorated%20title.png?fileID=2800000&guid=31715c88a3d22e342b893b38d543f4af&type=3#decorated%20title");
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+/* Script queries this but it's purely functional — image carries the visual */
+.case-title-hidden {
+    display: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INPUT AREA (centred flex column, pushed slightly below centre)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.input-area {
+    align-items: center;
+    flex-direction: column;
+    margin-top: 120px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   NAME BOX (tape-effect background)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.name-box {
+    width: 420px;
+    height: 88px;
+    align-items: center;
+    justify-content: center;
+    background-image: url("project://database/Assets/Textures/actual%20assets/loading%20new%20game%20-%20name/box%20for%20name.png?fileID=2800000&guid=3e4712faca2529343a0fa97b87e8c1c5&type=3#box%20for%20name");
+    -unity-background-scale-mode: stretch-to-fill;
+    margin-bottom: 8px;
+}
+
+.name-field {
+    width: 320px;
+    font-size: 16px;
+    -unity-font-style: bold;
+    color: rgb(35, 20, 8);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+    -unity-text-align: middle-center;
+}
+
+.name-field > .unity-base-text-field__input {
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PROCEED BUTTON (dark brush-stroke)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.proceed-btn {
+    width: 420px;
+    height: 72px;
+    padding: 0;
+    font-size: 17px;
+    letter-spacing: 4px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    color: rgb(225, 210, 188);
+    background-image: url("project://database/Assets/Textures/actual%20assets/loading%20new%20game%20-%20name/proceed%20button.png?fileID=2800000&guid=9ccb91f489f4a2a4b9757175198f434f&type=3#proceed%20button");
+    -unity-background-scale-mode: stretch-to-fill;
+    -unity-background-image-tint-color: rgb(255, 255, 255);
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+    scale: 1;
+    transition-property: scale, -unity-background-image-tint-color, color;
+    transition-duration: 0.18s, 0.18s, 0.18s;
+    transition-timing-function: ease-out, ease-out, ease-out;
+}
+
+.proceed-btn:hover {
+    scale: 1.05;
+    -unity-background-image-tint-color: rgb(100, 100, 100);
+    color: rgb(255, 240, 215);
+}
+
+.proceed-btn:active {
+    scale: 0.97;
+    -unity-background-image-tint-color: rgb(60, 60, 60);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BACK BUTTON
+   ═══════════════════════════════════════════════════════════════════ */
+
+.back-btn {
+    position: absolute;
+    left: 32px;
+    bottom: 28px;
+    background-color: rgba(0, 0, 0, 0);
+    border-width: 0;
+    border-radius: 0;
+    color: rgba(60, 38, 18, 0.7);
+    font-size: 13px;
+    letter-spacing: 1px;
+    -unity-font-style: bold;
+    padding: 6px 12px;
+    scale: 1;
+    transition-property: scale, color;
+    transition-duration: 0.15s, 0.15s;
+    transition-timing-function: ease-out, ease-out;
+}
+
+.back-btn:hover {
+    scale: 1.06;
+    color: rgba(60, 38, 18, 1.0);
+}
+
+.back-btn:active {
+    scale: 0.95;
+}
