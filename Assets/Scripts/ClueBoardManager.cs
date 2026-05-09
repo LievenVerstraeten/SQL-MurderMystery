@@ -1,56 +1,34 @@
+// ClueBoardManager.cs
+// DEFINITIVE VERSION
+// ASSETS — all in Assets/Textures/actual assets/clue board/
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Globalization;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-/// <summary>
-/// Clue Board component controller.
-///
-/// Features:
-///   - Open / close the board (call SetVisible or use the X button)
-///   - Inventory tray slides in from the right (▷ button)
-///   - Add blank sticky notes (✎ button)
-///   - Tap a card to select it → floating action bar with: delete, edit, rope, rotate L/R
-///   - Drag cards freely; they rotate around their pin pivot
-///   - Red rope connections drawn as gravity-sagging quadratic bezier curves
-///   - Ropes connect from pin-to-pin
-///   - Call ClueBoardManager.Instance.SetVisible(true) from the HUD open button
-/// </summary>
 public class ClueBoardManager : MonoBehaviour
 {
     public static ClueBoardManager Instance { get; private set; }
 
-    // ── Inner Types ──────────────────────────────────────────────────────────
+    private const string A = "Assets/Textures/actual assets/clue board/";
 
     private class BoardCard
     {
-        public string Id;
-        public string Title;
-        public string Body;
+        public string Id, Title, Body;
         public VisualElement Element;
-        public float Rotation;   // degrees, pivots around the top-centre pin
+        public float Rotation;
     }
 
     private class RopeConnection
     {
-        public BoardCard From;
-        public BoardCard To;
+        public BoardCard From, To;
     }
 
-    // ── Placeholder Inventory Data ────────────────────────────────────────────
-
-    private static readonly (string title, string body)[] PlaceholderItems =
-    {
-        ("Bloody Knife",   "Found near the well\nat 8:00 PM"),
-        ("Torn Letter",    "Fragment mentioning\na secret meeting"),
-        ("Boot Print",     "Size 10, near\nthe east wall"),
-        ("Candle Wax",     "Dripped on floor,\nstill fresh"),
-        ("Victim: ?????",  "Body found at dawn.\nIdentity unknown"),
-        ("Witness: ?????", "Saw a figure near\nthe gate at night"),
-    };
-
-    // ── Cached UI References ─────────────────────────────────────────────────
-
+    // ── UI refs ───────────────────────────────────────────────────────────────
     private VisualElement _root;
     private VisualElement _cardsLayer;
     private VisualElement _ropeLayer;
@@ -58,27 +36,132 @@ public class ClueBoardManager : MonoBehaviour
     private VisualElement _inventoryTray;
     private Button _inventoryBtn;
     private Button _actionRopeBtn;
+    private Button _actionDeleteBtn;
 
-    // ── Runtime State ────────────────────────────────────────────────────────
-
+    // ── State ─────────────────────────────────────────────────────────────────
     private readonly List<BoardCard> _cards = new();
     private readonly List<RopeConnection> _ropes = new();
-
     private BoardCard _selectedCard = null;
     private BoardCard _ropeStartCard = null;
     private bool _isRopeMode = false;
     private bool _isTrayOpen = false;
-
-    // Drag state
     private VisualElement _dragTarget = null;
     private Vector2 _dragOffset;
     private bool _didDrag = false;
-
+    private bool _ropeDirty = false;
     private int _cardCounter = 0;
+    private bool _isLoading = false; // suppress SaveBoard during LoadBoard
 
-    // ── Lifecycle ────────────────────────────────────────────────────────────
+    // ── Lifecycle ─────────────────────────────────────────────────────────────
 
-    private void Awake() => Instance = this;
+    private void Awake()
+    {
+        if (Instance != null && Instance != this) { Destroy(this); return; }
+        Instance = this;
+    }
+
+    public void ConnectToUI(UIDocument uiDocument)
+    {
+        if (uiDocument == null || uiDocument.rootVisualElement == null)
+        {
+            Debug.LogError("[ClueBoardManager] UIDocument null in ConnectToUI.");
+            return;
+        }
+        var rve = uiDocument.rootVisualElement;
+        var instance = rve.Q("clue-board-instance");
+        if (instance != null)
+            _root = instance.Q("cb-root") ?? instance;
+        else
+            _root = rve.Q("cb-root");
+
+        if (_root == null)
+        {
+            Debug.LogError("[ClueBoardManager] cb-root not found.");
+            return;
+        }
+        Debug.Log($"[ClueBoardManager] ConnectToUI — root: {_root.name}");
+        InitialiseBoard();
+    }
+
+    private void OnEnable()
+    {
+        var doc = GetComponent<UIDocument>();
+        if (doc == null) return;
+        var rve = doc.rootVisualElement;
+        _root = rve.Q("clue-board-instance") ?? rve.Q("cb-root") ?? rve;
+        InitialiseBoard();
+    }
+
+    private void InitialiseBoard()
+    {
+        if (_root == null) { Debug.LogError("[ClueBoardManager] _root null."); return; }
+
+        _cardsLayer = _root.Q("cards-layer");
+        _ropeLayer = _root.Q("rope-layer");
+        _cardActions = _root.Q("card-actions");
+        _inventoryTray = _root.Q("inventory-tray");
+        _inventoryBtn = _root.Q<Button>("inventory-btn");
+        _actionRopeBtn = _root.Q<Button>("action-rope");
+        _actionDeleteBtn = _root.Q<Button>("action-delete");
+
+        if (_cardsLayer == null) { Debug.LogError("[ClueBoardManager] cards-layer not found."); return; }
+        if (_ropeLayer == null) { Debug.LogError("[ClueBoardManager] rope-layer not found."); return; }
+
+        var boardBg = _root.Q("board-bg");
+        if (boardBg != null)
+        {
+            boardBg.style.backgroundColor = new StyleColor(new Color(0.14f, 0.11f, 0.08f));
+            ApplyTexture(boardBg, "clueboard bg (1).png");
+        }
+
+        _ropeLayer.generateVisualContent -= DrawRopes;
+
+        _root.Q<Button>("close-btn")?.RegisterCallback<ClickEvent>(_ => SetVisible(false));
+        _root.Q<Button>("add-note-btn")?.RegisterCallback<ClickEvent>(_ => AddNote());
+        _inventoryBtn?.RegisterCallback<ClickEvent>(_ => ToggleTray());
+        _root.Q<Button>("tray-close")?.RegisterCallback<ClickEvent>(_ => CloseTray());
+        _actionDeleteBtn?.RegisterCallback<ClickEvent>(_ => ActionDelete());
+        _root.Q<Button>("action-edit")?.RegisterCallback<ClickEvent>(_ => ActionEdit());
+        _actionRopeBtn?.RegisterCallback<ClickEvent>(_ => ActionStartRope());
+        _root.Q<Button>("action-rotate-l")?.RegisterCallback<ClickEvent>(_ => ActionRotate(-15f));
+        _root.Q<Button>("action-rotate-r")?.RegisterCallback<ClickEvent>(_ => ActionRotate(+15f));
+
+        ApplyTexture(_root.Q("action-bar-bg"), "Untitled39_0000s_0006_Panel-For-Close_Open_Add-options.png");
+        ApplyButtonIcon(_root.Q<Button>("close-btn"), "Untitled39_0000s_0000_Button-Close.png");
+        ApplyButtonIcon(_root.Q<Button>("add-note-btn"), "Untitled39_0000s_0005_Button-Circle-Empty.png");
+        ApplyButtonIcon(_inventoryBtn, "Untitled39_0000s_0001_Button-Arrow.png");
+        ApplyButtonIcon(_actionDeleteBtn, "Untitled39_0000s_0000_Button-Close.png");
+        ApplyButtonIcon(_actionRopeBtn, "Untitled39_0000s_0004_Button-Pin.png");
+        ApplyButtonIcon(_root.Q<Button>("action-rotate-l"), "Untitled39_0000s_0002_Button-Left.png");
+        ApplyButtonIcon(_root.Q<Button>("action-rotate-r"), "Untitled39_0000s_0003_Button-Right.png");
+
+        var editBtn = _root.Q<Button>("action-edit");
+        if (editBtn != null)
+        {
+            var tex = LoadAsset("Untitled39_0000s_0005_Button-Circle-Empty.png");
+            if (tex != null)
+            {
+                editBtn.text = "✎";
+                editBtn.style.backgroundImage = new StyleBackground(tex);
+                editBtn.style.backgroundSize = new StyleBackgroundSize(new BackgroundSize(BackgroundSizeType.Contain));
+                editBtn.style.backgroundColor = new StyleColor(Color.clear);
+                editBtn.style.borderTopWidth = editBtn.style.borderBottomWidth =
+                editBtn.style.borderLeftWidth = editBtn.style.borderRightWidth = 0f;
+                editBtn.style.fontSize = 16f;
+                editBtn.style.color = new StyleColor(new Color(0.15f, 0.12f, 0.08f));
+                editBtn.style.unityFontStyleAndWeight = FontStyle.Bold;
+                editBtn.style.unityTextAlign = new StyleEnum<TextAnchor>(TextAnchor.MiddleCenter);
+                editBtn.style.width = editBtn.style.height = 44f;
+            }
+        }
+
+        _ropeLayer.generateVisualContent += DrawRopes;
+        _cardsLayer.RegisterCallback<PointerDownEvent>(OnBoardPointerDown);
+
+        SetVisible(false);
+        PopulateTray();
+        LoadBoard();
+    }
 
     private void OnDisable()
     {
@@ -86,231 +169,172 @@ public class ClueBoardManager : MonoBehaviour
             _ropeLayer.generateVisualContent -= DrawRopes;
     }
 
-    /// <summary>
-    /// Called by GameUIManager.OnEnable() to bind this manager to the game scene's UIDocument.
-    /// The clue board elements are inlined directly in GameUI.uxml so they are always queryable.
-    /// </summary>
-    public void ConnectToUI(UIDocument doc)
+    private void Update()
     {
-        if (doc == null || doc.rootVisualElement == null) return;
-
-        // Detach previous rope painter if reconnecting
-        if (_ropeLayer != null)
-            _ropeLayer.generateVisualContent -= DrawRopes;
-
-        var root = doc.rootVisualElement;
-        _root = root.Q("clue-board-instance");
-        if (_root == null) { Debug.LogError("[ClueBoardManager] clue-board-instance not found in UIDocument"); return; }
-
-        _cardsLayer    = _root.Q("cards-layer");
-        _ropeLayer     = _root.Q("rope-layer");
-        _cardActions   = _root.Q("card-actions");
-        _inventoryTray = _root.Q("inventory-tray");
-        _inventoryBtn  = _root.Q<Button>("inventory-btn");
-        _actionRopeBtn = _root.Q<Button>("action-rope");
-
-        if (_ropeLayer != null) _ropeLayer.generateVisualContent += DrawRopes;
-
-        var closeBtn   = _root.Q<Button>("close-btn");
-        var addNoteBtn = _root.Q<Button>("add-note-btn");
-        var trayClose  = _root.Q<Button>("tray-close");
-        var actDelete  = _root.Q<Button>("action-delete");
-        var actEdit    = _root.Q<Button>("action-edit");
-        var rotateL    = _root.Q<Button>("action-rotate-l");
-        var rotateR    = _root.Q<Button>("action-rotate-r");
-
-        if (closeBtn       != null) closeBtn.clicked       += () => SetVisible(false);
-        if (addNoteBtn     != null) addNoteBtn.clicked     += AddNote;
-        if (_inventoryBtn  != null) _inventoryBtn.clicked  += ToggleTray;
-        if (trayClose      != null) trayClose.clicked      += CloseTray;
-        if (actDelete      != null) actDelete.clicked      += ActionDelete;
-        if (actEdit        != null) actEdit.clicked        += ActionEdit;
-        if (_actionRopeBtn != null) _actionRopeBtn.clicked += ActionStartRope;
-        if (rotateL        != null) rotateL.clicked        += () => ActionRotate(-15f);
-        if (rotateR        != null) rotateR.clicked        += () => ActionRotate(+15f);
-
-        if (_cardsLayer != null)
-            _cardsLayer.RegisterCallback<PointerDownEvent>(OnBoardPointerDown);
-
-        PopulateTray();
-        SetVisible(false);
-    }
-
-    // ── Board Visibility ─────────────────────────────────────────────────────
-
-    /// <summary>Called from InventoryManager when player pins an item to the board.</summary>
-    public void AddClueFromInventory(string title, string body)
-    {
-        // Make sure the board is open so the player sees the card appear
-        SetVisible(true);
-
-        float cx = _cardsLayer?.layout.width > 10 ? _cardsLayer.layout.width * 0.38f : 200f;
-        float cy = _cardsLayer?.layout.height > 10 ? _cardsLayer.layout.height * 0.35f : 140f;
-
-        SpawnCard(new BoardCard
+        if (_ropeDirty)
         {
-            Id = "card_" + _cardCounter++,
-            Title = title,
-            Body = body,
-            Rotation = Random.Range(-12f, 12f),
-        },
-        new Vector2(cx + Random.Range(-80, 80), cy + Random.Range(-60, 60)));
+            _ropeDirty = false;
+            _ropeLayer?.MarkDirtyRepaint();
+        }
     }
 
-    /// <summary>
-    /// Call from the HUD circle-icon to show/hide the board.
-    /// FIX: BringToFront() is now called on open so the clue board always
-    /// appears above every other panel (including the SQL terminal).
-    /// </summary>
+    // ── Visibility ────────────────────────────────────────────────────────────
+
     public void SetVisible(bool visible)
     {
-        if (_root == null) return;
+        if (_root == null) { Debug.LogError("[ClueBoardManager] SetVisible — _root null."); return; }
+
         _root.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+        _root.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
+
+        var wrapper = _root.parent;
+        if (wrapper != null)
+        {
+            wrapper.style.display = visible ? DisplayStyle.Flex : DisplayStyle.None;
+            wrapper.pickingMode = visible ? PickingMode.Position : PickingMode.Ignore;
+        }
 
         if (visible)
-            _root.BringToFront();   // ← ensures board is always on top
+            (wrapper ?? _root).BringToFront();
         else
             CloseTray();
     }
 
-    // ── Rope Drawing ─────────────────────────────────────────────────────────
-
-    private void DrawRopes(MeshGenerationContext ctx)
+    public bool IsVisible()
     {
-        if (_ropes.Count == 0) return;
-
-        var p = ctx.painter2D;
-        p.strokeColor = new Color(0.72f, 0.08f, 0.08f);
-        p.lineWidth = 3.5f;
-        p.lineCap = LineCap.Round;
-
-        foreach (var rope in _ropes)
-        {
-            Vector2 a = CardPinLocal(rope.From.Element);
-            Vector2 b = CardPinLocal(rope.To.Element);
-
-            // Gravity sag: control point below the midpoint, proportional to distance
-            float dist = Vector2.Distance(a, b);
-            float sag = Mathf.Clamp(dist * 0.22f, 24f, 110f);
-            Vector2 cp = new Vector2((a.x + b.x) * 0.5f, Mathf.Max(a.y, b.y) + sag);
-
-            p.BeginPath();
-            p.MoveTo(a);
-            p.QuadraticCurveTo(cp, b);
-            p.Stroke();
-        }
+        return _root != null && _root.resolvedStyle.display == DisplayStyle.Flex;
     }
 
-    /// Returns the top-centre pin position of <paramref name="card"/> in rope-layer space.
-    private Vector2 CardPinLocal(VisualElement card)
+    public void AddClueFromInventory(string title, string body)
     {
-        var wb = card.worldBound;
-        return _ropeLayer.WorldToLocal(new Vector2(wb.xMin + wb.width * 0.5f, wb.yMin + 10f));
-    }
-
-    // ── Inventory Tray ───────────────────────────────────────────────────────
-
-    private void PopulateTray()
-    {
-        var scroll = _root?.Q<ScrollView>("tray-scroll");
-        if (scroll == null) return;
-        scroll.Clear();
-        foreach (var (title, body) in PlaceholderItems)
-            scroll.Add(BuildTrayItem(title, body));
-    }
-
-    private VisualElement BuildTrayItem(string title, string body)
-    {
-        var item = new VisualElement();
-        item.AddToClassList("tray-item");
-
-        var t = new Label(title); t.AddToClassList("tray-item-title");
-        var b = new Label(body); b.AddToClassList("tray-item-body");
-        item.Add(t);
-        item.Add(b);
-
-        item.RegisterCallback<ClickEvent>(_ => SpawnFromInventory(title, body));
-        return item;
-    }
-
-    private void SpawnFromInventory(string title, string body)
-    {
+        SetVisible(true);
         float cx = _cardsLayer.layout.width > 10 ? _cardsLayer.layout.width * 0.38f : 200f;
         float cy = _cardsLayer.layout.height > 10 ? _cardsLayer.layout.height * 0.35f : 140f;
-
         SpawnCard(new BoardCard
         {
             Id = "card_" + _cardCounter++,
             Title = title,
             Body = body,
-            Rotation = Random.Range(-12f, 12f),
+            Rotation = UnityEngine.Random.Range(-12f, 12f)
         },
-        new Vector2(cx + Random.Range(-80, 80), cy + Random.Range(-60, 60)));
+            new Vector2(cx + UnityEngine.Random.Range(-80, 80), cy + UnityEngine.Random.Range(-60, 60)));
     }
 
-    private void ToggleTray()
+    // ── Rope drawing ──────────────────────────────────────────────────────────
+
+    private void DrawRopes(MeshGenerationContext ctx)
     {
-        if (_isTrayOpen) CloseTray(); else OpenTray();
+        if (_ropes.Count == 0) return;
+        var p = ctx.painter2D;
+        p.strokeColor = new Color(0.65f, 0.08f, 0.08f);
+        p.lineWidth = 4f;
+        p.lineCap = LineCap.Round;
+        foreach (var rope in _ropes)
+        {
+            if (rope.From?.Element == null || rope.To?.Element == null) continue;
+            Vector2 a = CardPinLocal(rope.From.Element);
+            Vector2 b = CardPinLocal(rope.To.Element);
+            float dist = Vector2.Distance(a, b);
+            float sag = Mathf.Clamp(dist * 0.22f, 20f, 100f);
+            Vector2 cp = new Vector2((a.x + b.x) * 0.5f, Mathf.Max(a.y, b.y) + sag);
+            p.BeginPath(); p.MoveTo(a); p.QuadraticCurveTo(cp, b); p.Stroke();
+        }
     }
+
+    private Vector2 CardPinLocal(VisualElement card)
+    {
+        var wb = card.worldBound;
+        return _ropeLayer.WorldToLocal(new Vector2(wb.xMin + wb.width * 0.5f, wb.yMin + 14f));
+    }
+
+    // ── Inventory tray ────────────────────────────────────────────────────────
+
+    private void PopulateTray()
+    {
+        var scroll = _root.Q<ScrollView>("tray-scroll");
+        if (scroll == null) return;
+        scroll.Clear();
+    }
+
+    private void ToggleTray() { if (_isTrayOpen) CloseTray(); else OpenTray(); }
 
     private void OpenTray()
     {
         _isTrayOpen = true;
-        _inventoryTray.RemoveFromClassList("inventory-tray--closed");
-        _inventoryTray.AddToClassList("inventory-tray--open");
-        _inventoryBtn.AddToClassList("cb-icon-btn--active");
+        _inventoryTray?.RemoveFromClassList("inventory-tray--closed");
+        _inventoryTray?.AddToClassList("inventory-tray--open");
+        _inventoryBtn?.AddToClassList("cb-icon-btn--active");
     }
 
     private void CloseTray()
     {
-        if (_inventoryTray == null) return;
         _isTrayOpen = false;
-        _inventoryTray.RemoveFromClassList("inventory-tray--open");
-        _inventoryTray.AddToClassList("inventory-tray--closed");
+        _inventoryTray?.RemoveFromClassList("inventory-tray--open");
+        _inventoryTray?.AddToClassList("inventory-tray--closed");
         _inventoryBtn?.RemoveFromClassList("cb-icon-btn--active");
     }
 
-    // ── Card Spawning ────────────────────────────────────────────────────────
+    // ── Card spawning ─────────────────────────────────────────────────────────
 
     private void AddNote()
     {
         float cx = _cardsLayer.layout.width > 10 ? _cardsLayer.layout.width * 0.5f : 220f;
         float cy = _cardsLayer.layout.height > 10 ? _cardsLayer.layout.height * 0.4f : 160f;
-
         SpawnCard(new BoardCard
         {
             Id = "card_" + _cardCounter++,
             Title = "Note",
-            Body = "…",
-            Rotation = Random.Range(-8f, 8f),
+            Body = "...",
+            Rotation = UnityEngine.Random.Range(-8f, 8f)
         },
-        new Vector2(cx + Random.Range(-60, 60), cy + Random.Range(-40, 40)));
+            new Vector2(cx + UnityEngine.Random.Range(-60, 60), cy + UnityEngine.Random.Range(-40, 40)));
     }
 
     private void SpawnCard(BoardCard card, Vector2 position)
     {
         var el = new VisualElement();
-        el.AddToClassList("board-card");
         el.name = card.Id;
-
+        el.style.position = Position.Absolute;
         el.style.left = position.x;
         el.style.top = position.y;
+        el.style.width = 180f;
+        el.style.height = 200f;
 
+        var noteTex = LoadAsset("note.png");
+        if (noteTex != null)
+            el.style.backgroundImage = new StyleBackground(noteTex);
+        else
+            el.style.backgroundColor = new StyleColor(new Color(0.78f, 0.72f, 0.54f));
+
+        el.style.backgroundSize = new StyleBackgroundSize(new BackgroundSize(BackgroundSizeType.Cover));
         SetCardRotation(el, card.Rotation);
 
-        var pin = new VisualElement();
-        pin.AddToClassList("card-pin");
-        el.Add(pin);
+        var textArea = new VisualElement();
+        textArea.style.position = Position.Absolute;
+        textArea.style.left = 16f;
+        textArea.style.right = 16f;
+        textArea.style.top = 44f;
+        textArea.style.bottom = 12f;
+        textArea.style.flexDirection = FlexDirection.Column;
+        textArea.style.overflow = Overflow.Hidden;
 
         var titleLbl = new Label(card.Title);
-        titleLbl.AddToClassList("card-title");
+        titleLbl.style.fontSize = 14f;
+        titleLbl.style.color = new StyleColor(new Color(0.15f, 0.10f, 0.05f));
+        titleLbl.style.unityFontStyleAndWeight = FontStyle.Bold;
+        titleLbl.style.whiteSpace = WhiteSpace.Normal;
+        titleLbl.style.marginBottom = 4f;
 
         var bodyLbl = new Label(card.Body);
-        bodyLbl.AddToClassList("card-body");
         bodyLbl.name = "body_" + card.Id;
+        bodyLbl.style.fontSize = 13f;
+        bodyLbl.style.color = new StyleColor(new Color(0.20f, 0.14f, 0.06f));
+        bodyLbl.style.whiteSpace = WhiteSpace.Normal;
+        bodyLbl.style.flexGrow = 1f;
 
-        el.Add(titleLbl);
-        el.Add(bodyLbl);
+        textArea.Add(titleLbl);
+        textArea.Add(bodyLbl);
+        el.Add(textArea);
 
         card.Element = el;
         _cards.Add(card);
@@ -319,65 +343,59 @@ public class ClueBoardManager : MonoBehaviour
         el.RegisterCallback<PointerDownEvent>(OnCardPointerDown);
         el.RegisterCallback<PointerMoveEvent>(OnCardPointerMove);
         el.RegisterCallback<PointerUpEvent>(OnCardPointerUp);
+
+        if (!_isLoading) SaveBoard();
     }
 
     private static void SetCardRotation(VisualElement el, float degrees)
     {
         el.style.rotate = new StyleRotate(new Rotate(degrees));
-        // Pivot around the pin at top-centre
         el.style.transformOrigin = new StyleTransformOrigin(
-            new TransformOrigin(Length.Percent(50), new Length(8f, LengthUnit.Pixel)));
+            new TransformOrigin(Length.Percent(50), new Length(10f, LengthUnit.Pixel)));
     }
 
-    // ── Selection ────────────────────────────────────────────────────────────
+    // ── Selection ─────────────────────────────────────────────────────────────
 
     private void SelectCard(BoardCard card)
     {
         if (_selectedCard != null && _selectedCard != card)
-            _selectedCard.Element.RemoveFromClassList("board-card--selected");
-
+            _selectedCard.Element.style.opacity = 1f;
         _selectedCard = card;
-        card.Element.AddToClassList("board-card--selected");
+        card.Element.style.opacity = 0.85f;
         card.Element.BringToFront();
-        _cardActions.style.display = DisplayStyle.Flex;
+        if (_cardActions != null) _cardActions.style.display = DisplayStyle.Flex;
         PositionActionBar(card);
     }
 
     private void DeselectAll()
     {
-        if (_selectedCard != null)
-            _selectedCard.Element.RemoveFromClassList("board-card--selected");
-
+        if (_selectedCard != null) _selectedCard.Element.style.opacity = 1f;
         _selectedCard = null;
-        _cardActions.style.display = DisplayStyle.None;
-
+        if (_cardActions != null) _cardActions.style.display = DisplayStyle.None;
         if (_isRopeMode)
         {
             _isRopeMode = false;
             _ropeStartCard = null;
-            _actionRopeBtn.RemoveFromClassList("card-action-btn--active");
+            _actionRopeBtn?.RemoveFromClassList("cb-active");
         }
     }
 
     private void PositionActionBar(BoardCard card)
     {
+        if (_cardActions == null) return;
         float left = card.Element.resolvedStyle.left;
         float top = card.Element.resolvedStyle.top;
         float width = card.Element.resolvedStyle.width;
-
-        const float barWidth = 172f;
-        _cardActions.style.left = Mathf.Max(4f, left + width * 0.5f - barWidth * 0.5f);
-        _cardActions.style.top = Mathf.Max(4f, top - 38f);
+        _cardActions.style.left = Mathf.Max(4f, left + width * 0.5f - 90f);
+        _cardActions.style.top = Mathf.Max(4f, top - 44f);
     }
 
     private void OnBoardPointerDown(PointerDownEvent evt)
     {
-        // Only deselect when the bare board is tapped (cards stop propagation)
-        if (evt.target == _cardsLayer)
-            DeselectAll();
+        if (evt.target == _cardsLayer) DeselectAll();
     }
 
-    // ── Action Bar ───────────────────────────────────────────────────────────
+    // ── Action bar ────────────────────────────────────────────────────────────
 
     private void ActionDelete()
     {
@@ -392,15 +410,21 @@ public class ClueBoardManager : MonoBehaviour
         if (_selectedCard == null) return;
         var card = _selectedCard;
         var el = card.Element;
-
         var bodyLbl = el.Q<Label>("body_" + card.Id);
-        // Guard: don't open a second field if one is already open
         if (bodyLbl == null || el.Q<TextField>("edit_" + card.Id) != null) return;
 
         var field = new TextField { value = card.Body, multiline = true };
-        field.AddToClassList("card-edit-field");
         field.name = "edit_" + card.Id;
+        field.style.position = Position.Absolute;
+        field.style.left = 16f;
+        field.style.right = 16f;
+        field.style.top = 44f;
+        field.style.bottom = 12f;
+        field.style.fontSize = 13f;
+        field.AddToClassList("card-edit-field");
 
+        var titleLbl = el.Q<Label>(null);
+        if (titleLbl != null) titleLbl.style.display = DisplayStyle.None;
         bodyLbl.style.display = DisplayStyle.None;
         el.Add(field);
         field.Focus();
@@ -410,16 +434,28 @@ public class ClueBoardManager : MonoBehaviour
             card.Body = field.value;
             bodyLbl.text = field.value;
             bodyLbl.style.display = DisplayStyle.Flex;
+            if (titleLbl != null) titleLbl.style.display = DisplayStyle.Flex;
             if (el.Contains(field)) el.Remove(field);
+            SaveBoard();
         });
     }
 
     private void ActionStartRope()
     {
         if (_selectedCard == null) return;
-        _isRopeMode = true;
-        _ropeStartCard = _selectedCard;
-        _actionRopeBtn.AddToClassList("card-action-btn--active");
+        if (_isRopeMode && _ropeStartCard == _selectedCard)
+        {
+            _isRopeMode = false;
+            _ropeStartCard = null;
+            _actionRopeBtn?.RemoveFromClassList("cb-active");
+        }
+        else
+        {
+            _isRopeMode = true;
+            _ropeStartCard = _selectedCard;
+            _actionRopeBtn?.AddToClassList("cb-active");
+            Debug.Log($"[ClueBoardManager] Rope mode ON from '{_ropeStartCard.Title}' — tap another card.");
+        }
     }
 
     private void ActionRotate(float delta)
@@ -427,54 +463,45 @@ public class ClueBoardManager : MonoBehaviour
         if (_selectedCard == null) return;
         _selectedCard.Rotation += delta;
         SetCardRotation(_selectedCard.Element, _selectedCard.Rotation);
-        _ropeLayer.MarkDirtyRepaint();
+        _ropeDirty = true;
     }
 
     private void RemoveCard(BoardCard card)
     {
         _ropes.RemoveAll(r => r.From == card || r.To == card);
-        _cardsLayer.Remove(card.Element);
+        if (_cardsLayer.Contains(card.Element)) _cardsLayer.Remove(card.Element);
         _cards.Remove(card);
-        _ropeLayer.MarkDirtyRepaint();
+        _ropeDirty = true;
+        SaveBoard();
     }
 
     private void TryConnectRope(BoardCard target)
     {
         if (_ropeStartCard == null || _ropeStartCard == target) return;
-
         bool exists = _ropes.Any(r =>
             (r.From == _ropeStartCard && r.To == target) ||
             (r.From == target && r.To == _ropeStartCard));
-
         if (!exists)
         {
             _ropes.Add(new RopeConnection { From = _ropeStartCard, To = target });
-            _ropeLayer.MarkDirtyRepaint();
+            _ropeDirty = true;
         }
-
         _isRopeMode = false;
         _ropeStartCard = null;
-        _actionRopeBtn.RemoveFromClassList("card-action-btn--active");
+        _actionRopeBtn?.RemoveFromClassList("cb-active");
     }
 
-    // ── Drag ─────────────────────────────────────────────────────────────────
+    // ── Drag ──────────────────────────────────────────────────────────────────
 
     private void OnCardPointerDown(PointerDownEvent evt)
     {
-        // Let action-bar button clicks pass through to their handlers
         if (evt.target is Button) return;
-
         var el = evt.currentTarget as VisualElement;
         if (el == null) return;
-
         _dragTarget = el;
         _didDrag = false;
-
         var local = _cardsLayer.WorldToLocal(evt.position);
-        _dragOffset = new Vector2(
-            local.x - el.resolvedStyle.left,
-            local.y - el.resolvedStyle.top);
-
+        _dragOffset = new Vector2(local.x - el.resolvedStyle.left, local.y - el.resolvedStyle.top);
         el.CapturePointer(evt.pointerId);
         evt.StopPropagation();
     }
@@ -482,51 +509,191 @@ public class ClueBoardManager : MonoBehaviour
     private void OnCardPointerMove(PointerMoveEvent evt)
     {
         if (_dragTarget == null || !_dragTarget.HasPointerCapture(evt.pointerId)) return;
-
         var pos = _cardsLayer.WorldToLocal(evt.position);
         _dragTarget.style.left = pos.x - _dragOffset.x;
         _dragTarget.style.top = pos.y - _dragOffset.y;
         _didDrag = true;
-
-        _ropeLayer.MarkDirtyRepaint();
-
-        if (_selectedCard != null && _selectedCard.Element == _dragTarget)
-            PositionActionBar(_selectedCard);
-
+        _ropeDirty = true;
+        if (_selectedCard?.Element == _dragTarget) PositionActionBar(_selectedCard);
         evt.StopPropagation();
     }
 
     private void OnCardPointerUp(PointerUpEvent evt)
     {
         if (_dragTarget == null) return;
-
         var card = _cards.FirstOrDefault(c => c.Element == _dragTarget);
         bool wasDrag = _didDrag;
-
         _dragTarget.ReleasePointer(evt.pointerId);
         _dragTarget = null;
         _didDrag = false;
-
+        if (wasDrag) SaveBoard();
         if (wasDrag || card == null) return;
-
-        // Treat as a tap
         if (_isRopeMode)
         {
             if (card == _ropeStartCard)
             {
-                // Tap same card again → cancel rope mode
                 _isRopeMode = false;
                 _ropeStartCard = null;
-                _actionRopeBtn.RemoveFromClassList("card-action-btn--active");
+                _actionRopeBtn?.RemoveFromClassList("cb-active");
             }
-            else
-            {
-                TryConnectRope(card);
-            }
+            else TryConnectRope(card);
         }
-        else
+        else SelectCard(card);
+    }
+
+    // ── Save / Load ───────────────────────────────────────────────────────────
+
+    private void SaveBoard()
+    {
+        if (_isLoading) return;
+        int profileId = GameManager.Instance?.ActiveProfileId ?? -1;
+        if (profileId < 0) return;
+
+        var sb = new StringBuilder();
+        sb.Append("[");
+        for (int i = 0; i < _cards.Count; i++)
         {
-            SelectCard(card);
+            var c = _cards[i];
+            float x = c.Element.resolvedStyle.left;
+            float y = c.Element.resolvedStyle.top;
+            string t = c.Title.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            string b = c.Body.Replace("\\", "\\\\").Replace("\"", "\\\"");
+            string xi = x.ToString(CultureInfo.InvariantCulture);
+            string yi = y.ToString(CultureInfo.InvariantCulture);
+            string ri = c.Rotation.ToString(CultureInfo.InvariantCulture);
+            sb.Append("{");
+            sb.Append("\"id\":\"").Append(c.Id).Append("\",");
+            sb.Append("\"title\":\"").Append(t).Append("\",");
+            sb.Append("\"body\":\"").Append(b).Append("\",");
+            sb.Append("\"x\":").Append(xi).Append(",");
+            sb.Append("\"y\":").Append(yi).Append(",");
+            sb.Append("\"rot\":").Append(ri);
+            sb.Append("}");
+            if (i < _cards.Count - 1) sb.Append(",");
         }
+        sb.Append("]");
+
+        DatabaseManager.Instance?.SaveBoardCards(profileId, sb.ToString());
+    }
+
+    private void LoadBoard()
+    {
+        int profileId = GameManager.Instance?.ActiveProfileId ?? -1;
+        if (profileId < 0) return;
+
+        string json = DatabaseManager.Instance?.LoadBoardCards(profileId);
+        if (string.IsNullOrEmpty(json)) return;
+
+        json = json.Trim();
+        if (!json.StartsWith("[") || !json.EndsWith("]")) return;
+        json = json.Substring(1, json.Length - 2);
+
+        _isLoading = true;
+        try
+        {
+            var cardJsons = SplitJsonObjects(json);
+            foreach (var cardJson in cardJsons)
+            {
+                string id = JsonGetString(cardJson, "id");
+                string t = JsonGetString(cardJson, "title");
+                string b = JsonGetString(cardJson, "body");
+                float x = JsonGetFloat(cardJson, "x");
+                float y = JsonGetFloat(cardJson, "y");
+                float rot = JsonGetFloat(cardJson, "rot");
+                if (string.IsNullOrEmpty(id)) continue;
+                SpawnCard(new BoardCard { Id = id, Title = t, Body = b, Rotation = rot },
+                    new Vector2(x, y));
+            }
+            _cardCounter = _cards.Count + 1;
+            Debug.Log($"[ClueBoardManager] Loaded {_cards.Count} cards.");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    // ── Minimal JSON helpers ──────────────────────────────────────────────────
+
+    private static List<string> SplitJsonObjects(string json)
+    {
+        var result = new List<string>();
+        int depth = 0, start = 0;
+        for (int i = 0; i < json.Length; i++)
+        {
+            if (json[i] == '{') { if (depth++ == 0) start = i; }
+            else if (json[i] == '}') { if (--depth == 0) result.Add(json.Substring(start, i - start + 1)); }
+        }
+        return result;
+    }
+
+    private static string JsonGetString(string json, string key)
+    {
+        // Find "key":"value"
+        string search = "\"" + key + "\":\"";
+        int idx = json.IndexOf(search, StringComparison.Ordinal);
+        if (idx < 0) return "";
+        idx += search.Length;
+        var sb = new StringBuilder();
+        while (idx < json.Length)
+        {
+            char c = json[idx];
+            if (c == '\\' && idx + 1 < json.Length)
+            {
+                char next = json[idx + 1];
+                if (next == '"') { sb.Append('"'); idx += 2; continue; }
+                if (next == '\\') { sb.Append('\\'); idx += 2; continue; }
+            }
+            if (c == '"') break;
+            sb.Append(c);
+            idx++;
+        }
+        return sb.ToString();
+    }
+
+    private static float JsonGetFloat(string json, string key)
+    {
+        string search = "\"" + key + "\":";
+        int idx = json.IndexOf(search, StringComparison.Ordinal);
+        if (idx < 0) return 0f;
+        idx += search.Length;
+        // Skip leading whitespace
+        while (idx < json.Length && json[idx] == ' ') idx++;
+        int end = idx;
+        while (end < json.Length && (char.IsDigit(json[end]) || json[end] == '.' || json[end] == '-' || json[end] == 'E' || json[end] == 'e' || json[end] == '+'))
+            end++;
+        if (end == idx) return 0f;
+        return float.TryParse(json.Substring(idx, end - idx), NumberStyles.Float, CultureInfo.InvariantCulture, out float v) ? v : 0f;
+    }
+
+    // ── Asset helpers ─────────────────────────────────────────────────────────
+
+    private static Texture2D LoadAsset(string filename)
+    {
+#if UNITY_EDITOR
+        return UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>(A + filename);
+#else
+        return Resources.Load<Texture2D>("ClueBoardAssets/" + System.IO.Path.GetFileNameWithoutExtension(filename));
+#endif
+    }
+
+    private static void ApplyTexture(VisualElement el, string filename)
+    {
+        if (el == null) return;
+        var tex = LoadAsset(filename);
+        if (tex != null) el.style.backgroundImage = new StyleBackground(tex);
+    }
+
+    private static void ApplyButtonIcon(Button btn, string filename)
+    {
+        if (btn == null) return;
+        var tex = LoadAsset(filename);
+        if (tex == null) return;
+        btn.text = "";
+        btn.style.backgroundImage = new StyleBackground(tex);
+        btn.style.backgroundSize = new StyleBackgroundSize(new BackgroundSize(BackgroundSizeType.Contain));
+        btn.style.backgroundColor = new StyleColor(Color.clear);
+        btn.style.borderTopWidth = btn.style.borderBottomWidth =
+        btn.style.borderLeftWidth = btn.style.borderRightWidth = 0f;
     }
 }

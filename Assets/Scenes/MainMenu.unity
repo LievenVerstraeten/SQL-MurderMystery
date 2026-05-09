@@ -172,6 +172,7 @@ GameObject:
   - component: {fileID: 186723434}
   - component: {fileID: 186723436}
   - component: {fileID: 186723435}
+  - component: {fileID: 186723437}
   m_Layer: 0
   m_Name: GameSystems
   m_TagString: Untagged
@@ -456,6 +457,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5284adf3716b6c946ade11691db78726, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TextSizeManager
+--- !u!114 &186723437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 186723421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4892e5502430d84ca2984dd61d32b13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ClueBoardManager
 --- !u!1 &187898159
 GameObject:
   m_ObjectHideFlags: 0

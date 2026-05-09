@@ -12,7 +12,6 @@
 //   Attach to a persistent GameObject in the game scene alongside DialogueManager.
 //   Assign the same UIDocument as GameUIManager (GameUI.uxml).
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -25,11 +24,10 @@ public class UIDatabase : MonoBehaviour
 
     // ── UI references ─────────────────────────────────────────────────────────
     private VisualElement _terminalPanel;
-    private TextField     _queryInputField;
-    private ListView      _commandHistoryList;
-    private Button        _sendQueryButton;
-    private Label         _queryOutputText;
-    private VisualElement _taskStamp;
+    private TextField _queryInputField;
+    private ListView _commandHistoryList;
+    private Button _sendQueryButton;
+    private Label _queryOutputText;
 
     private readonly List<string> _history = new();
 
@@ -49,12 +47,11 @@ public class UIDatabase : MonoBehaviour
 
         var root = uiDocument.rootVisualElement;
 
-        _terminalPanel      = root.Q("sql-terminal-container");
-        _queryInputField    = root.Q<TextField>("query-input-field");
+        _terminalPanel = root.Q("sql-terminal-container");
+        _queryInputField = root.Q<TextField>("query-input-field");
         _commandHistoryList = root.Q<ListView>("command-history-list");
-        _sendQueryButton    = root.Q<Button>("send-query-button");
-        _queryOutputText    = root.Q<Label>("query-output-text");
-        _taskStamp          = root.Q("task-stamp");
+        _sendQueryButton = root.Q<Button>("send-query-button");
+        _queryOutputText = root.Q<Label>("query-output-text");
 
         if (_sendQueryButton != null)
             _sendQueryButton.clicked += OnSendQuery;
@@ -64,18 +61,16 @@ public class UIDatabase : MonoBehaviour
 
         if (_commandHistoryList != null)
         {
-            _commandHistoryList.itemsSource    = _history;
-            _commandHistoryList.fixedItemHeight = 30;
-            _commandHistoryList.makeItem        = () => new Label();
-            _commandHistoryList.bindItem        = (el, i) =>
+            _commandHistoryList.itemsSource = _history;
+            _commandHistoryList.makeItem = () => new Label();
+            _commandHistoryList.bindItem = (el, i) =>
             {
                 var lbl = (Label)el;
                 lbl.text = _history[i];
-                lbl.style.color      = new StyleColor(Color.white);
-                lbl.style.fontSize   = 14;
+                lbl.style.color = new StyleColor(Color.white);
+                lbl.style.fontSize = 14;
                 lbl.style.paddingLeft = lbl.style.paddingTop =
                     lbl.style.paddingBottom = 5;
-                lbl.style.whiteSpace = new StyleEnum<WhiteSpace>(WhiteSpace.NoWrap);
             };
             _commandHistoryList.selectionChanged += OnHistoryItemSelected;
         }
@@ -88,8 +83,8 @@ public class UIDatabase : MonoBehaviour
 
     void OnDisable()
     {
-        if (_sendQueryButton    != null) _sendQueryButton.clicked             -= OnSendQuery;
-        if (_queryInputField    != null) _queryInputField.UnregisterCallback<KeyDownEvent>(OnQueryKeyDown);
+        if (_sendQueryButton != null) _sendQueryButton.clicked -= OnSendQuery;
+        if (_queryInputField != null) _queryInputField.UnregisterCallback<KeyDownEvent>(OnQueryKeyDown);
         if (_commandHistoryList != null) _commandHistoryList.selectionChanged -= OnHistoryItemSelected;
         TaskValidator.OnValidationComplete -= OnValidationComplete;
     }
@@ -101,30 +96,27 @@ public class UIDatabase : MonoBehaviour
         uiDocument = doc;
         var root = doc.rootVisualElement;
 
-        _terminalPanel      = root.Q("sql-terminal-container");
-        _queryInputField    = root.Q<TextField>("query-input-field");
+        _terminalPanel = root.Q("sql-terminal-container");
+        _queryInputField = root.Q<TextField>("query-input-field");
         _commandHistoryList = root.Q<ListView>("command-history-list");
-        _sendQueryButton    = root.Q<Button>("send-query-button");
-        _queryOutputText    = root.Q<Label>("query-output-text");
-        _taskStamp          = root.Q("task-stamp");
+        _sendQueryButton = root.Q<Button>("send-query-button");
+        _queryOutputText = root.Q<Label>("query-output-text");
 
         if (_sendQueryButton != null) _sendQueryButton.clicked += OnSendQuery;
         if (_queryInputField != null) _queryInputField.RegisterCallback<KeyDownEvent>(OnQueryKeyDown);
 
         if (_commandHistoryList != null)
         {
-            _commandHistoryList.itemsSource     = _history;
-            _commandHistoryList.fixedItemHeight  = 30;
-            _commandHistoryList.makeItem         = () => new Label();
-            _commandHistoryList.bindItem         = (el, i) =>
+            _commandHistoryList.itemsSource = _history;
+            _commandHistoryList.makeItem = () => new Label();
+            _commandHistoryList.bindItem = (el, i) =>
             {
                 var lbl = (Label)el;
                 lbl.text = _history[i];
-                lbl.style.color      = new StyleColor(Color.white);
-                lbl.style.fontSize   = 14;
+                lbl.style.color = new StyleColor(Color.white);
+                lbl.style.fontSize = 14;
                 lbl.style.paddingLeft = lbl.style.paddingTop =
                     lbl.style.paddingBottom = 5;
-                lbl.style.whiteSpace = new StyleEnum<WhiteSpace>(WhiteSpace.NoWrap);
             };
             _commandHistoryList.selectionChanged += OnHistoryItemSelected;
         }
@@ -144,12 +136,18 @@ public class UIDatabase : MonoBehaviour
             _terminalPanel.BringToFront();
         }
         ClearInput();
-        ClearOutput();
     }
 
     public void CloseTerminal()
     {
         if (_terminalPanel != null) _terminalPanel.style.display = DisplayStyle.None;
+    }
+
+    /// <summary>Returns true if the SQL terminal is currently visible.</summary>
+    public bool IsTerminalOpen()
+    {
+        return _terminalPanel != null &&
+               _terminalPanel.resolvedStyle.display == DisplayStyle.Flex;
     }
 
     /// <summary>
@@ -218,18 +216,6 @@ public class UIDatabase : MonoBehaviour
             : $"[!!] {result.Message}";
 
         ShowOutput(output, isError: !result.Passed);
-
-        if (result.Passed) StartCoroutine(ShowStamp());
-    }
-
-    private IEnumerator ShowStamp()
-    {
-        if (_taskStamp == null) yield break;
-        _taskStamp.RemoveFromClassList("task-stamp--active");
-        yield return null; // one frame so Unity resets the animation
-        _taskStamp.AddToClassList("task-stamp--active");
-        yield return new WaitForSeconds(2.5f);
-        _taskStamp.RemoveFromClassList("task-stamp--active");
     }
 
     // ── Output display ────────────────────────────────────────────────────────
@@ -267,7 +253,7 @@ public class UIDatabase : MonoBehaviour
         if (rows == null || rows.Count == 0) return "(0 rows)";
 
         var headers = new List<string>(rows[0].Keys);
-        string header  = string.Join(" | ", headers);
+        string header = string.Join(" | ", headers);
         string divider = new string('-', header.Length);
 
         var sb = new System.Text.StringBuilder();
@@ -300,13 +286,6 @@ public class UIDatabase : MonoBehaviour
     private void ClearInput()
     {
         if (_queryInputField != null) _queryInputField.value = "";
-    }
-
-    private void ClearOutput()
-    {
-        if (_queryOutputText == null) return;
-        _queryOutputText.text = "Query results will appear here.";
-        _queryOutputText.style.color = new StyleColor(Color.white);
     }
 
     private void OnHistoryItemSelected(IEnumerable<object> selection)
