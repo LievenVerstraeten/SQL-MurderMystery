@@ -91,6 +91,14 @@ public class UIDatabase : MonoBehaviour
 
     // ── Public API ────────────────────────────────────────────────────────────
 
+    /// <summary>Clears query history — called when a new game starts.</summary>
+    public void ClearHistory()
+    {
+        _history.Clear();
+        _commandHistoryList?.RefreshItems();
+        if (_queryOutputText != null) _queryOutputText.text = "Query results will appear here.";
+    }
+
     public void ConnectToUI(UIDocument doc)
     {
         uiDocument = doc;
@@ -141,6 +149,8 @@ public class UIDatabase : MonoBehaviour
     public void CloseTerminal()
     {
         if (_terminalPanel != null) _terminalPanel.style.display = DisplayStyle.None;
+        // Always close Debbie hint when terminal closes
+        DialogueManager.Instance?.CloseHintPopupPublic();
     }
 
     /// <summary>Returns true if the SQL terminal is currently visible.</summary>

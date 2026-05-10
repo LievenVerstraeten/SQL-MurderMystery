@@ -139,7 +139,10 @@ public class GameManager : MonoBehaviour
         // 7. Auto-save so the profile immediately appears on the load screen
         AutoSave("new_game");
 
-        // 8. Load the game scene
+        // 8. Clear SQL query history so it doesn't carry over from a previous session
+        UIDatabase.Instance?.ClearHistory();
+
+        // 9. Load the game scene
         SetState(GameState.Playing);
         SceneManager.LoadScene(gameScene);
     }

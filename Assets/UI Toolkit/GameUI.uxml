@@ -72,7 +72,7 @@
             </ui:VisualElement>
             <ui:VisualElement style="flex-grow: 1; flex-direction: row;">
                 <ui:VisualElement name="querie-input-menu" class="sql-input-panel" style="flex-grow: 1; flex-basis: 0; flex-direction: column;">
-                    <ui:VisualElement class="sql-input-row" style="flex-direction: row; width: 100%; height: 80px; flex-shrink: 0;">
+                    <ui:VisualElement class="sql-input-row" style="flex-direction: row; width: 100%; height: 160px; flex-shrink: 0;">
                         <ui:TextField label="" multiline="true" placeholder-text="put your queries here" name="query-input-field" class="sql-input-field" style="flex-grow: 1; flex-shrink: 1; flex-basis: 0; min-width: 0;"/>
                         <ui:Button text="Send" name="send-query-button" class="sql-send-btn" style="flex-shrink: 0;"/>
                     </ui:VisualElement>
@@ -164,6 +164,10 @@
                 <ui:VisualElement class="tutorial-row">
                     <ui:Label text="ERD Diagram" class="tutorial-key" />
                     <ui:Label text="Shows the full database schema — table names, columns, and how they link together." class="tutorial-val" />
+                </ui:VisualElement>
+                 <ui:VisualElement class="tutorial-row">
+                    <ui:Label text="Dialogue Log" class="tutorial-key" />
+                    <ui:Label text="Logs all of the current and previous dialogue." class="tutorial-val" />
                 </ui:VisualElement>
                 <ui:VisualElement class="tutorial-row">
                     <ui:Label text="? This page" class="tutorial-key" />

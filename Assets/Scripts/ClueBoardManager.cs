@@ -532,8 +532,23 @@ public class ClueBoardManager : MonoBehaviour
     {
         if (_dragTarget == null || !_dragTarget.HasPointerCapture(evt.pointerId)) return;
         var pos = _cardsLayer.WorldToLocal(evt.position);
-        _dragTarget.style.left = pos.x - _dragOffset.x;
-        _dragTarget.style.top = pos.y - _dragOffset.y;
+
+        float cardW = _dragTarget.resolvedStyle.width;
+        float cardH = _dragTarget.resolvedStyle.height;
+        float layerW = _cardsLayer.resolvedStyle.width;
+        float layerH = _cardsLayer.resolvedStyle.height;
+
+        // Clamp so at least half the card stays visible inside the board
+        float minX = -cardW * 0.5f;
+        float maxX = layerW > 0 ? layerW - cardW * 0.5f : float.MaxValue;
+        float minY = -cardH * 0.5f;
+        float maxY = layerH > 0 ? layerH - cardH * 0.5f : float.MaxValue;
+
+        float newX = Mathf.Clamp(pos.x - _dragOffset.x, minX, maxX);
+        float newY = Mathf.Clamp(pos.y - _dragOffset.y, minY, maxY);
+
+        _dragTarget.style.left = newX;
+        _dragTarget.style.top = newY;
         _didDrag = true;
         _ropeDirty = true;
         if (_selectedCard?.Element == _dragTarget) PositionActionBar(_selectedCard);
