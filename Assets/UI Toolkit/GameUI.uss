@@ -1286,7 +1286,6 @@
     margin-left: 2px;
     margin-right: 2px;
 }
-
 /* ═══════════════════════════════════════════════════════════════════
    PROFILE OVERLAY
    ═══════════════════════════════════════════════════════════════════ */
@@ -1461,4 +1460,78 @@ TextField > .unity-base-text-field__input {
 
 .card-edit-field > .unity-base-field__input {
     -unity-cursor-color: rgb(242, 202, 80);
+}
+
+    /* ── Dialogue History Overlay ───────────────────────────────────────────── */
+.history-header {
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 22px;
+    background-color: rgba(20, 14, 6, 1.0);
+    flex-shrink: 0;
+    border-bottom-width: 2px;
+    border-bottom-color: rgb(140, 100, 28);
+}
+
+.history-title {
+    flex-grow: 1;
+    font-size: 20px;
+    color: rgb(140, 100, 28);
+    -unity-font-style: bold;
+}
+
+.history-scroll {
+    flex-grow: 1;
+    padding: 16px 24px;
+}
+
+.history-content {
+    flex-direction: column;
+}
+
+.history-entry {
+    flex-direction: column;
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(140, 100, 28, 0.2);
+}
+
+.history-speaker {
+    font-size: 18px;
+    color: rgb(140, 100, 28);
+    -unity-font-style: bold;
+    margin-bottom: 4px;
+}
+
+.history-text {
+    font-size: 16px;
+    color: rgb(200, 185, 160);
+    white-space: normal;
+}
+
+.history-scroll .unity-scroller--vertical {
+    background-color: rgba(20, 14, 6, 0.9);
+    border-left-color: rgba(140, 100, 28, 0.5);
+    border-left-width: 1px;
+    width: 12px;
+}
+
+.history-scroll .unity-scroller__low-button,
+.history-scroll .unity-scroller__high-button {
+    background-color: rgba(140, 100, 28, 0.3);
+    border-color: rgba(140, 100, 28, 0.5);
+    border-width: 1px;
+}
+
+.history-scroll .unity-base-slider__tracker {
+    background-color: rgba(140, 100, 28, 0.15);
+}
+
+.history-scroll .unity-base-slider__dragger {
+    background-color: rgb(140, 100, 28);
+    border-radius: 4px;
+    border-width: 0;
+    margin-left: 2px;
+    margin-right: 2px;
 }

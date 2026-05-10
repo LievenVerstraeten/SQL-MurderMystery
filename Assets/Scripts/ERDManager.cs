@@ -141,7 +141,11 @@ public class ERDManager : MonoBehaviour
         if (_labelsLayer == null) Debug.LogWarning("[ERDManager] 'erd-labels-layer' not found — relation labels will not show.");
 
         root.Q<Button>("erd-button")?.RegisterCallback<ClickEvent>(_ => SetVisible(true));
-        root.Q<Button>("erd-close-btn")?.RegisterCallback<ClickEvent>(_ => SetVisible(false));
+        root.Q<Button>("erd-close-btn")?.RegisterCallback<ClickEvent>(_ =>
+        {
+            SetVisible(false);
+            _overlay?.panel?.visualTree?.Q("root")?.Focus();
+        });
 
         _canvasRoot.RegisterCallback<PointerDownEvent>(OnPanStart);
         _canvasRoot.RegisterCallback<PointerMoveEvent>(OnPanMove);
@@ -685,7 +689,7 @@ public class ERDManager : MonoBehaviour
         if (_canvas == null) return;
         _canvas.style.left = _pan.x;
         _canvas.style.top = _pan.y;
-        _canvas.transform.scale = new Vector3(_zoom, _zoom, 1f);
+        _canvas.style.scale = new StyleScale(new Scale(new Vector3(_zoom, _zoom, 1f)));
         _canvas.style.transformOrigin =
             new StyleTransformOrigin(new TransformOrigin(0, 0, 0));
         if (_zoomLabel != null)

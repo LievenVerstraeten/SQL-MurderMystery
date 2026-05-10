@@ -16,6 +16,9 @@
                 <ui:Button name="erd-button" class="icon-button" tooltip="View Database ERD">
                     <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_ERD.png');"/>
                 </ui:Button>
+                <ui:Button name="history-button" class="icon-button" tooltip="Dialogue History">
+                    <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_History.png');"/>
+                </ui:Button>
                 <ui:Button name="tutorial-button" class="icon-button">
                     <ui:VisualElement class="btn-icon" style="background-image: url('project://database/Assets/Textures/Graphics/icons/UI_Question.png');"/>
                 </ui:Button>
@@ -183,6 +186,17 @@
             </ui:VisualElement>
         </ui:ScrollView>
     </ui:VisualElement>
+
+    <!-- DIALOGUE HISTORY OVERLAY -->
+<ui:VisualElement name="history-overlay" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(6,4,2,0.95); flex-direction: column;">
+    <ui:VisualElement class="history-header">
+        <ui:Label text="DIALOGUE HISTORY" class="history-title" />
+        <ui:Button name="history-close-btn" text="" class="tutorial-close-btn" />
+    </ui:VisualElement>
+    <ui:ScrollView name="history-scroll" class="history-scroll" style="flex-grow: 1;">
+        <ui:VisualElement name="history-content" class="history-content" />
+    </ui:ScrollView>
+</ui:VisualElement>
 
     <!-- PROFILE OVERLAY -->
     <ui:VisualElement name="profile-overlay" style="display: none; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background-color: rgba(6,4,2,0.92); align-items: center; justify-content: center; flex-direction: column;">
