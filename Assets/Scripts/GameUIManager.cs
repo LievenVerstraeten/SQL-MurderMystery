@@ -20,6 +20,9 @@ public class GameUIManager : MonoBehaviour
     private Button saveExitButton;
 
     private bool isMenuOpen = false;
+    private bool isHistoryOpen = false;
+    private VisualElement _historyOverlay;
+    private VisualElement _historyContent;
     private bool isInputMenuOpen = false;
     private bool isTutorialOpen = false;
     private bool isProfileOpen = false;
@@ -85,6 +88,14 @@ public class GameUIManager : MonoBehaviour
         if (_tutorialOverlay != null) _tutorialOverlay.style.display = DisplayStyle.None;
         var tutorialCloseBtn = root.Q<Button>("tutorial-close-btn");
         if (tutorialCloseBtn != null) tutorialCloseBtn.clicked += CloseTutorial;
+
+        _historyOverlay = root.Q("history-overlay");
+        if (_historyOverlay != null) _historyOverlay.style.display = DisplayStyle.None;
+        _historyContent = root.Q("history-content");
+        var historyCloseBtn = root.Q<Button>("history-close-btn");
+        if (historyCloseBtn != null) historyCloseBtn.clicked += CloseHistory;
+        var historyBtn = root.Q<Button>("history-button");
+        if (historyBtn != null) historyBtn.clicked += OnHistoryClicked;
 
         // Profile overlay
         _profileOverlay = root.Q("profile-overlay");
@@ -176,12 +187,68 @@ public class GameUIManager : MonoBehaviour
         if (_tutorialOverlay == null) return;
         _tutorialOverlay.style.display = isTutorialOpen ? DisplayStyle.Flex : DisplayStyle.None;
         if (isTutorialOpen) _tutorialOverlay.BringToFront();
+        else _root?.Focus();
+    }
+
+    private void OnHistoryClicked()
+    {
+        isHistoryOpen = !isHistoryOpen;
+        if (_historyOverlay == null) return;
+        _historyOverlay.style.display = isHistoryOpen ? DisplayStyle.Flex : DisplayStyle.None;
+        if (isHistoryOpen)
+        {
+            PopulateHistory();
+            _historyOverlay.BringToFront();
+        }
+        else _root?.Focus();
+    }
+
+    private void CloseHistory()
+    {
+        isHistoryOpen = false;
+        if (_historyOverlay != null) _historyOverlay.style.display = DisplayStyle.None;
+        _root?.Focus();
+    }
+
+    private void PopulateHistory()
+    {
+        if (_historyContent == null) return;
+        _historyContent.Clear();
+
+        var history = DialogueManager.Instance?.GetHistory();
+        if (history == null || history.Count == 0)
+        {
+            var empty = new UnityEngine.UIElements.Label("No dialogue yet.");
+            empty.AddToClassList("history-text");
+            empty.style.opacity = 0.5f;
+            _historyContent.Add(empty);
+            return;
+        }
+
+        // Show most recent at top
+        for (int i = history.Count - 1; i >= 0; i--)
+        {
+            var (speaker, text) = history[i];
+            var entry = new UnityEngine.UIElements.VisualElement();
+            entry.AddToClassList("history-entry");
+
+            var speakerLbl = new UnityEngine.UIElements.Label(speaker);
+            speakerLbl.AddToClassList("history-speaker");
+
+            var textLbl = new UnityEngine.UIElements.Label(text);
+            textLbl.AddToClassList("history-text");
+
+            entry.Add(speakerLbl);
+            entry.Add(textLbl);
+            _historyContent.Add(entry);
+        }
     }
 
     private void CloseTutorial()
     {
         isTutorialOpen = false;
         if (_tutorialOverlay != null) _tutorialOverlay.style.display = DisplayStyle.None;
+        _root?.Focus();
     }
 
     private void OnProfileClicked()
@@ -205,6 +272,7 @@ public class GameUIManager : MonoBehaviour
     {
         isProfileOpen = false;
         if (_profileOverlay != null) _profileOverlay.style.display = DisplayStyle.None;
+        _root?.Focus();
     }
 
     // ─── Burger menu ──────────────────────────────────────────────────────────
@@ -219,6 +287,7 @@ public class GameUIManager : MonoBehaviour
             burgerMenuDropdown.style.display = DisplayStyle.None;
         if (querieInputMenu != null)
             querieInputMenu.style.display = DisplayStyle.None;
+        CloseHistory();
     }
 
     private void OnBurgerMenuClicked()
@@ -253,10 +322,8 @@ public class GameUIManager : MonoBehaviour
 
     private void OnSaveExitClicked()
     {
-        // Auto-save is handled by DialogueManager on every node advance.
-        // Here we just return to the main menu scene.
-        Debug.Log("[GameUIManager] Save & Exit clicked — returning to main menu.");
-        UnityEngine.SceneManagement.SceneManager.LoadScene("MainMenu");
+        Debug.Log("[GameUIManager] Save & Exit clicked — saving and returning to main menu.");
+        GameManager.Instance?.ReturnToMainMenu();
     }
 
     // ─── Story kickoff ────────────────────────────────────────────────────────

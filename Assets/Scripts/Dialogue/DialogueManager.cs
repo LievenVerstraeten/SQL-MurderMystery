@@ -89,6 +89,9 @@ public class DialogueManager : MonoBehaviour
 
     private Coroutine _idleCluckCoroutine;
 
+    // ── Dialogue history ──────────────────────────────────────────────────────
+    private readonly List<(string speaker, string text)> _history = new();
+
     private static readonly string[] IdleClucks =
     {
         "Cluck.",
@@ -134,6 +137,11 @@ public class DialogueManager : MonoBehaviour
     {
         UnbindUI();
         TaskValidator.OnValidationComplete -= OnSQLValidated;
+        if (_idleCluckCoroutine != null)
+        {
+            StopCoroutine(_idleCluckCoroutine);
+            _idleCluckCoroutine = null;
+        }
     }
 
     private void BindUI(VisualElement root)
@@ -165,6 +173,42 @@ public class DialogueManager : MonoBehaviour
         // Clicking anywhere on the dialogue layer or cutscene layer advances the story
         _dialogueLayer?.RegisterCallback<ClickEvent>(_ => OnContinueClicked());
         _cutsceneLayer?.RegisterCallback<ClickEvent>(_ => OnContinueClicked());
+
+        // Register at TrickleDown phase on the panel root so keyboard
+        // events are captured regardless of which element has focus.
+        // This means Space/Enter always works even after clicking buttons or overlays.
+        root.RegisterCallback<KeyDownEvent>(OnKeyDown, TrickleDown.TrickleDown);
+        root.focusable = true;
+        root.Focus();
+    }
+
+    private void OnKeyDown(KeyDownEvent evt)
+    {
+        // Only Space or Enter advance dialogue
+        if (evt.keyCode != KeyCode.Space &&
+            evt.keyCode != KeyCode.Return &&
+            evt.keyCode != KeyCode.KeypadEnter) return;
+
+        // Never advance while SQL task is active
+        if (_awaitingSQL) return;
+
+        // Never advance if a text field has focus
+        var focused = uiDocument?.rootVisualElement?.focusController?.focusedElement;
+        if (focused is TextField) return;
+
+        // Never advance if any overlay is open
+        var root = uiDocument?.rootVisualElement;
+        if (root != null)
+        {
+            // Check all named overlays
+            bool tutorialOpen = root.Q("tutorial-overlay")?.resolvedStyle.display == DisplayStyle.Flex;
+            bool profileOpen = root.Q("profile-overlay")?.resolvedStyle.display == DisplayStyle.Flex;
+            bool erdOpen = root.Q("erd-overlay")?.resolvedStyle.display == DisplayStyle.Flex;
+            bool boardOpen = ClueBoardManager.Instance != null && ClueBoardManager.Instance.IsVisible();
+            if (tutorialOpen || profileOpen || erdOpen || boardOpen) return;
+        }
+
+        OnContinueClicked();
     }
 
     private void UnbindUI()
@@ -173,6 +217,8 @@ public class DialogueManager : MonoBehaviour
         if (_cutsceneContinueBtn != null) _cutsceneContinueBtn.clicked -= OnContinueClicked;
         if (_debbieHintBtn != null) _debbieHintBtn.clicked -= OnDebbieHintClicked;
         if (_hintPopupClose != null) _hintPopupClose.clicked -= CloseHintPopup;
+        // Unregister keyboard so it doesn't fire twice if ConnectToUI is called again
+        uiDocument?.rootVisualElement?.UnregisterCallback<KeyDownEvent>(OnKeyDown);
     }
 
     /// <summary>
@@ -191,6 +237,14 @@ public class DialogueManager : MonoBehaviour
 
     public void StartStory(List<DialogueNode> story, int startIndex = 0)
     {
+        ClearHistory();
+
+        // Pre-populate history with all dialogue nodes up to startIndex
+        // so resume shows correct history
+        for (int i = 0; i < startIndex && i < story.Count; i++)
+            if (story[i].Type == NodeType.Dialogue)
+                _history.Add((story[i].Speaker, story[i].Text));
+
         _story = story;
         _nodeIndex = startIndex;
         _awaitingSQL = false;
@@ -248,6 +302,9 @@ public class DialogueManager : MonoBehaviour
 
     private void ShowDialogue(DialogueNode node)
     {
+        // Record in history
+        _history.Add((node.Speaker, node.Text));
+
         // Close the terminal in case a Demo node left it open
         UIDatabase.Instance?.CloseTerminal();
 
@@ -417,6 +474,9 @@ public class DialogueManager : MonoBehaviour
 
     private void OnContinueClicked()
     {
+        // Return focus to root so keyboard advance keeps working
+        uiDocument?.rootVisualElement?.Focus();
+
         if (_awaitingSQL || _bgFading) return;
 
         // Absorb the bubbled ClickEvent that arrives right after a skip click
@@ -435,9 +495,9 @@ public class DialogueManager : MonoBehaviour
     private void Advance()
     {
         _nodeIndex++;
-        ShowNode();
 
-        // Save exact dialogue position so player resumes mid-story on load
+        // Save before ShowNode — ShowNode can call Advance() again via coroutines
+        // so saving after would record the wrong index
         if (GameManager.Instance != null && CaseManager.Instance?.ActiveCase != null)
         {
             CaseManager.Instance.SaveDialogueNode(
@@ -446,6 +506,8 @@ public class DialogueManager : MonoBehaviour
                 _nodeIndex);
             GameManager.Instance.AutoSave("story_advance");
         }
+
+        ShowNode();
     }
 
     private void OnSQLValidated(TaskValidator.ValidationResult result)
@@ -490,6 +552,12 @@ public class DialogueManager : MonoBehaviour
 
     /// <summary>Public version — called when clue board opens so hint doesn't float over it.</summary>
     public void CloseHintPopupPublic() => CloseHintPopup();
+
+    /// <summary>Returns a copy of the dialogue history for the history overlay.</summary>
+    public List<(string speaker, string text)> GetHistory() => new(_history);
+
+    /// <summary>Clears history — called when a new story starts.</summary>
+    private void ClearHistory() => _history.Clear();
 
     private void StartTypewriter(Label label, string text, string speaker = "")
     {

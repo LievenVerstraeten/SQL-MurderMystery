@@ -116,7 +116,12 @@ public class ClueBoardManager : MonoBehaviour
 
         _ropeLayer.generateVisualContent -= DrawRopes;
 
-        _root.Q<Button>("close-btn")?.RegisterCallback<ClickEvent>(_ => SetVisible(false));
+        _root.Q<Button>("close-btn")?.RegisterCallback<ClickEvent>(_ =>
+        {
+            SetVisible(false);
+            // Re-focus root so keyboard dialogue advance works again
+            _root.panel?.visualTree?.Q("root")?.Focus();
+        });
         _root.Q<Button>("add-note-btn")?.RegisterCallback<ClickEvent>(_ => AddNote());
         _inventoryBtn?.RegisterCallback<ClickEvent>(_ => ToggleTray());
         _root.Q<Button>("tray-close")?.RegisterCallback<ClickEvent>(_ => CloseTray());
@@ -160,7 +165,24 @@ public class ClueBoardManager : MonoBehaviour
 
         SetVisible(false);
         PopulateTray();
+
+        // Clear any existing cards/ropes from a previous ConnectToUI call
+        ClearBoard();
         LoadBoard();
+    }
+
+    private void ClearBoard()
+    {
+        foreach (var card in _cards)
+            if (_cardsLayer.Contains(card.Element))
+                _cardsLayer.Remove(card.Element);
+        _cards.Clear();
+        _ropes.Clear();
+        _selectedCard = null;
+        _ropeStartCard = null;
+        _isRopeMode = false;
+        _cardCounter = 0;
+        _ropeDirty = true;
     }
 
     private void OnDisable()
@@ -510,8 +532,23 @@ public class ClueBoardManager : MonoBehaviour
     {
         if (_dragTarget == null || !_dragTarget.HasPointerCapture(evt.pointerId)) return;
         var pos = _cardsLayer.WorldToLocal(evt.position);
-        _dragTarget.style.left = pos.x - _dragOffset.x;
-        _dragTarget.style.top = pos.y - _dragOffset.y;
+
+        float cardW = _dragTarget.resolvedStyle.width;
+        float cardH = _dragTarget.resolvedStyle.height;
+        float layerW = _cardsLayer.resolvedStyle.width;
+        float layerH = _cardsLayer.resolvedStyle.height;
+
+        // Clamp so at least half the card stays visible inside the board
+        float minX = -cardW * 0.5f;
+        float maxX = layerW > 0 ? layerW - cardW * 0.5f : float.MaxValue;
+        float minY = -cardH * 0.5f;
+        float maxY = layerH > 0 ? layerH - cardH * 0.5f : float.MaxValue;
+
+        float newX = Mathf.Clamp(pos.x - _dragOffset.x, minX, maxX);
+        float newY = Mathf.Clamp(pos.y - _dragOffset.y, minY, maxY);
+
+        _dragTarget.style.left = newX;
+        _dragTarget.style.top = newY;
         _didDrag = true;
         _ropeDirty = true;
         if (_selectedCard?.Element == _dragTarget) PositionActionBar(_selectedCard);
@@ -554,8 +591,10 @@ public class ClueBoardManager : MonoBehaviour
         for (int i = 0; i < _cards.Count; i++)
         {
             var c = _cards[i];
-            float x = c.Element.resolvedStyle.left;
-            float y = c.Element.resolvedStyle.top;
+            // Use style.left/top (the values we set) not resolvedStyle
+            // which may not be calculated yet if layout hasn't run
+            float x = c.Element.style.left.value.value;
+            float y = c.Element.style.top.value.value;
             string t = c.Title.Replace("\\", "\\\\").Replace("\"", "\\\"");
             string b = c.Body.Replace("\\", "\\\\").Replace("\"", "\\\"");
             string xi = x.ToString(CultureInfo.InvariantCulture);
@@ -573,7 +612,27 @@ public class ClueBoardManager : MonoBehaviour
         }
         sb.Append("]");
 
-        DatabaseManager.Instance?.SaveBoardCards(profileId, sb.ToString());
+        // Append ropes as a separate array at the end
+        // Format: main JSON object wrapping cards and ropes arrays
+        string cardsJson = sb.ToString();
+
+        var ropesSb = new StringBuilder();
+        ropesSb.Append("[");
+        bool firstRope = true;
+        foreach (var r in _ropes)
+        {
+            if (r.From == null || r.To == null) continue;
+            if (!firstRope) ropesSb.Append(",");
+            firstRope = false;
+            ropesSb.Append("{");
+            ropesSb.Append("\"from\":\"").Append(r.From.Id).Append("\",");
+            ropesSb.Append("\"to\":\"").Append(r.To.Id).Append("\"");
+            ropesSb.Append("}");
+        }
+        ropesSb.Append("]");
+
+        string finalJson = "{\"cards\":" + cardsJson + ",\"ropes\":" + ropesSb.ToString() + "}";
+        DatabaseManager.Instance?.SaveBoardCards(profileId, finalJson);
     }
 
     private void LoadBoard()
@@ -585,13 +644,40 @@ public class ClueBoardManager : MonoBehaviour
         if (string.IsNullOrEmpty(json)) return;
 
         json = json.Trim();
-        if (!json.StartsWith("[") || !json.EndsWith("]")) return;
-        json = json.Substring(1, json.Length - 2);
+
+        // New format: {"cards":[...],"ropes":[...]}
+        // Legacy format: [...] (cards only array)
+        string cardsJson = json;
+        string ropesJson = null;
+
+        if (json.StartsWith("{"))
+        {
+            // Extract cards array
+            int cardsIdx = json.IndexOf("\"cards\":", StringComparison.Ordinal);
+            int ropesIdx = json.IndexOf("\"ropes\":", StringComparison.Ordinal);
+            if (cardsIdx >= 0)
+            {
+                int start = json.IndexOf('[', cardsIdx);
+                int end = FindMatchingBracket(json, start);
+                if (start >= 0 && end > start)
+                    cardsJson = json.Substring(start, end - start + 1);
+            }
+            if (ropesIdx >= 0)
+            {
+                int start = json.IndexOf('[', ropesIdx);
+                int end = FindMatchingBracket(json, start);
+                if (start >= 0 && end > start)
+                    ropesJson = json.Substring(start, end - start + 1);
+            }
+        }
+
+        if (!cardsJson.StartsWith("[") || !cardsJson.EndsWith("]")) return;
+        string inner = cardsJson.Substring(1, cardsJson.Length - 2);
 
         _isLoading = true;
         try
         {
-            var cardJsons = SplitJsonObjects(json);
+            var cardJsons = SplitJsonObjects(inner);
             foreach (var cardJson in cardJsons)
             {
                 string id = JsonGetString(cardJson, "id");
@@ -611,6 +697,46 @@ public class ClueBoardManager : MonoBehaviour
         {
             _isLoading = false;
         }
+
+        // Restore ropes after layout is done so worldBound is valid
+        // GeometryChangedEvent fires once layout has been calculated
+        if (!string.IsNullOrEmpty(ropesJson) && ropesJson.StartsWith("["))
+        {
+            string ropesJsonCopy = ropesJson;
+            void RestoreRopes(GeometryChangedEvent _)
+            {
+                _cardsLayer.UnregisterCallback<GeometryChangedEvent>(RestoreRopes);
+                string ropesInner = ropesJsonCopy.Substring(1, ropesJsonCopy.Length - 2);
+                var ropeJsons = SplitJsonObjects(ropesInner);
+                foreach (var ropeJson in ropeJsons)
+                {
+                    string fromId = JsonGetString(ropeJson, "from");
+                    string toId = JsonGetString(ropeJson, "to");
+                    var from = _cards.FirstOrDefault(c => c.Id == fromId);
+                    var to = _cards.FirstOrDefault(c => c.Id == toId);
+                    if (from != null && to != null)
+                        _ropes.Add(new RopeConnection { From = from, To = to });
+                }
+                _ropeDirty = true;
+                Debug.Log($"[ClueBoardManager] Restored {_ropes.Count} ropes after layout.");
+            }
+            _cardsLayer.RegisterCallback<GeometryChangedEvent>(RestoreRopes);
+        }
+    }
+
+    /// <summary>Finds the index of the closing bracket matching the opening bracket at startIdx.</summary>
+    private static int FindMatchingBracket(string s, int startIdx)
+    {
+        if (startIdx < 0 || startIdx >= s.Length) return -1;
+        char open = s[startIdx];
+        char close = open == '[' ? ']' : '}';
+        int depth = 0;
+        for (int i = startIdx; i < s.Length; i++)
+        {
+            if (s[i] == open) depth++;
+            else if (s[i] == close) { if (--depth == 0) return i; }
+        }
+        return -1;
     }
 
     // ── Minimal JSON helpers ──────────────────────────────────────────────────
